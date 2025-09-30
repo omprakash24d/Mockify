@@ -6,7 +6,7 @@ import type {
   SampleQuestionParams,
 } from "../../../services/optimizedNeetAPI";
 import { optimizedQuestionsAPI } from "../../../services/optimizedNeetAPI";
-import type { Question, Pagination } from "../../../types/neet";
+import type { Pagination, Question } from "../../../types/neet";
 
 interface UseOptimizedQuestionsState {
   questions: Question[];

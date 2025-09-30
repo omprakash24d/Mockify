@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+P:\Mockify\backend\mockifyneet-firebase-adminsdk-fbsvc-bd57857713.json
 
 # Environment files
 .env
