@@ -28,34 +28,40 @@ export const ChapterSelectionStep: React.FC<StepComponentProps> = ({
   const { setSelectedChapters, handleChapterToggle, setCurrentStep } = actions;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <GraduationCap className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-          Select Chapters
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto transition-colors duration-300">
-          Choose specific chapters from your selected subjects to focus your
-          test content.
-        </p>
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl shadow-2xl">
+          <GraduationCap className="w-12 h-12 text-white" />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+            Select Chapters
+          </h2>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            Choose specific chapters from your selected subjects to focus your
+            test content.
+          </p>
+        </div>
       </div>
 
       {/* Selected Subjects Summary */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-xl border border-indigo-200 dark:border-indigo-800 mb-6">
-        <div className="flex items-center space-x-3 mb-3">
-          <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          <h4 className="font-semibold text-indigo-900 dark:text-indigo-100">
+      <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/10 dark:via-purple-900/10 dark:to-pink-900/10 p-8 rounded-3xl border border-indigo-200 dark:border-indigo-800/50 shadow-xl">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <h4 className="text-xl font-bold text-indigo-900 dark:text-indigo-100">
             Selected Subjects
           </h4>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           {selectedSubjects.map((id) => {
             const subject = subjects.find((s) => s.id === id);
             return (
               <span
                 key={id}
-                className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200 rounded-lg text-sm font-medium border border-indigo-200 dark:border-indigo-700"
+                className="px-4 py-2 bg-white/60 dark:bg-slate-800/60 text-indigo-800 dark:text-indigo-200 rounded-2xl text-sm font-semibold border border-indigo-200 dark:border-indigo-700/50 shadow-sm backdrop-blur-sm"
               >
                 {subject?.name}
               </span>
@@ -66,14 +72,16 @@ export const ChapterSelectionStep: React.FC<StepComponentProps> = ({
 
       {/* Loading State */}
       {stepLoading[2] && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-            Loading Chapters...
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-center transition-colors duration-300">
-            Fetching chapters for your selected subjects
-          </p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-indigo-500 rounded-full animate-spin mb-6"></div>
+          <div className="text-center space-y-3">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Loading Chapters...
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
+              Fetching chapters for your selected subjects
+            </p>
+          </div>
         </div>
       )}
 
@@ -81,23 +89,25 @@ export const ChapterSelectionStep: React.FC<StepComponentProps> = ({
       {!stepLoading[2] &&
         chapters.length === 0 &&
         selectedSubjects.length > 0 && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-              <GraduationCap className="w-12 h-12 text-gray-400" />
+          <div className="text-center py-20">
+            <div className="w-32 h-32 bg-slate-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <GraduationCap className="w-16 h-16 text-slate-400 dark:text-slate-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-              No Chapters Found
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-300">
-              We couldn't find any chapters for your selected subjects. Please
-              try selecting different subjects.
-            </p>
-            <button
-              onClick={() => setCurrentStep(1)}
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 px-6 py-3 rounded-lg font-medium transition-all duration-200"
-            >
-              Go Back to Subjects
-            </button>
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                No Chapters Found
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+                We couldn't find any chapters for your selected subjects. Please
+                try selecting different subjects.
+              </p>
+              <button
+                onClick={() => setCurrentStep(1)}
+                className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-8 py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+              >
+                Go Back to Subjects
+              </button>
+            </div>
           </div>
         )}
 
@@ -105,27 +115,27 @@ export const ChapterSelectionStep: React.FC<StepComponentProps> = ({
       {!stepLoading[2] && chapters.length > 0 && (
         <>
           {/* Stats & Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
             <div className="flex items-center space-x-4">
-              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">
+              <div className="bg-white dark:bg-slate-800 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {chapters.length} Available Chapters
                 </span>
               </div>
               {selectedChapters.length > 0 && (
-                <div className="bg-indigo-100 dark:bg-indigo-900/30 px-4 py-2 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                  <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 px-6 py-3 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+                  <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
                     {selectedChapters.length} Selected
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setSelectedChapters(chapters.map((c) => c.id))}
-                className="px-4 py-2 text-sm font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800"
+                className="px-6 py-3 text-sm font-semibold bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 text-indigo-700 dark:text-indigo-300 rounded-2xl hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all duration-300 border border-indigo-200 dark:border-indigo-800 shadow-sm hover:shadow-md"
               >
                 Select All
               </button>
@@ -133,7 +143,7 @@ export const ChapterSelectionStep: React.FC<StepComponentProps> = ({
                 type="button"
                 onClick={() => setSelectedChapters([])}
                 disabled={selectedChapters.length === 0}
-                className="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm"
               >
                 Clear All
               </button>

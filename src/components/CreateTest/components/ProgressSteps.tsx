@@ -7,77 +7,127 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
   steps,
   currentStep,
   stepLoading,
-}) => (
-  <div className="mb-8">
-    <div className="flex items-center justify-between max-w-4xl mx-auto">
-      {steps.map((step, index) => {
-        const StepIcon = step.icon;
-        const isCompleted = currentStep > step.id;
-        const isCurrent = currentStep === step.id;
-        const isUpcoming = currentStep < step.id;
+}) => {
+  const getStepColors = (stepId: number) => {
+    switch (stepId) {
+      case 1:
+        return {
+          bg: "bg-blue-500",
+          border: "border-blue-200",
+          line: "bg-blue-200",
+        };
+      case 2:
+        return {
+          bg: "bg-indigo-500",
+          border: "border-indigo-200",
+          line: "bg-indigo-200",
+        };
+      case 3:
+        return {
+          bg: "bg-purple-500",
+          border: "border-purple-200",
+          line: "bg-purple-200",
+        };
+      case 4:
+        return {
+          bg: "bg-emerald-500",
+          border: "border-emerald-200",
+          line: "bg-emerald-200",
+        };
+      default:
+        return {
+          bg: "bg-slate-500",
+          border: "border-slate-200",
+          line: "bg-slate-200",
+        };
+    }
+  };
 
-        return (
-          <div key={step.id} className="flex items-center flex-1">
-            {/* Step Circle */}
-            <div className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center transition-all duration-300 relative",
-                  isCompleted && "bg-green-500 text-white shadow-lg",
-                  isCurrent &&
-                    `bg-${step.color}-500 text-white shadow-lg scale-110`,
-                  isUpcoming &&
-                    "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border-2 text-gray-600 dark:text-gray-400 transition-colors duration-300"
-                )}
-              >
-                {isCompleted ? (
-                  <CheckCircle className="w-6 h-6 lg:w-7 lg:h-7" />
-                ) : (
-                  <StepIcon className="w-6 h-6 lg:w-7 lg:h-7" />
-                )}
+  return (
+    <div className="mb-16">
+      <div className="flex items-center justify-between max-w-5xl mx-auto">
+        {steps.map((step, index) => {
+          const StepIcon = step.icon;
+          const isCompleted = currentStep > step.id;
+          const isCurrent = currentStep === step.id;
+          const isUpcoming = currentStep < step.id;
+          const colors = getStepColors(step.id);
 
-                {/* Loading spinner for current step */}
-                {isCurrent && stepLoading[step.id] && (
-                  <div className="absolute inset-0 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
-                )}
-              </div>
-
-              {/* Step Info */}
-              <div className="mt-3 text-center max-w-28">
+          return (
+            <div key={step.id} className="flex items-center flex-1">
+              {/* Step Circle */}
+              <div className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "text-sm font-semibold transition-colors duration-300",
-                    isCompleted || isCurrent
-                      ? "text-gray-900 dark:text-gray-100"
-                      : "text-gray-600 dark:text-gray-400"
+                    "w-16 h-16 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 relative shadow-lg",
+                    isCompleted &&
+                      "bg-gradient-to-br from-emerald-500 to-green-600 text-white",
+                    isCurrent &&
+                      `bg-gradient-to-br ${colors.bg.replace(
+                        "bg-",
+                        "from-"
+                      )} to-${
+                        colors.bg.split("-")[1]
+                      }-600 text-white scale-110 shadow-2xl`,
+                    isUpcoming &&
+                      "bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600"
                   )}
                 >
-                  {step.title}
-                </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block transition-colors duration-300">
-                  {step.description}
-                </div>
-              </div>
-            </div>
-
-            {/* Connector Line */}
-            {index < steps.length - 1 && (
-              <div className="flex-1 mx-4 hidden sm:block">
-                <div
-                  className={cn(
-                    "h-0.5 transition-all duration-300",
-                    currentStep > step.id
-                      ? "bg-green-500"
-                      : currentStep === step.id
-                      ? `bg-${step.color}-200`
-                      : "border-gray-200 dark:border-gray-700 bg-gray-200 dark:bg-gray-700"
+                  {isCompleted ? (
+                    <CheckCircle className="w-8 h-8 lg:w-10 lg:h-10" />
+                  ) : (
+                    <StepIcon className="w-8 h-8 lg:w-10 lg:h-10" />
                   )}
-                />
+
+                  {/* Loading spinner for current step */}
+                  {isCurrent && stepLoading[step.id] && (
+                    <div className="absolute inset-0 rounded-2xl border-2 border-white/30 border-t-white animate-spin"></div>
+                  )}
+                </div>
+
+                {/* Step Info */}
+                <div className="mt-4 text-center max-w-32">
+                  <div
+                    className={cn(
+                      "text-sm lg:text-base font-bold transition-colors duration-300",
+                      isCompleted || isCurrent
+                        ? "text-slate-900 dark:text-slate-100"
+                        : "text-slate-500 dark:text-slate-500"
+                    )}
+                  >
+                    {step.title}
+                  </div>
+                  <div className="text-xs lg:text-sm text-slate-500 dark:text-slate-500 mt-1 hidden sm:block leading-tight">
+                    {step.description}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        );
-      })}
+
+              {/* Connector Line */}
+              {index < steps.length - 1 && (
+                <div className="flex-1 mx-6 hidden sm:block">
+                  <div className="relative">
+                    <div className="h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                    <div
+                      className={cn(
+                        "absolute top-0 left-0 h-1 rounded-full transition-all duration-500",
+                        currentStep > step.id
+                          ? "w-full bg-gradient-to-r from-emerald-400 to-green-500"
+                          : currentStep === step.id
+                          ? `w-1/2 bg-gradient-to-r ${colors.bg.replace(
+                              "bg-",
+                              "from-"
+                            )} to-${colors.bg.split("-")[1]}-400`
+                          : "w-0"
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};

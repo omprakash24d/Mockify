@@ -4,7 +4,13 @@ import {
   setPersistence,
   type User as FirebaseUser,
 } from "firebase/auth";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { auth } from "../lib/firebase";
 
 interface AuthContextType {
@@ -39,12 +45,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     import.meta.env.VITE_SESSION_TIMEOUT || "86400000"
   ); // 24 hours default
 
-  const updateActivity = () => {
-    setLastActivity(Date.now());
-    localStorage.setItem("mockify-lastActivity", Date.now().toString());
-  };
+  const updateActivity = useCallback(() => {
+    const now = Date.now();
+    setLastActivity(now);
+    localStorage.setItem("mockify-lastActivity", now.toString());
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await auth.signOut();
       localStorage.removeItem("mockify-lastActivity");
@@ -52,22 +59,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Error signing out:", error);
     }
-  };
+  }, []);
 
-  const checkSessionTimeout = () => {
+  const checkSessionTimeout = useCallback(() => {
     const storedActivity = localStorage.getItem("mockify-lastActivity");
     if (storedActivity) {
       const lastActivityTime = parseInt(storedActivity);
       const timeDiff = Date.now() - lastActivityTime;
 
-      if (timeDiff > sessionTimeout && user) {
+      if (timeDiff > sessionTimeout) {
         console.log("Session expired, logging out...");
-        logout();
         return false;
       }
     }
     return true;
-  };
+  }, [sessionTimeout]);
 
   useEffect(() => {
     // Set persistence to local storage
@@ -83,33 +89,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     });
 
-    // Check session timeout periodically
+    return () => {
+      unsubscribe();
+    };
+  }, [checkSessionTimeout, updateActivity]);
+
+  // Separate effect for session timeout checking
+  useEffect(() => {
+    if (!user) return;
+
     const timeoutCheck = setInterval(() => {
-      if (user && !checkSessionTimeout()) {
-        setUser(null);
+      if (!checkSessionTimeout()) {
+        logout();
       }
     }, 60000); // Check every minute
 
-    // Update activity on user interactions
-    const activityEvents = ["mousedown", "keydown", "scroll", "touchstart"];
-    const handleActivity = () => {
-      if (user) {
-        updateActivity();
-      }
+    return () => {
+      clearInterval(timeoutCheck);
     };
+  }, [user, checkSessionTimeout, logout]);
+
+  // Separate effect for activity tracking
+  useEffect(() => {
+    if (!user) return;
+
+    const activityEvents = ["mousedown", "keydown", "scroll", "touchstart"];
 
     activityEvents.forEach((event) => {
-      document.addEventListener(event, handleActivity, true);
+      document.addEventListener(event, updateActivity, true);
     });
 
     return () => {
-      unsubscribe();
-      clearInterval(timeoutCheck);
       activityEvents.forEach((event) => {
-        document.removeEventListener(event, handleActivity, true);
+        document.removeEventListener(event, updateActivity, true);
       });
     };
-  }, [user, sessionTimeout]);
+  }, [user, updateActivity]);
 
   const value = {
     user,

@@ -187,15 +187,30 @@ export const CreateTestWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 lg:p-8 transition-colors">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
+        <div className="mb-12">
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg mb-6">
+              <svg
+                className="w-10 h-10 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 dark:from-white dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
               Create Test
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
               Generate customized tests in minutes with our intelligent test
               creation wizard
             </p>
@@ -210,16 +225,16 @@ export const CreateTestWizard: React.FC = () => {
         />
 
         {/* Main Content Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-300">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-sm overflow-hidden">
           {/* Error Banner */}
           <ErrorBanner error={error} onDismiss={() => setError(null)} />
 
           {/* Content Area */}
-          <div className="p-6 lg:p-8">
+          <div className="p-8 lg:p-12">
             {isLoading ? (
               <LoadingState currentStep={currentStep} />
             ) : (
-              <div className="transition-all duration-300 ease-in-out">
+              <div className="transition-all duration-500 ease-in-out">
                 {renderStepContent()}
               </div>
             )}

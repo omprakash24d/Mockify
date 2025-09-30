@@ -7,22 +7,23 @@ import {
 
 // Contexts
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 
 // Components
-import { AuthScreen } from "./components/AuthScreen";
-import { CreateTestWizard } from "./components/CreateTestWizard";
-import { Dashboard } from "./components/Dashboard";
-import { EnhancedAccountManager } from "./components/EnhancedAccountManager";
+import { EnhancedAccountManager } from "./components/AccountManager";
+import { AuthScreen } from "./components/Authentication";
+import { SecurityDashboard } from "./components/Authentication/SecurityDashboard";
+import { CreateTestWizard } from "./components/CreateTest";
+import { Dashboard } from "./components/Dashboard/Dashboard";
 import { LoadingSpinner } from "./components/LoadingSpinner";
-import { Navbar } from "./components/Navbar";
-import { SecurityDashboard } from "./components/SecurityDashboard";
+import { Navbar } from "./components/Navbar/index";
 // Hooks
 import { usePerformanceMonitor } from "./hooks/usePerformanceMonitor";
 
 // Inner App component that uses auth context
 const AppContent = () => {
   const { user, loading } = useAuth();
+  const { theme } = useTheme();
 
   // Monitor performance in production
   usePerformanceMonitor();
@@ -37,7 +38,13 @@ const AppContent = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 transition-all duration-300 ease-in-out">
+      <div
+        className={`min-h-screen transition-all duration-300 ease-in-out ${
+          theme === "dark"
+            ? "bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100"
+            : "bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900"
+        }`}
+      >
         <Navbar user={user} />
         <main className="pt-16 transition-all duration-300 ease-in-out">
           <div className="min-h-[calc(100vh-4rem)]">
@@ -51,7 +58,6 @@ const AppContent = () => {
             </Routes>
           </div>
         </main>
-        {/* Debug components removed - theme toggle is working */}
       </div>
     </Router>
   );

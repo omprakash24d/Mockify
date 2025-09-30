@@ -1,0 +1,61 @@
+import { type User as FirebaseUser } from "firebase/auth";
+import type { RefObject } from "react";
+import { ThemeToggle } from "../../../contexts/ThemeContext";
+import { ProfileDropdown } from "./ProfileDropdown";
+import { UserProfileButton } from "./UserProfileButton";
+
+interface UserControlsProps {
+  user: FirebaseUser;
+  isProfileOpen: boolean;
+  profileMenuRef: RefObject<HTMLDivElement | null>;
+  profileKeyboardRef: RefObject<HTMLDivElement | null>;
+  onProfileToggle: () => void;
+  onProfileSettings: () => void;
+  onSignOut: () => void;
+}
+
+export const UserControls: React.FC<UserControlsProps> = ({
+  user,
+  isProfileOpen,
+  profileMenuRef,
+  profileKeyboardRef,
+  onProfileToggle,
+  onProfileSettings,
+  onSignOut,
+}) => {
+  return (
+    <div className="hidden md:flex items-center gap-3">
+      {/* Theme Toggle with enhanced styling */}
+      <div className="flex items-center">
+        <ThemeToggle size="sm" variant="switch" />
+      </div>
+
+      {/* Divider */}
+      <div className="h-6 w-px bg-gray-300 dark:bg-gray-700" />
+
+      {/* User Profile Button */}
+      <div className="relative">
+        <UserProfileButton
+          user={user}
+          isProfileOpen={isProfileOpen}
+          onClick={onProfileToggle}
+        />
+
+        <ProfileDropdown
+          user={user}
+          isOpen={isProfileOpen}
+          profileMenuRef={profileMenuRef}
+          profileKeyboardRef={profileKeyboardRef}
+          onProfileSettings={() => {
+            onProfileSettings();
+            onProfileToggle();
+          }}
+          onSignOut={() => {
+            onSignOut();
+            onProfileToggle();
+          }}
+        />
+      </div>
+    </div>
+  );
+};

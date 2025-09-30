@@ -34,126 +34,142 @@ export const PreviewGenerateStep: React.FC<StepComponentProps> = ({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <Eye className="w-16 h-16 text-green-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-          Preview & Generate Test
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto transition-colors duration-300">
-          Review your test configuration and generate PDF files when ready.
-        </p>
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl shadow-2xl">
+          <Eye className="w-12 h-12 text-white" />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+            Preview & Generate Test
+          </h2>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            Review your test configuration and generate PDF files when ready.
+          </p>
+        </div>
       </div>
 
       {/* Load Questions CTA */}
       {questions.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <RefreshCw className="w-12 h-12 text-green-600 dark:text-green-400" />
+        <div className="text-center py-16">
+          <div className="w-32 h-32 bg-gradient-to-br from-emerald-100 via-green-100 to-teal-100 dark:from-emerald-900/20 dark:via-green-900/20 dark:to-teal-900/20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
+            <RefreshCw className="w-16 h-16 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-            Ready to Generate Questions
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto transition-colors duration-300">
-            Click the button below to generate questions based on your selected
-            criteria. This may take a few moments.
-          </p>
-          <button
-            onClick={loadQuestions}
-            className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-          >
-            <RefreshCw className="w-5 h-5 mr-2 inline" />
-            Generate Questions
-          </button>
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              Ready to Generate Questions
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-lg max-w-lg mx-auto leading-relaxed">
+              Click the button below to generate questions based on your
+              selected criteria. This may take a few moments.
+            </p>
+            <button
+              onClick={loadQuestions}
+              className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1 text-lg"
+            >
+              <RefreshCw className="w-6 h-6 mr-3" />
+              Generate Questions
+            </button>
+          </div>
         </div>
       )}
 
       {/* Test Summary - Always show */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-6 lg:p-8">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-            <CheckCircle className="w-6 h-6 text-white" />
+      <div className="bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-900/10 dark:via-green-900/10 dark:to-teal-900/10 border border-emerald-200 dark:border-emerald-800/50 rounded-3xl p-8 lg:p-10 shadow-xl">
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-green-900 dark:text-green-100">
+            <h3 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
               Test Configuration Summary
             </h3>
-            <p className="text-green-700 dark:text-green-300">
+            <p className="text-emerald-700 dark:text-emerald-300 text-lg">
               Your test is configured with the following parameters
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Title
               </span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-gray-100 truncate transition-colors duration-300">
+            <div className="font-bold text-slate-900 dark:text-slate-100 text-lg truncate">
               {testTitle || "Untitled Test"}
             </div>
           </div>
 
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Subjects
               </span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+            <div className="font-bold text-2xl text-slate-900 dark:text-slate-100 mb-2">
               {selectedSubjects.length}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 truncate transition-colors duration-300">
+            <div className="text-xs text-slate-600 dark:text-slate-400 truncate">
               {selectedSubjects
                 .map((id) => subjects.find((s) => s.id === id)?.name)
                 .join(", ")}
             </div>
           </div>
 
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                <GraduationCap className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Chapters
               </span>
             </div>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {selectedChapters.length}
             </div>
           </div>
 
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-md">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Target Questions
               </span>
             </div>
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+            <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               {testFilters.questionCount}
             </div>
           </div>
 
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <Settings className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                <Settings className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Difficulty
               </span>
             </div>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-2">
               {testFilters.difficulty.map((diff) => (
                 <span
                   key={diff}
                   className={cn(
-                    "px-2 py-1 rounded text-xs font-medium",
+                    "px-3 py-1 rounded-xl text-xs font-bold shadow-sm",
                     diff === "easy" &&
-                      "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
+                      "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
                     diff === "medium" &&
-                      "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300",
+                      "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
                     diff === "hard" &&
                       "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
                   )}

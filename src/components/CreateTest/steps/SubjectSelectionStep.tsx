@@ -11,51 +11,59 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
   const { setSelectedSubjects, handleSubjectToggle } = actions;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <BookOpen className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-          Choose Your Subjects
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto transition-colors duration-300">
-          Select one or more subjects to include in your test. You can always
-          adjust your selection later.
-        </p>
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl">
+          <BookOpen className="w-12 h-12 text-white" />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+            Choose Your Subjects
+          </h2>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            Select one or more subjects to include in your test. You can always
+            adjust your selection later.
+          </p>
+        </div>
       </div>
 
       {/* Loading State */}
       {stepLoading[1] && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-            Loading Subjects...
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-center transition-colors duration-300">
-            Fetching the latest curriculum data
-          </p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-blue-500 rounded-full animate-spin mb-6"></div>
+          <div className="text-center space-y-3">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Loading Subjects...
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
+              Fetching the latest curriculum data
+            </p>
+          </div>
         </div>
       )}
 
       {/* Empty State */}
       {!stepLoading[1] && subjects.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-            <BookOpen className="w-12 h-12 text-gray-400" />
+        <div className="text-center py-20">
+          <div className="w-32 h-32 bg-slate-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <BookOpen className="w-16 h-16 text-slate-400 dark:text-slate-600" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
-            No Subjects Available
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-300">
-            We couldn't find any subjects in the database. Please contact
-            support or try again later.
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
-          >
-            Reload Page
-          </button>
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              No Subjects Available
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+              We couldn't find any subjects in the database. Please contact
+              support or try again later.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+            >
+              Reload Page
+            </button>
+          </div>
         </div>
       )}
 
@@ -63,16 +71,16 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
       {!stepLoading[1] && subjects.length > 0 && (
         <>
           {/* Stats & Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
             <div className="flex items-center space-x-4">
-              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">
+              <div className="bg-white dark:bg-slate-800 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {subjects.length} Available Subjects
                 </span>
               </div>
               {selectedSubjects.length > 0 && (
-                <div className="bg-blue-100 dark:bg-blue-900/30 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-3 rounded-2xl border border-blue-200 dark:border-blue-800">
+                  <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                     {selectedSubjects.length} Selected
                   </span>
                 </div>
@@ -80,11 +88,11 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
             </div>
 
             {/* Quick Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setSelectedSubjects(subjects.map((s) => s.id))}
-                className="px-4 py-2 text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors border border-blue-200 dark:border-blue-800"
+                className="px-6 py-3 text-sm font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-300 rounded-2xl hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-300 border border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md"
               >
                 Select All
               </button>
@@ -92,7 +100,7 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                 type="button"
                 onClick={() => setSelectedSubjects([])}
                 disabled={selectedSubjects.length === 0}
-                className="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm"
               >
                 Clear All
               </button>
@@ -100,32 +108,32 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
           </div>
 
           {/* Subjects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {subjects.map((subject) => {
               const isSelected = selectedSubjects.includes(subject.id);
               return (
                 <label
                   key={subject.id}
                   className={cn(
-                    "group relative p-6 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105",
-                    "border-2 hover:shadow-lg",
+                    "group relative p-8 rounded-3xl cursor-pointer transition-all duration-300 hover:-translate-y-1",
+                    "border-2 shadow-lg hover:shadow-2xl",
                     isSelected
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600 transition-colors duration-300"
+                      ? "border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-blue-200/50 dark:shadow-blue-900/30"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20"
                   )}
                 >
                   {/* Selection Indicator */}
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-6 right-6">
                     <div
                       className={cn(
-                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200",
+                        "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                         isSelected
-                          ? "border-blue-500 bg-blue-500"
-                          : "border-gray-300 dark:border-gray-600 group-hover:border-blue-400"
+                          ? "border-blue-500 bg-blue-500 shadow-lg"
+                          : "border-slate-300 dark:border-slate-600 group-hover:border-blue-400 group-hover:scale-110"
                       )}
                     >
                       {isSelected && (
-                        <CheckCircle className="w-4 h-4 text-white" />
+                        <CheckCircle className="w-5 h-5 text-white" />
                       )}
                     </div>
                   </div>
@@ -137,40 +145,41 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                     className="sr-only"
                   />
 
-                  <div className="space-y-3">
+                  <div className="space-y-5">
                     {/* Subject Icon */}
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-lg flex items-center justify-center transition-colors",
+                        "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg",
                         isSelected
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                          ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white"
+                          : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-indigo-100 dark:group-hover:from-blue-900/30 dark:group-hover:to-indigo-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400"
                       )}
                     >
-                      <GraduationCap className="w-6 h-6" />
+                      <GraduationCap className="w-8 h-8" />
                     </div>
 
                     {/* Subject Info */}
-                    <div>
+                    <div className="space-y-3">
                       <h3
-                        className={`font-semibold text-lg transition-colors duration-300 ${
+                        className={cn(
+                          "font-bold text-xl transition-colors duration-300",
                           isSelected
                             ? "text-blue-900 dark:text-blue-100"
-                            : "text-gray-900 dark:text-gray-100"
-                        }`}
+                            : "text-slate-900 dark:text-slate-100"
+                        )}
                       >
                         {subject.name}
                       </h3>
-                      <div className="flex items-center space-x-4 mt-2">
-                        <div className="flex items-center space-x-1">
-                          <BookOpen className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <BookOpen className="w-4 h-4 text-slate-400" />
+                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                             {subject.chapters?.length || 0} chapters
                           </span>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <BarChart3 className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                        <div className="flex items-center space-x-2">
+                          <BarChart3 className="w-4 h-4 text-slate-400" />
+                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                             ~{(subject.chapters?.length || 0) * 15} questions
                           </span>
                         </div>
@@ -178,9 +187,9 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                     </div>
                   </div>
 
-                  {/* Selection Overlay */}
+                  {/* Selection Glow */}
                   {isSelected && (
-                    <div className="absolute inset-0 bg-blue-500/10 rounded-xl pointer-events-none transition-opacity duration-200" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl pointer-events-none" />
                   )}
                 </label>
               );
@@ -189,11 +198,15 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
 
           {/* Selection Summary */}
           {selectedSubjects.length > 0 && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                Selected Subjects Summary
-              </h4>
+            <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 rounded-3xl border border-blue-200 dark:border-blue-800/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                  Selected Subjects Summary
+                </h4>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {selectedSubjects.map((subjectId) => {
                   const subject = subjects.find((s) => s.id === subjectId);
@@ -201,14 +214,16 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                   return (
                     <div
                       key={subject.id}
-                      className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg"
+                      className="flex items-center space-x-4 p-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl shadow-sm border border-white/50 dark:border-slate-700/50 backdrop-blur-sm"
                     >
-                      <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                        <GraduationCap className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm truncate">
                           {subject.name}
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                        <div className="text-xs text-slate-600 dark:text-slate-400">
                           {subject.chapters?.length || 0} chapters
                         </div>
                       </div>

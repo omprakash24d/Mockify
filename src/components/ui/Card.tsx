@@ -26,9 +26,9 @@ const cardVariants = {
   ].join(" "),
 
   elevated: [
-    "bg-white border border-gray-200/50",
-    "dark:bg-gray-900 dark:border-gray-800/50",
-    "shadow-xl",
+    "bg-white/80 backdrop-blur-sm border border-gray-200/50",
+    "dark:bg-gray-900/80 dark:border-gray-800/50",
+    "shadow-xl shadow-gray-500/10 dark:shadow-black/20",
   ].join(" "),
 
   outlined: [
@@ -62,9 +62,10 @@ export const Card: React.FC<CardProps> = ({
         interactive &&
           [
             "cursor-pointer",
-            "hover:shadow-xl hover:-translate-y-0.5",
-            "active:translate-y-0 active:shadow-lg",
+            "hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02]",
+            "active:translate-y-0 active:scale-100 active:shadow-lg",
             "focus:outline-none focus:ring-3 focus:ring-blue-500/20",
+            "transition-all duration-300 ease-out",
           ].join(" "),
 
         // Padding
