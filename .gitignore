@@ -20,6 +20,10 @@ P:\Mockify\backend\mockifyneet-firebase-adminsdk-fbsvc-bd57857713.json
 .env.test
 .env.production
 
+# Firebase service account keys (NEVER commit these!)
+*firebase-adminsdk*.json
+*serviceAccountKey*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
