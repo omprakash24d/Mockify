@@ -1,10 +1,11 @@
 import { ERROR_MESSAGES } from "./constants";
 
 // Helper function to get user-friendly error messages
-export const getErrorMessage = (error: any): string => {
+export const getErrorMessage = (error: unknown): string => {
+  const err = error as { code?: string; message?: string };
   return (
-    ERROR_MESSAGES[error.code as keyof typeof ERROR_MESSAGES] ||
-    error.message ||
+    ERROR_MESSAGES[err.code as keyof typeof ERROR_MESSAGES] ||
+    err.message ||
     ERROR_MESSAGES.default
   );
 };

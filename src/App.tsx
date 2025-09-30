@@ -11,12 +11,14 @@ import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 
 // Components
 import { EnhancedAccountManager } from "./components/AccountManager";
+import { AdminDashboard } from "./components/AdminDashboard";
 import { AuthScreen } from "./components/Authentication";
 import { SecurityDashboard } from "./components/Authentication/SecurityDashboard";
 import { CreateTestWizard } from "./components/CreateTest";
 import { Dashboard } from "./components/Dashboard/Dashboard";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { Navbar } from "./components/Navbar/index";
+import NEETDashboard from "./components/NEET/NEETDashboard.tsx";
 // Hooks
 import { usePerformanceMonitor } from "./hooks/usePerformanceMonitor";
 
@@ -50,6 +52,8 @@ const AppContent = () => {
           <div className="min-h-[calc(100vh-4rem)]">
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/neet" element={<NEETDashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/create-test" element={<CreateTestWizard />} />
               <Route path="/account" element={<EnhancedAccountManager />} />
               <Route path="/security" element={<SecurityDashboard />} />

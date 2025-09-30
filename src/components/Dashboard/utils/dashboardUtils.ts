@@ -3,12 +3,19 @@
  * @param timestamp - Firestore timestamp or Date object
  * @returns Formatted date string
  */
-export const formatDate = (timestamp: any): string => {
+export const formatDate = (timestamp: unknown): string => {
   if (!timestamp) return "Unknown";
-  const date = timestamp.seconds
-    ? new Date(timestamp.seconds * 1000)
-    : new Date(timestamp);
-  return date.toLocaleDateString();
+
+  const ts = timestamp as { seconds?: number } | Date;
+  const date = (ts as { seconds?: number }).seconds
+    ? new Date((ts as { seconds: number }).seconds * 1000)
+    : new Date(ts as Date);
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
 /**

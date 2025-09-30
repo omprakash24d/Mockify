@@ -60,7 +60,7 @@ export class AuthService {
     try {
       await signInWithEmailAndPassword(auth, sanitizedEmail, password);
       this.securityManager.recordLoginAttempt(sanitizedEmail, true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.securityManager.recordLoginAttempt(sanitizedEmail, false);
       throw this.handleAuthError(error);
     }
@@ -128,7 +128,7 @@ export class AuthService {
       }
 
       this.securityManager.recordLoginAttempt(sanitizedEmail, true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleAuthError(error);
     }
   }
@@ -150,7 +150,7 @@ export class AuthService {
       const needsDetails = await UserProfileService.needsCoachingDetails(user);
 
       return { user, needsDetails };
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleAuthError(error);
     }
   }
@@ -168,7 +168,7 @@ export class AuthService {
 
     try {
       await sendPasswordResetEmail(auth, email.trim());
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleAuthError(error);
     }
   }
@@ -178,18 +178,15 @@ export class AuthService {
       return { isValid: false, feedback: [], score: 0, strength: "very-weak" };
     }
 
+    // Use the centralized validation from SecurityManager
+    const validation = this.securityManager.validatePasswordStrength(password);
     const strength = checkPasswordStrength(password);
+
     return {
-      isValid: strength.isValid,
-      score: strength.score,
+      isValid: validation.isValid,
+      score: validation.score,
       strength: strength.strength,
-      feedback: [
-        !strength.checks.length ? "At least 8 characters" : "",
-        !strength.checks.uppercase ? "One uppercase letter" : "",
-        !strength.checks.lowercase ? "One lowercase letter" : "",
-        !strength.checks.number ? "One number" : "",
-        !strength.checks.special ? "One special character" : "",
-      ].filter(Boolean),
+      feedback: validation.errors,
     };
   }
 
@@ -197,36 +194,37 @@ export class AuthService {
     return this.securityManager.isAccountLocked(email);
   }
 
-  private handleAuthError(error: any): Error {
-    if (error.code === "auth/user-not-found") {
+  private handleAuthError(error: unknown): Error {
+    const err = error as { code?: string; message?: string };
+    if (err.code === "auth/user-not-found") {
       return new Error("No account found with this email address");
-    } else if (error.code === "auth/wrong-password") {
+    } else if (err.code === "auth/wrong-password") {
       return new Error("Incorrect password");
-    } else if (error.code === "auth/email-already-in-use") {
+    } else if (err.code === "auth/email-already-in-use") {
       return new Error("An account with this email already exists");
-    } else if (error.code === "auth/weak-password") {
+    } else if (err.code === "auth/weak-password") {
       return new Error("Password is too weak");
-    } else if (error.code === "auth/account-exists-with-different-credential") {
+    } else if (err.code === "auth/account-exists-with-different-credential") {
       return new Error(
         "An account already exists with this email. Please sign in with your email and password first, then link your Google account in settings."
       );
-    } else if (error.code === "auth/popup-closed-by-user") {
+    } else if (err.code === "auth/popup-closed-by-user") {
       return new Error(
         "Google sign-in was cancelled. Please try again if you want to continue with Google."
       );
-    } else if (error.code === "auth/popup-blocked") {
+    } else if (err.code === "auth/popup-blocked") {
       return new Error(
         "Sign-in popup was blocked by your browser. Please allow popups and try again."
       );
-    } else if (error.code === "auth/cancelled-popup-request") {
+    } else if (err.code === "auth/cancelled-popup-request") {
       // User cancelled - don't show error for this
       return new Error("");
-    } else if (error.code === "auth/too-many-requests") {
+    } else if (err.code === "auth/too-many-requests") {
       return new Error(
         "Too many password reset attempts. Please try again later."
       );
     } else {
-      return new Error(error.message || "An error occurred");
+      return new Error(err.message || "An error occurred");
     }
   }
 }

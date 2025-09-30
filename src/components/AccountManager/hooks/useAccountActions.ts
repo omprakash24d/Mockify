@@ -32,7 +32,7 @@ export function useProfileActions() {
         return;
       }
 
-      const updates: any = {};
+      const updates: Partial<{ displayName: string; photoURL: string }> = {};
 
       if (
         profileData.displayName &&
@@ -56,7 +56,7 @@ export function useProfileActions() {
       } else {
         onSuccess("No changes to save.");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       onError(getErrorMessage(error));
       console.error("Profile update error:", error);
     } finally {
@@ -128,7 +128,7 @@ export function usePasswordActions() {
 
       onSuccess("Password updated successfully!");
       resetPasswordForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
       onError(getErrorMessage(error));
       console.error("Password update error:", error);
     } finally {

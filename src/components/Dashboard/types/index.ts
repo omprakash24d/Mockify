@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface DashboardStats {
   totalSubjects: number;
   totalChapters: number;
@@ -9,7 +11,7 @@ export interface DashboardStats {
 export interface QuickAction {
   title: string;
   subtitle: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   onClick: () => void;
   primary?: boolean;
   bgColor?: string;
@@ -20,7 +22,7 @@ export interface StatCard {
   title: string;
   value: number;
   subtitle: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   bgColor: string;
 }

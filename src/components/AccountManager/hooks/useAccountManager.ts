@@ -104,7 +104,7 @@ export function useAccountManager(user: User | null) {
       setSuccess("");
       setPasswordStrength({ isValid: false, errors: [], score: 0 });
     }
-  }, [user?.uid]); // Only depend on user ID to prevent unnecessary re-renders
+  }, [user]); // Only depend on user to prevent unnecessary re-renders
 
   // Validate display name
   useEffect(() => {
@@ -129,7 +129,7 @@ export function useAccountManager(user: User | null) {
     } else {
       setPasswordStrength({ isValid: false, errors: [], score: 0 });
     }
-  }, [debouncedNewPassword]); // securityManager is stable via useMemo, no need to include
+  }, [debouncedNewPassword, securityManager]); // securityManager is stable via useMemo
 
   const updateProfileData = useCallback((updates: Partial<ProfileFormData>) => {
     setProfileData((prev) => ({ ...prev, ...updates }));

@@ -21,7 +21,10 @@ export const usePerformanceMonitor = () => {
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (entry.entryType === "first-input") {
-            const fidEntry = entry as any;
+            const fidEntry = entry as PerformanceEntry & {
+              processingStart: number;
+              startTime: number;
+            };
             const fid = fidEntry.processingStart - fidEntry.startTime;
             if (fid > 100) {
               console.warn("Poor FID performance:", fid + "ms");
@@ -33,7 +36,10 @@ export const usePerformanceMonitor = () => {
       // Cumulative Layout Shift (CLS) - Log only if > 0.1 (poor performance)
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          const clsEntry = entry as any;
+          const clsEntry = entry as PerformanceEntry & {
+            hadRecentInput: boolean;
+            value: number;
+          };
           if (
             entry.entryType === "layout-shift" &&
             !clsEntry.hadRecentInput &&

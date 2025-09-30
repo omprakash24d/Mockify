@@ -56,10 +56,8 @@ export const useAuth = () => {
     if (formData.email) {
       const isLocked = securityManager.isAccountLocked(formData.email);
       if (isLocked) {
-        const remainingTime = securityManager.getRemainingLockoutTime(
-          formData.email
-        );
-        console.log(`Account locked for ${remainingTime}ms`);
+        securityManager.getRemainingLockoutTime(formData.email);
+        // Account locked - no console logging in production
       }
     }
   }, [formData.email, securityManager]);
@@ -127,8 +125,9 @@ export const useAuth = () => {
         } else {
           await authService.signUpWithEmail(formData, passwordStrength);
         }
-      } catch (error: any) {
-        setAuthState((prev) => ({ ...prev, error: error.message }));
+      } catch (error: unknown) {
+        const err = error as { message: string };
+        setAuthState((prev) => ({ ...prev, error: err.message }));
       } finally {
         setAuthState((prev) => ({ ...prev, loading: false }));
       }
@@ -163,11 +162,11 @@ export const useAuth = () => {
           return;
         }
 
-        console.log("Google login successful:", user.email);
-      } catch (error: any) {
-        if (error.message) {
-          setAuthState((prev) => ({ ...prev, error: error.message }));
-        }
+        // Google login successful - user authenticated
+      } catch (error: unknown) {
+        const err = error as { message?: string };
+        const errorMessage = err.message || "Google authentication failed";
+        setAuthState((prev) => ({ ...prev, error: errorMessage }));
       } finally {
         setAuthState((prev) => ({ ...prev, googleLoading: false }));
       }
@@ -182,8 +181,9 @@ export const useAuth = () => {
         // Clear password fields after successful reset email
         formFieldHandlers.setPassword("");
         formFieldHandlers.setConfirmPassword("");
-      } catch (error: any) {
-        setAuthState((prev) => ({ ...prev, error: error.message }));
+      } catch (error: unknown) {
+        const err = error as { message: string };
+        setAuthState((prev) => ({ ...prev, error: err.message }));
       } finally {
         setAuthState((prev) => ({ ...prev, resetLoading: false }));
       }
@@ -236,7 +236,7 @@ export const useAuth = () => {
           coachingLogo: "",
         });
 
-        console.log("Coaching details saved successfully");
+        // Coaching details saved successfully
       } catch (error) {
         console.error("Error saving coaching details:", error);
         setAuthState((prev) => ({

@@ -56,8 +56,8 @@ export const useDashboardData = () => {
       if (user) {
         try {
           userTests = await MockifyAPI.getUserTests(user.uid);
-        } catch (error) {
-          console.log("No user tests found yet:", error);
+        } catch {
+          // No user tests found yet - using empty array
         }
       }
 

@@ -47,7 +47,7 @@ export const useKeyboardNavigation = ({
           }
           break;
 
-        case "Tab":
+        case "Tab": {
           if (!trapFocus) return;
 
           const focusableElements = getFocusableElements();
@@ -68,6 +68,7 @@ export const useKeyboardNavigation = ({
             }
           }
           break;
+        }
       }
     },
     [isOpen, onClose, onEscape, trapFocus, getFocusableElements]

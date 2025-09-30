@@ -82,7 +82,11 @@ export class UserProfileService {
   ): Promise<void> {
     try {
       const docRef = doc(db, "userProfiles", uid);
-      const updatePayload: any = {
+      const updatePayload: Partial<CoachingDetailsFormData> & {
+        displayName?: string;
+        updatedAt: Date;
+        profileCompleted?: boolean;
+      } = {
         ...updateData,
         updatedAt: new Date(),
       };

@@ -12,12 +12,7 @@
  * - Type-safe operations throughout
  */
 
-import type {
-  AuthFormData,
-  PasswordStrength,
-  SecurityEvent,
-  SecurityStats,
-} from "../types";
+import type { AuthFormData, SecurityEvent, SecurityStats } from "../types";
 
 /* ============================================================================
  * FORM UTILITIES
@@ -247,45 +242,11 @@ export const isValidEmail = (email: string): boolean => {
  * Validate phone number format
  */
 export const isValidPhoneNumber = (phone: string): boolean => {
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
   return phoneRegex.test(phone.replace(/\s/g, ""));
 };
 
 /**
- * Generate password strength assessment
+ * Generate password strength assessment - DEPRECATED
+ * Use SecurityManager.validatePasswordStrength() instead for consistent validation
  */
-export const assessPasswordStrength = (password: string): PasswordStrength => {
-  const feedback: string[] = [];
-  let score = 0;
-
-  if (password.length >= 8) score += 1;
-  else feedback.push("Use at least 8 characters");
-
-  if (/[a-z]/.test(password)) score += 1;
-  else feedback.push("Include lowercase letters");
-
-  if (/[A-Z]/.test(password)) score += 1;
-  else feedback.push("Include uppercase letters");
-
-  if (/[0-9]/.test(password)) score += 1;
-  else feedback.push("Include numbers");
-
-  if (/[^A-Za-z0-9]/.test(password)) score += 1;
-  else feedback.push("Include special characters");
-
-  const strengthLevels = [
-    "very-weak",
-    "weak",
-    "fair",
-    "good",
-    "strong",
-  ] as const;
-  const strength = strengthLevels[Math.min(score, 4)];
-
-  return {
-    isValid: score >= 4,
-    feedback,
-    score,
-    strength,
-  };
-};

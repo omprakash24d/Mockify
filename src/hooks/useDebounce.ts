@@ -16,7 +16,7 @@ export const useDebounce = <T>(value: T, delay: number = 300): T => {
   return debouncedValue;
 };
 
-export const useDebouncedCallback = <T extends (...args: any[]) => any>(
+export const useDebouncedCallback = <T extends (...args: never[]) => unknown>(
   callback: T,
   delay: number = 300
 ): T => {

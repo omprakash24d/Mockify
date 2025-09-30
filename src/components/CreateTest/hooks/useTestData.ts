@@ -20,7 +20,7 @@ export const useTestData = () => {
     try {
       const subjectsData = await getSubjects();
       setSubjects(subjectsData);
-      console.log("✅ Loaded subjects:", subjectsData.length);
+      // Subjects loaded successfully
     } catch (error) {
       console.error("❌ Error loading subjects:", error);
       throw error;
@@ -46,7 +46,7 @@ export const useTestData = () => {
       chapterResults.forEach((chapters) => allChaptersData.push(...chapters));
 
       setChapters(allChaptersData);
-      console.log("✅ Loaded chapters:", allChaptersData.length);
+      // Chapters loaded successfully
     } catch (error) {
       console.error("❌ Error loading chapters:", error);
       throw error;
@@ -65,7 +65,7 @@ export const useTestData = () => {
       };
       const questionsData = await getQuestions(filters);
       setQuestions(questionsData);
-      console.log("✅ Loaded questions:", questionsData.length);
+      // Questions loaded successfully
     } catch (error) {
       console.error("❌ Error loading questions:", error);
       setError("Failed to load questions. Please try again.");

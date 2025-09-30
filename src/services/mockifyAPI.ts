@@ -343,7 +343,7 @@ export class MockifyAPI {
     try {
       const subject = await this.getSubject(subjectId);
       return subject !== null;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -352,7 +352,7 @@ export class MockifyAPI {
     try {
       const chapter = await this.getChapter(chapterId);
       return chapter !== null;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -364,7 +364,7 @@ export class MockifyAPI {
     try {
       const chapter = await this.getChapter(chapterId);
       return chapter?.subject_id === subjectId;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

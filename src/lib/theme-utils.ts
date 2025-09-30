@@ -1,14 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-/**
- * Combines clsx and tailwind-merge for optimal class name handling
- * @param inputs - Class values to combine
- * @returns Merged and deduplicated class string
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "./utils";
 
 /**
  * Enhanced theme classes for consistent styling across the application

@@ -4,13 +4,7 @@ import {
   setPersistence,
   type User as FirebaseUser,
 } from "firebase/auth";
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
 
 interface AuthContextType {
@@ -22,15 +16,11 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+// useAuth hook moved to hooks/useAuth.ts for better organization
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -68,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const timeDiff = Date.now() - lastActivityTime;
 
       if (timeDiff > sessionTimeout) {
-        console.log("Session expired, logging out...");
+        // Session expired, logging out
         return false;
       }
     }
@@ -136,4 +126,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// Hook to use the AuthContext
+export const useAuth = () => {
+  const context = React.useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

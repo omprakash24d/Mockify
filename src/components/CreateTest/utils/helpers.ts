@@ -43,7 +43,7 @@ export const formatDifficultyText = (difficulty: string): string => {
 };
 
 export const calculateEstimatedQuestions = (
-  chapters: Array<{ topics?: any[] }>
+  chapters: Array<{ topics?: unknown[] }>
 ): number => {
   return chapters.reduce(
     (sum, c) => sum + Math.max(1, (c.topics?.length || 0) * 3),
@@ -52,7 +52,7 @@ export const calculateEstimatedQuestions = (
 };
 
 export const calculateTotalTopics = (
-  chapters: Array<{ topics?: any[] }>
+  chapters: Array<{ topics?: unknown[] }>
 ): number => {
   return chapters.reduce((sum, c) => sum + (c.topics?.length || 0), 0);
 };

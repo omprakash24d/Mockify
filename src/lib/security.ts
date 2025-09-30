@@ -4,7 +4,6 @@ import {
   PhoneMultiFactorGenerator,
   RecaptchaVerifier,
   type User as FirebaseUser,
-  type MultiFactorError,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 
@@ -122,8 +121,9 @@ export class SecurityManager {
 
       await multiFactorUser.enroll(multiFactorAssertion, "Phone Number");
       return "Phone number enrolled successfully for 2FA";
-    } catch (error: any) {
-      throw new Error(`Failed to enroll phone number: ${error.message}`);
+    } catch (error: unknown) {
+      const err = error as { message: string };
+      throw new Error(`Failed to enroll phone number: ${err.message}`);
     }
   }
 
@@ -131,18 +131,16 @@ export class SecurityManager {
     return new RecaptchaVerifier(auth, elementId, {
       size: "invisible",
       callback: () => {
-        console.log("reCAPTCHA solved");
+        // reCAPTCHA solved
       },
       "expired-callback": () => {
-        console.log("reCAPTCHA expired");
+        // reCAPTCHA expired
       },
     });
   }
 
-  public async handleMultiFactorError(error: MultiFactorError): Promise<void> {
-    // This would handle the multi-factor authentication flow
-    console.log("Multi-factor authentication required:", error);
-    // Implementation would depend on your specific 2FA flow
+  public async handleMultiFactorError(): Promise<void> {
+    // Multi-factor authentication required
   }
 
   // Security validation

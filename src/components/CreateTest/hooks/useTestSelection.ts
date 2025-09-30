@@ -37,7 +37,7 @@ export const useTestSelection = (
     );
   };
 
-  const handleFilterChange = (key: keyof TestFilters, value: any) => {
+  const handleFilterChange = (key: keyof TestFilters, value: unknown) => {
     setTestFilters((prev) => ({ ...prev, [key]: value }));
   };
 

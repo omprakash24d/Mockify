@@ -157,7 +157,7 @@ export interface ValidationResult {
   warnings?: string[];
 }
 
-export interface AuthServiceResponse<T = any> {
+export interface AuthServiceResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

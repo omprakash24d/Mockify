@@ -14,16 +14,7 @@ import type { PasswordFormData, VisibilityStates } from "./types";
 export function EnhancedAccountManager() {
   const { user } = useAuth();
 
-  if (!user) {
-    return (
-      <div className="p-6 text-center">
-        <p className="text-gray-600 dark:text-gray-400">
-          Please log in to manage your account.
-        </p>
-      </div>
-    );
-  }
-
+  // Move hooks before any conditional returns
   const {
     profileData,
     passwordData,
@@ -45,6 +36,17 @@ export function EnhancedAccountManager() {
 
   const { handleUpdateProfile } = useProfileActions();
   const { handleUpdatePassword } = usePasswordActions();
+
+  // Conditional return after hooks
+  if (!user) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-gray-600 dark:text-gray-400">
+          Please log in to manage your account.
+        </p>
+      </div>
+    );
+  }
 
   // Enhanced close handler with state cleanup
   const handleClose = () => {

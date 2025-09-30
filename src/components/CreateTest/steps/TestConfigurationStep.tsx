@@ -180,7 +180,7 @@ export const TestConfigurationStep: React.FC<StepComponentProps> = ({
               {DIFFICULTY_LEVELS.map(
                 ({ value, label, color, icon, description }) => {
                   const isSelected = testFilters.difficulty.includes(
-                    value as any
+                    value as "easy" | "medium" | "hard"
                   );
                   const colorClasses = {
                     green: {
@@ -238,7 +238,10 @@ export const TestConfigurationStep: React.FC<StepComponentProps> = ({
                           checked={isSelected}
                           onChange={(e) => {
                             const difficulties = e.target.checked
-                              ? [...testFilters.difficulty, value as any]
+                              ? [
+                                  ...testFilters.difficulty,
+                                  value as "easy" | "medium" | "hard",
+                                ]
                               : testFilters.difficulty.filter(
                                   (d) => d !== value
                                 );

@@ -32,7 +32,7 @@ export interface StepComponentProps {
     setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
     handleSubjectToggle: (subjectId: string) => void;
     handleChapterToggle: (chapterId: string) => void;
-    handleFilterChange: (key: keyof TestFilters, value: any) => void;
+    handleFilterChange: (key: keyof TestFilters, value: unknown) => void;
     loadQuestions: () => Promise<void>;
     generatePDF: () => Promise<void>;
     generateAnswerKey: () => Promise<void>;
