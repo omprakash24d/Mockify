@@ -22,19 +22,19 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const containerClasses = fullScreen
-    ? "min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"
+    ? "min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center"
     : "flex items-center justify-center p-8";
 
   return (
     <div className={containerClasses} role="status" aria-live="polite">
       <div className="text-center">
         <div
-          className={`animate-spin rounded-full border-b-2 border-primary-600 dark:border-primary-400 mx-auto ${sizeClasses[size]}`}
+          className={`animate-spin rounded-full border-b-2 border-blue-600 dark:border-blue-400 mx-auto ${sizeClasses[size]}`}
           aria-hidden="true"
         ></div>
         <span className="sr-only">Loading content</span>
         <h2
-          className="mt-4 text-lg font-medium text-gray-900 dark:text-white"
+          className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100"
           aria-live="polite"
         >
           {message}
@@ -45,7 +45,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         {showCancel && onCancel && (
           <button
             onClick={onCancel}
-            className="mt-4 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            className="mt-4 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             aria-label="Cancel loading"
           >
             Cancel

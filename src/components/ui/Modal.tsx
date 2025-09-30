@@ -66,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <div className="flex items-center justify-between border-gray-200 dark:border-gray-700 px-6 py-4 border-b">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {title}
               </h2>

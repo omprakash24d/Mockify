@@ -116,8 +116,13 @@ export class UserProfileService {
       return true; // New user needs all details
     }
 
-    // Check if coaching details are missing
-    return !profile.coachingName || !profile.phoneNumber;
+    // Check if essential coaching details are missing
+    const hasCoachingName =
+      profile.coachingName && profile.coachingName.trim().length > 0;
+    const hasPhoneNumber =
+      profile.phoneNumber && profile.phoneNumber.trim().length >= 10;
+
+    return !hasCoachingName || !hasPhoneNumber || !profile.profileCompleted;
   }
 }
 

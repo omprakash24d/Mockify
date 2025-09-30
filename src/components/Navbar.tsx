@@ -90,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
           <img
             src={user.photoURL}
             alt="Profile"
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-primary-500/20 shadow-soft"
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-blue-500/20 shadow-lg"
             onError={(e) => {
               // Fallback if image fails to load
               e.currentTarget.style.display = "none";
@@ -105,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
         /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u;
       if (user.photoURL.match(emojiPattern)) {
         return (
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800 dark:to-primary-700 flex items-center justify-center text-lg shadow-soft ring-2 ring-primary-500/20">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center text-lg shadow-lg ring-2 ring-blue-500/20">
             {user.photoURL}
           </div>
         );
@@ -114,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
 
     // Default avatar with improved styling
     return (
-      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800 dark:to-primary-700 flex items-center justify-center shadow-soft ring-2 ring-primary-500/20">
+      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center shadow-lg ring-2 ring-blue-500/20">
         <User className="h-4 w-4 text-primary-600 dark:text-primary-400" />
       </div>
     );
@@ -142,13 +142,13 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
     return "User"; // Final fallback
   }, [user.displayName, user.email]);
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200/50 dark:border-neutral-800/50 z-50 transition-all duration-300">
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 dark:from-primary-400 dark:to-primary-300 bg-clip-text text-transparent transition-all duration-300">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent transition-all duration-300">
                 Mockify
               </h1>
             </div>
@@ -165,8 +165,8 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
                     "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2",
                     "hover:scale-105 active:scale-95",
                     item.active
-                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 shadow-soft"
-                      : "text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 shadow-lg"
+                      : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                   )}
                   aria-current={item.active ? "page" : undefined}
                 >
@@ -185,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="max-w-xs flex items-center gap-3 text-sm rounded-xl transition-all duration-300 p-2 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus:ring-3 focus:ring-primary-500/20 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 shadow-soft hover:shadow-medium hover:scale-105 active:scale-95"
+                  className="max-w-xs flex items-center gap-3 text-sm rounded-xl transition-all duration-300 p-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:ring-offset-2 dark:focus:ring-offset-gray-900 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                   id="user-menu-button"
                   aria-expanded={isProfileOpen}
                   aria-haspopup="true"
@@ -251,7 +251,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
             <ThemeToggle size="sm" />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="bg-neutral-100 dark:bg-neutral-800 inline-flex items-center justify-center p-2 rounded-xl text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 focus:outline-none focus:ring-3 focus:ring-primary-500/20 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 transition-all duration-200 shadow-soft hover:shadow-medium active:scale-95"
+              className="bg-gray-100 dark:bg-gray-800 inline-flex items-center justify-center p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               aria-label={isMenuOpen ? "Close main menu" : "Open main menu"}

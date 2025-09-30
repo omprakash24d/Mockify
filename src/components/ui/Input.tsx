@@ -13,25 +13,25 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const inputVariants = {
   default: [
-    "bg-white border border-neutral-300",
-    "dark:bg-neutral-900 dark:border-neutral-600",
-    "focus:bg-white dark:focus:bg-neutral-900",
-    "hover:border-neutral-400 dark:hover:border-neutral-500",
+    "bg-white border border-gray-300",
+    "dark:bg-gray-900 dark:border-gray-600",
+    "focus:bg-white dark:focus:bg-gray-900",
+    "hover:border-gray-400 dark:hover:border-gray-500",
   ].join(" "),
 
   filled: [
-    "bg-neutral-100 border border-transparent",
-    "dark:bg-neutral-800 dark:border-transparent",
-    "focus:bg-white focus:border-neutral-300",
-    "dark:focus:bg-neutral-900 dark:focus:border-neutral-600",
-    "hover:bg-neutral-50 dark:hover:bg-neutral-700",
+    "bg-gray-100 border border-transparent",
+    "dark:bg-gray-800 dark:border-transparent",
+    "focus:bg-white focus:border-gray-300",
+    "dark:focus:bg-gray-900 dark:focus:border-gray-600",
+    "hover:bg-gray-50 dark:hover:bg-gray-700",
   ].join(" "),
 
   outlined: [
-    "bg-transparent border-2 border-neutral-300",
-    "dark:border-neutral-600",
-    "focus:bg-white dark:focus:bg-neutral-900",
-    "hover:border-neutral-400 dark:hover:border-neutral-500",
+    "bg-transparent border-2 border-gray-300",
+    "dark:border-gray-600",
+    "focus:bg-white dark:focus:bg-gray-900",
+    "hover:border-gray-400 dark:hover:border-gray-500",
   ].join(" "),
 };
 
@@ -71,13 +71,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "block text-sm font-medium font-inter",
               hasError
-                ? "text-error-600 dark:text-error-400"
-                : "text-neutral-700 dark:text-neutral-300",
+                ? "text-red-600 dark:text-red-400"
+                : "text-gray-700 dark:text-gray-300",
               disabled && "opacity-60"
             )}
           >
             {label}
-            {required && <span className="text-error-500 ml-1">*</span>}
+            {required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
 
@@ -94,8 +94,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                   ? "left-5"
                   : "left-4",
                 hasError
-                  ? "text-error-500 dark:text-error-400"
-                  : "text-neutral-500 dark:text-neutral-400",
+                  ? "text-red-500 dark:text-red-400"
+                  : "text-gray-500 dark:text-gray-400",
                 disabled && "opacity-60"
               )}
             >
@@ -112,8 +112,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Base styles
               "w-full font-inter rounded-xl transition-all duration-200 ease-out",
               "focus:outline-none focus:ring-3 focus:ring-opacity-20",
-              "placeholder:text-neutral-500 dark:placeholder:text-neutral-400",
-              "text-neutral-900 dark:text-neutral-100",
+              "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              "text-gray-900 dark:text-gray-100",
 
               // Size styles
               inputSizes[inputSize],
@@ -138,20 +138,20 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Error styles
               hasError &&
                 [
-                  "border-error-300 bg-error-50",
-                  "dark:border-error-600 dark:bg-error-900/20",
-                  "focus:border-error-500 focus:ring-error-500/20",
+                  "border-red-300 bg-red-50",
+                  "dark:border-red-600 dark:bg-red-900/20",
+                  "focus:border-red-500 focus:ring-red-500/20",
                 ].join(" "),
 
               // Success focus (when no error)
-              !hasError && "focus:border-primary-500 focus:ring-primary-500/20",
+              !hasError && "focus:border-blue-500 focus:ring-blue-500/20",
 
               // Disabled styles
               disabled &&
                 [
                   "opacity-60 cursor-not-allowed",
-                  "bg-neutral-100 dark:bg-neutral-800",
-                  "border-neutral-200 dark:border-neutral-700",
+                  "bg-gray-100 dark:bg-gray-800",
+                  "border-gray-200 dark:border-gray-700",
                 ].join(" "),
 
               // Custom styles
@@ -182,7 +182,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {(error || hint) && (
           <div className="space-y-1">
             {error && (
-              <p className="text-sm font-inter text-error-600 dark:text-error-400 flex items-center gap-1">
+              <p className="text-sm font-inter text-red-600 dark:text-red-400 flex items-center gap-1">
                 <svg
                   className="w-4 h-4 flex-shrink-0"
                   fill="currentColor"
@@ -198,7 +198,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               </p>
             )}
             {hint && !error && (
-              <p className="text-sm font-inter text-neutral-600 dark:text-neutral-400">
+              <p className="text-sm font-inter text-gray-600 dark:text-gray-400">
                 {hint}
               </p>
             )}

@@ -16,6 +16,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
+  const handleToggle = () => {
+    toggleTheme();
+  };
+
   const sizeClasses = {
     sm: variant === "switch" ? "w-10 h-6" : "w-8 h-8",
     md: variant === "switch" ? "w-12 h-7" : "w-10 h-10",
@@ -31,17 +35,17 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   if (variant === "switch") {
     return (
       <button
-        onClick={toggleTheme}
+        onClick={handleToggle}
         className={cn(
           // Base styles
           "relative rounded-full p-1 transition-all duration-300 ease-out",
-          "focus:outline-none focus:ring-3 focus:ring-primary-500/20 focus:ring-offset-2",
-          "dark:focus:ring-offset-neutral-900",
+          "focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:ring-offset-2",
+          "dark:focus:ring-offset-gray-900",
 
           // Switch background
           isDark
-            ? "bg-primary-600 hover:bg-primary-700"
-            : "bg-neutral-300 hover:bg-neutral-400",
+            ? "bg-blue-600 hover:bg-blue-700"
+            : "bg-gray-300 hover:bg-gray-400",
 
           // Size
           sizeClasses[size],
@@ -85,8 +89,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 "absolute transition-all duration-300",
                 iconSizes[size],
                 isDark
-                  ? "opacity-100 scale-100 text-primary-600"
-                  : "opacity-0 scale-0 text-neutral-600"
+                  ? "opacity-100 scale-100 text-blue-600"
+                  : "opacity-0 scale-0 text-gray-600"
               )}
             />
           </div>
@@ -98,15 +102,15 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   // Button variant
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleToggle}
       className={cn(
         // Base styles
         "relative rounded-xl p-2 transition-all duration-300 ease-out",
-        "bg-neutral-100 hover:bg-neutral-200 border border-neutral-200",
-        "dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-700",
-        "focus:outline-none focus:ring-3 focus:ring-primary-500/20 focus:ring-offset-2",
-        "dark:focus:ring-offset-neutral-900",
-        "shadow-soft hover:shadow-medium",
+        "bg-gray-100 hover:bg-gray-200 border border-gray-200",
+        "dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700",
+        "focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:ring-offset-2",
+        "dark:focus:ring-offset-gray-900",
+        "shadow-lg hover:shadow-xl",
         "active:scale-95",
 
         // Size

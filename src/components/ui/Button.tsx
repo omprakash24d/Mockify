@@ -19,67 +19,67 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const buttonVariants = {
   primary: [
     // Base styles
-    "bg-primary-500 text-white border-primary-500",
+    "bg-blue-600 text-white border-blue-600",
     // Hover styles
-    "hover:bg-primary-600 hover:border-primary-600",
+    "hover:bg-blue-700 hover:border-blue-700",
     // Active styles
-    "active:bg-primary-700 active:border-primary-700",
+    "active:bg-blue-800 active:border-blue-800",
     // Focus styles
-    "focus:ring-primary-500/20",
+    "focus:ring-blue-500/20",
     // Dark mode
-    "dark:bg-primary-500 dark:hover:bg-primary-600 dark:active:bg-primary-700",
+    "dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800",
     // Shadow
-    "shadow-soft hover:shadow-medium",
+    "shadow-lg hover:shadow-xl",
   ].join(" "),
 
   secondary: [
-    "bg-neutral-100 text-neutral-900 border-neutral-200",
-    "hover:bg-neutral-200 hover:border-neutral-300",
-    "active:bg-neutral-300 active:border-neutral-400",
-    "focus:ring-neutral-500/20",
-    "dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700",
-    "dark:hover:bg-neutral-700 dark:hover:border-neutral-600",
-    "dark:active:bg-neutral-600 dark:active:border-neutral-500",
-    "shadow-soft hover:shadow-medium",
+    "bg-gray-100 text-gray-900 border-gray-200",
+    "hover:bg-gray-200 hover:border-gray-300",
+    "active:bg-gray-300 active:border-gray-400",
+    "focus:ring-gray-500/20",
+    "dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700",
+    "dark:hover:bg-gray-700 dark:hover:border-gray-600",
+    "dark:active:bg-gray-600 dark:active:border-gray-500",
+    "shadow-md hover:shadow-lg",
   ].join(" "),
 
   outline: [
-    "bg-transparent text-neutral-700 border-neutral-300",
-    "hover:bg-neutral-50 hover:border-neutral-400",
-    "active:bg-neutral-100 active:border-neutral-500",
-    "focus:ring-neutral-500/20",
-    "dark:text-neutral-300 dark:border-neutral-600",
-    "dark:hover:bg-neutral-800 dark:hover:border-neutral-500",
-    "dark:active:bg-neutral-700 dark:active:border-neutral-400",
-    "shadow-soft hover:shadow-medium",
+    "bg-transparent text-gray-700 border-gray-300",
+    "hover:bg-gray-50 hover:border-gray-400",
+    "active:bg-gray-100 active:border-gray-500",
+    "focus:ring-gray-500/20",
+    "dark:text-gray-300 dark:border-gray-600",
+    "dark:hover:bg-gray-800 dark:hover:border-gray-500",
+    "dark:active:bg-gray-700 dark:active:border-gray-400",
+    "shadow-md hover:shadow-lg",
   ].join(" "),
 
   ghost: [
-    "bg-transparent text-neutral-700 border-transparent",
-    "hover:bg-neutral-100",
-    "active:bg-neutral-200",
-    "focus:ring-neutral-500/20",
-    "dark:text-neutral-300",
-    "dark:hover:bg-neutral-800",
-    "dark:active:bg-neutral-700",
+    "bg-transparent text-gray-700 border-transparent",
+    "hover:bg-gray-100",
+    "active:bg-gray-200",
+    "focus:ring-gray-500/20",
+    "dark:text-gray-300",
+    "dark:hover:bg-gray-800",
+    "dark:active:bg-gray-700",
   ].join(" "),
 
   danger: [
-    "bg-error-500 text-white border-error-500",
-    "hover:bg-error-600 hover:border-error-600",
-    "active:bg-error-700 active:border-error-700",
-    "focus:ring-error-500/20",
-    "dark:bg-error-500 dark:hover:bg-error-600 dark:active:bg-error-700",
-    "shadow-soft hover:shadow-medium",
+    "bg-red-600 text-white border-red-600",
+    "hover:bg-red-700 hover:border-red-700",
+    "active:bg-red-800 active:border-red-800",
+    "focus:ring-red-500/20",
+    "dark:bg-red-600 dark:hover:bg-red-700 dark:active:bg-red-800",
+    "shadow-lg hover:shadow-xl",
   ].join(" "),
 
   success: [
-    "bg-success-500 text-white border-success-500",
-    "hover:bg-success-600 hover:border-success-600",
-    "active:bg-success-700 active:border-success-700",
-    "focus:ring-success-500/20",
-    "dark:bg-success-500 dark:hover:bg-success-600 dark:active:bg-success-700",
-    "shadow-soft hover:shadow-medium",
+    "bg-green-600 text-white border-green-600",
+    "hover:bg-green-700 hover:border-green-700",
+    "active:bg-green-800 active:border-green-800",
+    "focus:ring-green-500/20",
+    "dark:bg-green-600 dark:hover:bg-green-700 dark:active:bg-green-800",
+    "shadow-lg hover:shadow-xl",
   ].join(" "),
 };
 
@@ -111,7 +111,7 @@ export const Button: React.FC<ButtonProps> = ({
         "font-inter font-medium rounded-xl border",
         "transition-all duration-200 ease-out",
         "focus:outline-none focus:ring-3 focus:ring-offset-2",
-        "dark:focus:ring-offset-neutral-900",
+        "dark:focus:ring-offset-gray-900",
 
         // Interactive states
         isInteractive && "cursor-pointer",

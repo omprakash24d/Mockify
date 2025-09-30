@@ -1,21 +1,3 @@
-/**
- * Enhanced ProfileManager Component
- *
- * Improvements made:
- * - Avatar Initialization: Syncs selected avatar with user's current avatar on mount
- * - Enhanced Error Handling: Normalized error messages for better UX
- * - Form Validation: Added display name validation with real-time feedback
- * - Separate Loading States: Independent loading states for profile and password forms
- * - Modal State Cleanup: Resets all form states when modal is closed
- * - Enhanced Accessibility: ARIA roles, keyboard navigation, focus management
- * - Dark Mode Support: Full dark mode theming throughout the component
- * - Password Security: Uses SecurityManager constants and enhanced validation
- * - Keyboard Support: ESC key closes modal, proper tab navigation
- * - Success Message Auto-clear: Success messages auto-dismiss after timeout
- * - Click-outside Close: Modal closes when clicking on backdrop
- * - Improved UX: Better button states, validation feedback, and loading indicators
- */
-
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -322,8 +304,8 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
 
     // Default avatar
     return (
-      <div className="w-full h-full rounded-full bg-primary-100 flex items-center justify-center">
-        <User className="w-6 h-6 text-primary-600" />
+      <div className="w-full h-full rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+        <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
       </div>
     );
   };

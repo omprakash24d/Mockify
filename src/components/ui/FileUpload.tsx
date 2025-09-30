@@ -1,6 +1,5 @@
 import { Image, Upload, X } from "lucide-react";
 import React, { useRef, useState } from "react";
-import { useTheme } from "../../contexts/ThemeContext";
 
 interface FileUploadProps {
   label?: string;
@@ -23,7 +22,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   className,
   required = false,
 }) => {
-  const { theme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(value || "");
   const [isDragging, setIsDragging] = useState(false);
@@ -87,14 +85,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {/* Label */}
       {label && (
         <label
-          className={`block text-sm font-medium font-lato ${
+          className={`block text-sm font-medium ${
             error
-              ? theme === "dark"
-                ? "text-red-400"
-                : "text-red-500"
-              : theme === "dark"
-              ? "text-gray-300"
-              : "text-gray-700"
+              ? "text-red-600 dark:text-red-400"
+              : "text-gray-700 dark:text-gray-300"
           }`}
         >
           {label}
@@ -105,17 +99,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {/* Upload Area */}
       <div
         className={`
-          relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
-          transition-all duration-200 ease-in-out
-          ${isDragging ? "border-blue-400 bg-blue-50 dark:bg-blue-900/20" : ""}
+          relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
+          transition-all duration-300 ease-in-out group
+          ${
+            isDragging
+              ? "border-blue-400 bg-blue-50 dark:bg-blue-900/20 scale-105"
+              : ""
+          }
           ${
             error
-              ? theme === "dark"
-                ? "border-red-400 bg-red-900/10"
-                : "border-red-500 bg-red-50"
-              : theme === "dark"
-              ? "border-gray-600 bg-gray-800 hover:border-gray-500"
-              : "border-gray-300 bg-gray-50 hover:border-gray-400"
+              ? "border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/20"
+              : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50"
           }
         `}
         onClick={handleClick}
@@ -133,72 +127,76 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         {previewUrl ? (
           /* Preview */
-          <div className="relative">
-            <img
-              src={previewUrl}
-              alt="Logo preview"
-              className="mx-auto h-24 w-24 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemove();
-              }}
-              className={`absolute -top-2 -right-2 p-1 rounded-full ${
-                theme === "dark"
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-red-500 hover:bg-red-600"
-              } text-white transition-colors`}
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <p
-              className={`mt-2 text-sm ${
-                theme === "dark" ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+          <div className="relative inline-block">
+            <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-2 shadow-lg">
+              <img
+                src={previewUrl}
+                alt="Logo preview"
+                className="mx-auto h-24 w-24 object-cover rounded-lg"
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove();
+                }}
+                className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+            <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 font-medium">
               Click to change logo
             </p>
           </div>
         ) : (
           /* Upload Prompt */
-          <div>
+          <div className="space-y-4">
             <div
-              className={`mx-auto h-12 w-12 ${
-                theme === "dark" ? "text-gray-400" : "text-gray-500"
+              className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:scale-110 ${
+                isDragging
+                  ? "bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
               }`}
             >
               {isDragging ? (
-                <Upload className="h-12 w-12" />
+                <Upload className="h-8 w-8" />
               ) : (
-                <Image className="h-12 w-12" />
+                <Image className="h-8 w-8" />
               )}
             </div>
-            <p
-              className={`mt-2 text-sm font-medium ${
-                theme === "dark" ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              {isDragging ? "Drop your logo here" : "Upload coaching logo"}
-            </p>
-            <p
-              className={`mt-1 text-xs ${
-                theme === "dark" ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              PNG, JPG, GIF up to {maxSize}MB (Optional)
-            </p>
+
+            <div className="space-y-2">
+              <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                {isDragging ? "Drop your logo here" : "Upload coaching logo"}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Drag and drop or{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                  browse files
+                </span>
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                PNG, JPG, GIF up to {maxSize}MB • Optional
+              </p>
+            </div>
           </div>
         )}
       </div>
 
       {/* Error Message */}
       {error && (
-        <p
-          className={`text-sm font-lato ${
-            theme === "dark" ? "text-red-400" : "text-red-500"
-          }`}
-        >
+        <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+          <svg
+            className="w-4 h-4 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
+          </svg>
           {error}
         </p>
       )}

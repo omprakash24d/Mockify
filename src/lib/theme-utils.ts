@@ -11,83 +11,95 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Centralized theme classes for consistent styling across the application
- * Supports both light and dark modes with semantic naming
+ * Enhanced theme classes for consistent styling across the application
+ * Optimized for smooth theme transitions and accessibility
  */
 export const themeClasses = {
-  // Background classes
-  background: {
-    primary: "bg-white dark:bg-gray-900",
-    secondary: "bg-gray-50 dark:bg-gray-800",
-    accent: "bg-gray-100 dark:bg-gray-700",
-    card: "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
-    overlay: "bg-black/50 dark:bg-black/70",
+  // Background classes with smooth transitions
+  bg: {
+    primary: "bg-white dark:bg-gray-900 transition-colors duration-300",
+    secondary: "bg-gray-50 dark:bg-gray-800 transition-colors duration-300",
+    elevated: "bg-white dark:bg-gray-800 transition-colors duration-300",
+    accent: "bg-gray-100 dark:bg-gray-700 transition-colors duration-300",
+    card: "bg-white dark:bg-gray-800 transition-colors duration-300",
+    overlay: "bg-black/50 dark:bg-black/70 transition-colors duration-300",
+    glass:
+      "bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm transition-all duration-300",
   },
 
-  // Text classes
+  // Text classes with improved contrast
   text: {
-    primary: "text-gray-900 dark:text-white",
-    secondary: "text-gray-600 dark:text-gray-400",
-    muted: "text-gray-500 dark:text-gray-500",
-    accent: "text-primary-600 dark:text-primary-400",
-    success: "text-green-600 dark:text-green-400",
-    warning: "text-yellow-600 dark:text-yellow-400",
-    error: "text-red-600 dark:text-red-400",
+    primary: "text-gray-900 dark:text-gray-100 transition-colors duration-300",
+    secondary:
+      "text-gray-600 dark:text-gray-400 transition-colors duration-300",
+    muted: "text-gray-500 dark:text-gray-500 transition-colors duration-300",
+    accent: "text-blue-600 dark:text-blue-400 transition-colors duration-300",
+    success:
+      "text-green-600 dark:text-green-400 transition-colors duration-300",
+    warning:
+      "text-yellow-600 dark:text-yellow-400 transition-colors duration-300",
+    error: "text-red-600 dark:text-red-400 transition-colors duration-300",
+    inverse: "text-white dark:text-gray-900 transition-colors duration-300",
   },
 
-  // Border classes
+  // Border classes with consistent theming
   border: {
-    default: "border-gray-200 dark:border-gray-700",
-    focus: "border-primary-500 dark:border-primary-400",
-    error: "border-red-300 dark:border-red-600",
-    success: "border-green-300 dark:border-green-600",
+    default:
+      "border-gray-200 dark:border-gray-700 transition-colors duration-300",
+    light:
+      "border-gray-100 dark:border-gray-800 transition-colors duration-300",
+    focus:
+      "border-blue-500 dark:border-blue-400 transition-colors duration-300",
+    error: "border-red-300 dark:border-red-600 transition-colors duration-300",
+    success:
+      "border-green-300 dark:border-green-600 transition-colors duration-300",
   },
 
-  // Button classes
+  // Enhanced button classes with better accessibility
   button: {
     primary:
-      "bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white",
+      "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
     secondary:
-      "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white",
+      "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
     outline:
-      "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300",
+      "bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
     ghost:
-      "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300",
+      "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-transparent focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
     danger:
-      "bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white",
+      "bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white border border-transparent focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
   },
 
-  // Input classes
+  // Enhanced input classes
   input: {
     default:
-      "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary-500 focus:ring-primary-500",
+      "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
     error:
-      "bg-white dark:bg-gray-700 border-red-300 dark:border-red-600 text-gray-900 dark:text-white focus:border-red-500 focus:ring-red-500",
+      "bg-white dark:bg-gray-700 border-red-300 dark:border-red-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200",
   },
 
-  // Status classes
+  // Enhanced status classes
   status: {
     success:
-      "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200",
+      "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 transition-all duration-300",
     warning:
-      "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200",
+      "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 transition-all duration-300",
     error:
-      "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200",
-    info: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200",
+      "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 transition-all duration-300",
+    info: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 transition-all duration-300",
   },
 
   // Navigation classes
   nav: {
     active:
-      "bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300",
+      "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700 transition-all duration-200",
     inactive:
-      "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
+      "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-all duration-200",
   },
 };
 
 /**
  * Helper function to retrieve specific theme classes by variant and type
- * @param variant - The theme variant category (background, text, etc.)
+ * @param variant - The theme variant category (bg, text, etc.)
  * @param type - The specific type within the variant
  * @returns The corresponding theme classes or default fallback
  */
@@ -105,8 +117,8 @@ export const getThemeClasses = (
     console.warn(
       `Theme classes not found for variant: ${variant}, type: ${type}`
     );
-    return variant === "background"
-      ? themeClasses.background.primary
+    return variant === "bg"
+      ? themeClasses.bg.primary
       : variant === "text"
       ? themeClasses.text.primary
       : variant === "border"
@@ -127,7 +139,7 @@ export const getFocusClasses = (error?: boolean): string => {
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900",
     error
       ? "focus:ring-red-500 dark:focus:ring-red-400"
-      : "focus:ring-primary-500 dark:focus:ring-primary-400"
+      : "focus:ring-blue-500 dark:focus:ring-blue-400"
   );
 };
 
@@ -185,7 +197,7 @@ export const responsiveClasses = {
 export const a11yClasses = {
   screenReader: "sr-only",
   focusVisible:
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
   skipLink:
     "absolute left-[-10000px] top-auto width-1 height-1 overflow-hidden focus:left-6 focus:top-7 focus:width-auto focus:height-auto focus:overflow-visible",
   highContrast:

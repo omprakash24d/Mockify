@@ -48,6 +48,23 @@ export const CoachingDetailsModal: React.FC<CoachingDetailsModalProps> = ({
         coachingLogo: coachingLogo.trim() || undefined,
       };
 
+      // Additional validation to ensure essential fields are not empty
+      if (!formData.coachingName) {
+        setValidationErrors({
+          coachingName: "Coaching institute name is required",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.phoneNumber || formData.phoneNumber.length < 10) {
+        setValidationErrors({
+          phoneNumber: "Valid 10-digit phone number is required",
+        });
+        setLoading(false);
+        return;
+      }
+
       const validationResult = coachingDetailsSchema.safeParse(formData);
 
       if (!validationResult.success) {
@@ -65,24 +82,29 @@ export const CoachingDetailsModal: React.FC<CoachingDetailsModalProps> = ({
     }
   };
 
+  // Check if form is valid for button state
+  const isFormValid =
+    coachingName.trim().length > 0 && phoneNumber.trim().length >= 10;
+
   if (!isOpen) return null;
 
+  // Prevent modal dismissal - user must complete the form
   const overlayClasses =
-    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50";
+    "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 backdrop-blur-sm";
   const modalClasses = `
-    max-w-2xl w-full rounded-xl shadow-xl border transition-all duration-200
+    max-w-2xl w-full rounded-xl shadow-2xl border transition-all duration-200 max-h-[90vh] overflow-y-auto
     ${
       theme === "dark"
-        ? "bg-neutral-900 border-neutral-700"
+        ? "bg-gray-900 border-gray-700"
         : "bg-white border-gray-200"
     }
   `;
 
   return (
-    <div className={overlayClasses}>
-      <div className={modalClasses}>
+    <div className={overlayClasses} onClick={(e) => e.stopPropagation()}>
+      <div className={modalClasses} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-neutral-700">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Building2 className="w-8 h-8 text-white" />
@@ -123,7 +145,6 @@ export const CoachingDetailsModal: React.FC<CoachingDetailsModalProps> = ({
 
               {/* Phone Number */}
               <PhoneInput
-                
                 value={phoneNumber}
                 onChange={setPhoneNumber}
                 error={validationErrors.phoneNumber}
@@ -151,10 +172,12 @@ export const CoachingDetailsModal: React.FC<CoachingDetailsModalProps> = ({
                     : "bg-blue-50 border-blue-200 text-blue-600"
                 }`}
               >
-                <p className="font-medium mb-2">Smart Detection</p>
+                <p className="font-medium mb-2">
+                  ⚠️ Profile Completion Required
+                </p>
                 <p className="text-xs leading-relaxed">
-                  Only coaching logo can be skipped - all other fields are
-                  required to complete your profile.
+                  You must complete your coaching institute name and phone
+                  number to access your dashboard. Only the logo is optional.
                 </p>
               </div>
             </div>
@@ -173,20 +196,61 @@ export const CoachingDetailsModal: React.FC<CoachingDetailsModalProps> = ({
             <Button
               type="submit"
               loading={loading}
-              disabled={loading}
+              disabled={loading || !isFormValid}
               className="w-full"
               size="lg"
             >
               {loading ? "Setting up..." : "Complete Setup"}
             </Button>
 
-            <p
-              className={`text-xs text-center mt-3 ${
-                theme === "dark" ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              All fields are required to proceed to your dashboard
-            </p>
+            {!isFormValid && (
+              <div
+                className={`text-xs text-center mt-3 p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-yellow-900/20 text-yellow-300"
+                    : "bg-yellow-50 text-yellow-600"
+                }`}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <span>⚠️</span>
+                  <span>Complete all required fields to proceed</span>
+                </div>
+                <div className="flex justify-center space-x-4 mt-2 text-xs">
+                  <div className="flex items-center space-x-1">
+                    <span
+                      className={
+                        coachingName.trim() ? "text-green-500" : "text-gray-400"
+                      }
+                    >
+                      {coachingName.trim() ? "✓" : "○"}
+                    </span>
+                    <span>Institute Name</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span
+                      className={
+                        phoneNumber.trim().length >= 10
+                          ? "text-green-500"
+                          : "text-gray-400"
+                      }
+                    >
+                      {phoneNumber.trim().length >= 10 ? "✓" : "○"}
+                    </span>
+                    <span>Phone Number</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isFormValid && (
+              <p
+                className={`text-xs text-center mt-3 ${
+                  theme === "dark" ? "text-green-400" : "text-green-600"
+                }`}
+              >
+                ✓ Ready to complete your profile
+              </p>
+            )}
           </div>
         </form>
       </div>

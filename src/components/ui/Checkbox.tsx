@@ -25,14 +25,14 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           type="checkbox"
           id={checkboxId}
           className={cn(
-            "h-4 w-4 rounded border border-gray-300 text-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 transition-colors",
-            "dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-primary-400",
+            "h-4 w-4 rounded border border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors",
+            "dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-blue-400",
             "peer sr-only",
             className
           )}
           {...props}
         />
-        <div className="h-4 w-4 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500 peer-checked:border-primary-600 dark:peer-checked:border-primary-500 transition-colors flex items-center justify-center">
+        <div className="h-4 w-4 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:border-blue-600 dark:peer-checked:border-blue-500 transition-colors flex items-center justify-center">
           <Check className="h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
         </div>
       </div>
@@ -42,13 +42,13 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           {label && (
             <label
               htmlFor={checkboxId}
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+              className="block text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer"
             >
               {label}
             </label>
           )}
           {description && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {description}
             </p>
           )}

@@ -20,25 +20,25 @@ const paddingClasses = {
 
 const cardVariants = {
   default: [
-    "bg-white border border-neutral-200",
-    "dark:bg-neutral-900 dark:border-neutral-800",
-    "shadow-soft",
+    "bg-white border border-gray-200",
+    "dark:bg-gray-900 dark:border-gray-800",
+    "shadow-lg",
   ].join(" "),
 
   elevated: [
-    "bg-white border border-neutral-200/50",
-    "dark:bg-neutral-900 dark:border-neutral-800/50",
-    "shadow-soft-lg",
+    "bg-white border border-gray-200/50",
+    "dark:bg-gray-900 dark:border-gray-800/50",
+    "shadow-xl",
   ].join(" "),
 
   outlined: [
-    "bg-transparent border-2 border-neutral-200",
-    "dark:border-neutral-700",
+    "bg-transparent border-2 border-gray-200",
+    "dark:border-gray-700",
   ].join(" "),
 
   ghost: [
-    "bg-neutral-50/50 border border-neutral-100",
-    "dark:bg-neutral-800/50 dark:border-neutral-700",
+    "bg-gray-50/50 border border-gray-100",
+    "dark:bg-gray-800/50 dark:border-gray-700",
   ].join(" "),
 };
 
@@ -62,9 +62,9 @@ export const Card: React.FC<CardProps> = ({
         interactive &&
           [
             "cursor-pointer",
-            "hover:shadow-soft-lg hover:-translate-y-0.5",
-            "active:translate-y-0 active:shadow-soft",
-            "focus:outline-none focus:ring-3 focus:ring-primary-500/20",
+            "hover:shadow-xl hover:-translate-y-0.5",
+            "active:translate-y-0 active:shadow-lg",
+            "focus:outline-none focus:ring-3 focus:ring-blue-500/20",
           ].join(" "),
 
         // Padding
@@ -95,10 +95,9 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
     <div
       className={cn(
         divided &&
-          [
-            "border-b border-neutral-200 pb-4 mb-6",
-            "dark:border-neutral-700",
-          ].join(" "),
+          ["border-b border-gray-200 pb-4 mb-6", "dark:border-gray-700"].join(
+            " "
+          ),
         !divided && "mb-4",
         className
       )}
@@ -129,7 +128,7 @@ export const CardTitle: React.FC<CardTitleProps> = ({
   return (
     <h3
       className={cn(
-        "text-neutral-900 dark:text-neutral-100",
+        "text-gray-900 dark:text-gray-100",
         "tracking-tight leading-tight",
         titleSizes[size],
         className
@@ -152,7 +151,7 @@ export const CardDescription: React.FC<CardDescriptionProps> = ({
   return (
     <p
       className={cn(
-        "text-neutral-600 dark:text-neutral-400",
+        "text-gray-600 dark:text-gray-400",
         "text-sm leading-relaxed mt-1",
         className
       )}
@@ -172,7 +171,7 @@ export const CardContent: React.FC<CardContentProps> = ({
   className,
 }) => {
   return (
-    <div className={cn("text-neutral-700 dark:text-neutral-300", className)}>
+    <div className={cn("text-gray-700 dark:text-gray-300", className)}>
       {children}
     </div>
   );
@@ -193,10 +192,9 @@ export const CardFooter: React.FC<CardFooterProps> = ({
     <div
       className={cn(
         divided &&
-          [
-            "border-t border-neutral-200 pt-4 mt-6",
-            "dark:border-neutral-700",
-          ].join(" "),
+          ["border-t border-gray-200 pt-4 mt-6", "dark:border-gray-700"].join(
+            " "
+          ),
         !divided && "mt-4",
         className
       )}

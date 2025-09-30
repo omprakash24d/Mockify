@@ -7,7 +7,16 @@ import {
   updateProfile,
   type User as FirebaseUser,
 } from "firebase/auth";
-import { Building2, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import {
+  AlertCircle,
+  Building2,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  User,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { auth } from "../lib/firebase";
@@ -21,6 +30,7 @@ import {
   signupSchema,
 } from "../lib/validations";
 import { CoachingDetailsModal } from "./CoachingDetailsModal";
+import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/Button";
 import { FileUpload } from "./ui/FileUpload";
 import { GoogleIcon } from "./ui/GoogleIcon";
@@ -288,22 +298,34 @@ export const AuthScreen: React.FC = () => {
       });
 
       const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Auto-fill available Google profile information
+      if (user.displayName && !name) {
+        setName(user.displayName);
+      }
+      if (user.email && !email) {
+        setEmail(user.email);
+      }
 
       // Check if user needs to complete coaching details
-      const needsDetails = await UserProfileService.needsCoachingDetails(
-        result.user
-      );
+      const needsDetails = await UserProfileService.needsCoachingDetails(user);
 
       if (needsDetails) {
-        // Set pending user and show coaching details modal
-        setPendingUser(result.user);
+        // If we're in signup mode and have Google data, switch to signup to show the form
+        if (isLogin) {
+          setIsLogin(false);
+        }
+
+        // Set pending user and show coaching details modal for immediate completion
+        setPendingUser(user);
         setShowCoachingModal(true);
         return;
       }
 
       // The Google login won't affect existing email/password authentication
       // Firebase handles multiple auth providers for the same user automatically
-      console.log("Google login successful:", result.user.email);
+      console.log("Google login successful:", user.email);
     } catch (error: any) {
       if (error.code === "auth/account-exists-with-different-credential") {
         setError(
@@ -373,6 +395,12 @@ export const AuthScreen: React.FC = () => {
     if (!pendingUser) return;
 
     try {
+      // Validate that all essential information is provided
+      if (!details.coachingName || !details.phoneNumber) {
+        setError("All coaching details are required to proceed.");
+        return;
+      }
+
       // Update or create user profile with coaching details
       const existingProfile = await UserProfileService.getUserProfile(
         pendingUser.uid
@@ -386,6 +414,16 @@ export const AuthScreen: React.FC = () => {
 
       setShowCoachingModal(false);
       setPendingUser(null);
+
+      // Clear form data after successful completion
+      setName("");
+      setEmail("");
+      setCoachingName("");
+      setPhoneNumber("");
+      setCoachingLogo("");
+      setPassword("");
+      setConfirmPassword("");
+
       console.log("Coaching details saved successfully");
     } catch (error) {
       console.error("Error saving coaching details:", error);
@@ -393,137 +431,324 @@ export const AuthScreen: React.FC = () => {
     }
   };
 
-  const { classes, theme } = useTheme();
+  const {} = useTheme();
 
   return (
-    <div
-      className={`min-h-screen ${classes.bg.secondary} flex items-center justify-center p-4 sm:p-6 lg:p-8`}
-    >
-      <div className="max-w-2xl w-full space-y-8">
-        {/* Logo and Header - Improved Layout */}
-        <div className="text-center">
-          <div className="flex flex-col items-center space-y-4">
-            {/* Logo and Brand in single row */}
-            <div className="flex items-center space-x-3">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white text-2xl font-bold">M</span>
-              </div>
-              <div className="text-left">
-                <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400 leading-tight">
-                  Mockify
-                </h1>
-                <p className={`${classes.text.secondary} text-sm font-medium`}>
-                  Test Preparation Platform
-                </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 60 60"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern
+              id="dots"
+              x="0"
+              y="0"
+              width="60"
+              height="60"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx="7"
+                cy="7"
+                r="1"
+                fill="currentColor"
+                className="text-gray-300 dark:text-gray-700"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle variant="switch" size="md" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+        <div
+          className={`w-full ${
+            isLogin ? "max-w-md" : "max-w-2xl"
+          } transition-all duration-300`}
+        >
+          {/* Brand Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center mb-6">
+              {/* Modern Logo */}
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-xl shadow-lg flex items-center justify-center transform rotate-2 hover:rotate-0 transition-transform duration-300">
+                  <span className="text-white text-xl font-bold">M</span>
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-3 h-3 text-white" />
+                </div>
               </div>
             </div>
 
-            {/* Welcome message */}
-            <div className="space-y-1">
-              <h2 className={`text-xl font-semibold ${classes.text.primary}`}>
-                {isLogin ? "Welcome back!" : "Create account"}
+            {/* Brand Text */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent leading-tight">
+                Mockify
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">
+                Test Preparation Platform
+              </p>
+            </div>
+
+            {/* Dynamic Welcome Message */}
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                {isLogin ? "Welcome back!" : "Join Mockify"}
               </h2>
-              <p className={`${classes.text.secondary} text-sm`}>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 {isLogin
-                  ? "Sign in to continue your journey"
-                  : "Join thousands of coaching institutes"}
+                  ? "Sign in to access your dashboard"
+                  : "Create your account to get started"}
               </p>
             </div>
           </div>
-        </div>
 
-        {/* Auth Form */}
-        <div
-          className={`${classes.bg.elevated} rounded-xl shadow-lg border ${classes.border.default} p-6 sm:p-8 transition-all duration-200 hover:shadow-xl`}
-        >
-          <form onSubmit={handleEmailAuth} noValidate>
-            {!isLogin ? (
-              /* Signup Form - Multi-column layout */
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Left Column */}
-                  <div className="space-y-4">
-                    {/* Name field */}
-                    <Input
-                      ref={nameRef}
-                      id="name"
-                      type="text"
-                      label="Full Name"
-                      required
-                      value={name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setName(e.target.value)
-                      }
-                      placeholder="Enter your full name"
-                      icon={
-                        <User className={`h-5 w-5 ${classes.text.primary}`} />
-                      }
-                      error={validationErrors.name}
-                    />
+          {/* Auth Form Container */}
+          <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8">
+            {/* Form Header */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg mb-3">
+                {isLogin ? (
+                  <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                ) : (
+                  <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {isLogin ? "Sign in to your account" : "Create your account"}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {isLogin
+                  ? "Enter your credentials to access your dashboard"
+                  : "Fill in your details to get started"}
+              </p>
+            </div>
+            <form onSubmit={handleEmailAuth} noValidate className="space-y-5">
+              {!isLogin ? (
+                /* Signup Form - Modern two-column layout */
+                <div className="space-y-6">
+                  {/* Personal Information Section */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                      <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-2">
+                        <User className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Personal Information
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        ref={nameRef}
+                        id="name"
+                        type="text"
+                        label="Full Name"
+                        required
+                        value={name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setName(e.target.value)
+                        }
+                        placeholder="Enter your full name"
+                        icon={
+                          <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        }
+                        error={validationErrors.name}
+                        variant="filled"
+                        inputSize="md"
+                      />
 
-                    {/* Coaching Name field */}
-                    <Input
-                      id="coachingName"
-                      type="text"
-                      label="Coaching Institute Name"
-                      required
-                      value={coachingName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setCoachingName(e.target.value)
-                      }
-                      placeholder="Enter your coaching institute name"
-                      icon={
-                        <Building2
-                          className={`h-5 w-5 ${classes.text.primary}`}
-                        />
-                      }
-                      error={validationErrors.coachingName}
-                    />
-
-                    {/* Email field */}
-                    <Input
-                      ref={emailRef}
-                      id="email"
-                      type="email"
-                      label="Email address"
-                      required
-                      value={email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEmail(e.target.value)
-                      }
-                      placeholder="Enter your email"
-                      icon={
-                        <Mail className={`h-5 w-5 ${classes.text.primary}`} />
-                      }
-                      error={validationErrors.email}
-                    />
+                      <Input
+                        ref={emailRef}
+                        id="email"
+                        type="email"
+                        label="Email address"
+                        required
+                        value={email}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEmail(e.target.value)
+                        }
+                        placeholder="Enter your email address"
+                        icon={
+                          <Mail className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        }
+                        error={validationErrors.email}
+                        variant="filled"
+                        inputSize="md"
+                      />
+                    </div>
                   </div>
 
-                  {/* Right Column */}
-                  <div className="space-y-4">
-                    {/* Phone Number field */}
-                    <PhoneInput
-                      value={phoneNumber}
-                      onChange={setPhoneNumber}
-                      error={validationErrors.phoneNumber}
-                      required
-                    />
+                  {/* Institute Information Section */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                      <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-2">
+                        <Building2 className="w-3 h-3 text-green-600 dark:text-green-400" />
+                      </div>
+                      Institute Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        id="coachingName"
+                        type="text"
+                        label="Coaching Institute Name"
+                        required
+                        value={coachingName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setCoachingName(e.target.value)
+                        }
+                        placeholder="Enter your institute name"
+                        icon={
+                          <Building2 className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        }
+                        error={validationErrors.coachingName}
+                        variant="filled"
+                        inputSize="md"
+                      />
 
-                    {/* Coaching Logo field */}
-                    <FileUpload
-                      label="Coaching Logo (Optional)"
-                      value={coachingLogo}
-                      onChange={(_, previewUrl) => setCoachingLogo(previewUrl)}
-                      error={validationErrors.coachingLogo}
-                      maxSize={5}
-                      accept="image/*"
-                    />
+                      <PhoneInput
+                        label="Phone Number"
+                        value={phoneNumber}
+                        onChange={setPhoneNumber}
+                        error={validationErrors.phoneNumber}
+                        required
+                        placeholder="Enter 10-digit number"
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <FileUpload
+                        label="Coaching Logo (Optional)"
+                        value={coachingLogo}
+                        onChange={(_, previewUrl) =>
+                          setCoachingLogo(previewUrl)
+                        }
+                        error={validationErrors.coachingLogo}
+                        maxSize={5}
+                        accept="image/*"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Security Section */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                      <div className="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-2">
+                        <Lock className="w-3 h-3 text-red-600 dark:text-red-400" />
+                      </div>
+                      Security Setup
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        ref={passwordRef}
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        label="Password"
+                        required
+                        value={password}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setPassword(e.target.value)
+                        }
+                        placeholder="Create a strong password"
+                        icon={
+                          <Lock className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        }
+                        error={validationErrors.password}
+                        variant="filled"
+                        inputSize="md"
+                        rightElement={
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors focus:outline-none"
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5" />
+                            ) : (
+                              <Eye className="h-5 w-5" />
+                            )}
+                          </button>
+                        }
+                      />
+
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        label="Confirm Password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setConfirmPassword(e.target.value)
+                        }
+                        placeholder="Confirm your password"
+                        icon={
+                          <Lock className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        }
+                        error={validationErrors.confirmPassword}
+                        variant="filled"
+                        inputSize="md"
+                        rightElement={
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                            className="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors focus:outline-none"
+                            aria-label={
+                              showConfirmPassword
+                                ? "Hide password"
+                                : "Show password"
+                            }
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-5 w-5" />
+                            ) : (
+                              <Eye className="h-5 w-5" />
+                            )}
+                          </button>
+                        }
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <PasswordStrengthIndicator
+                        password={password}
+                        confirmPassword={confirmPassword}
+                        showConfirmation={!!confirmPassword}
+                      />
+                    </div>
                   </div>
                 </div>
+              ) : (
+                /* Login Form - Clean and focused */
+                <div className="space-y-5">
+                  <Input
+                    ref={emailRef}
+                    id="email"
+                    type="email"
+                    label="Email address"
+                    required
+                    value={email}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setEmail(e.target.value)
+                    }
+                    placeholder="Enter your email address"
+                    icon={
+                      <Mail className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    }
+                    error={validationErrors.email}
+                    variant="filled"
+                    inputSize="md"
+                  />
 
-                {/* Full-width password fields */}
-                <div className="space-y-4">
-                  {/* Password field */}
                   <Input
                     ref={passwordRef}
                     id="password"
@@ -536,14 +761,16 @@ export const AuthScreen: React.FC = () => {
                     }
                     placeholder="Enter your password"
                     icon={
-                      <Lock className={`h-5 w-5 ${classes.text.primary}`} />
+                      <Lock className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                     }
                     error={validationErrors.password}
+                    variant="filled"
+                    inputSize="md"
                     rightElement={
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors focus:outline-none focus:text-blue-500 dark:focus:text-blue-400"
+                        className="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors focus:outline-none"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
@@ -556,305 +783,237 @@ export const AuthScreen: React.FC = () => {
                       </button>
                     }
                   />
-
-                  {/* Confirm Password field for signup */}
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    label="Confirm Password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setConfirmPassword(e.target.value)
-                    }
-                    placeholder="Re-enter your password"
-                    icon={
-                      <Lock className={`h-5 w-5 ${classes.text.primary}`} />
-                    }
-                    error={validationErrors.confirmPassword}
-                    rightElement={
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors focus:outline-none focus:text-blue-500 dark:focus:text-blue-400"
-                        aria-label={
-                          showConfirmPassword
-                            ? "Hide password"
-                            : "Show password"
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </button>
-                    }
-                  />
-
-                  {/* Password strength indicator for signup */}
-                  <PasswordStrengthIndicator
-                    password={password}
-                    confirmPassword={confirmPassword}
-                    showConfirmation={!!confirmPassword}
-                  />
                 </div>
-              </div>
-            ) : (
-              /* Login Form - Simple layout */
-              <div className="space-y-6">
-                {/* Email field */}
-                <Input
-                  ref={emailRef}
-                  id="email"
-                  type="email"
-                  label="Email address"
-                  required
-                  value={email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEmail(e.target.value)
-                  }
-                  placeholder="Enter your email"
-                  icon={<Mail className={`h-5 w-5 ${classes.text.primary}`} />}
-                  error={validationErrors.email}
-                />
+              )}
 
-                {/* Password field */}
-                <Input
-                  ref={passwordRef}
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  label="Password"
-                  required
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPassword(e.target.value)
-                  }
-                  placeholder="Enter your password"
-                  icon={<Lock className={`h-5 w-5 ${classes.text.primary}`} />}
-                  error={validationErrors.password}
-                  rightElement={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors focus:outline-none focus:text-blue-500 dark:focus:text-blue-400"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  }
-                />
-              </div>
-            )}
-
-            {/* Error message */}
-            {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-lg animate-in slide-in-from-top-2 duration-200">
-                <div className="flex items-start space-x-3">
-                  <svg
-                    className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-sm font-medium text-red-700 dark:text-red-300">
-                    {error}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Reset email confirmation */}
-            {resetEmailSent && (
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-lg animate-in slide-in-from-top-2 duration-200">
-                <div className="flex items-start space-x-3">
-                  <svg
-                    className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    Password reset email sent! Check your inbox.
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Forgot Password */}
-            {isLogin && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={handlePasswordReset}
-                  disabled={!email || loading || resetLoading}
-                  className={`text-sm ${classes.text.accent} hover:opacity-80 font-medium transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
-                  aria-label="Send password reset email"
-                >
-                  {resetLoading
-                    ? "Sending reset email..."
-                    : "Forgot your password?"}
-                </button>
-              </div>
-            )}
-
-            {/* Form completion hint for signup */}
-            {!isLogin && !isFormValid && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <svg
-                    className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div className="text-sm text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">
-                      Complete all fields to continue:
-                    </p>
-                    <ul className="text-xs space-y-1">
-                      {!name.trim() && <li>• Full name is required</li>}
-                      {!email.trim() && <li>• Email address is required</li>}
-                      {!password && <li>• Password is required</li>}
-                      {!confirmPassword && (
-                        <li>• Confirm password is required</li>
-                      )}
-                      {!coachingName.trim() && (
-                        <li>• Coaching institute name is required</li>
-                      )}
-                      {!phoneNumber.trim() && (
-                        <li>• Phone number is required</li>
-                      )}
-                      {password && !passwordStrength.isValid && (
-                        <li>• Password strength requirements not met</li>
-                      )}
-                      {password &&
-                        confirmPassword &&
-                        password !== confirmPassword && (
-                          <li>• Passwords must match</li>
-                        )}
-                    </ul>
+              {/* Status Messages */}
+              {error && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-lg animate-slide-down">
+                  <div className="flex items-start space-x-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                        Authentication Error
+                      </p>
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                        {error}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Submit Button */}
-            <div className="pt-4">
-              <Button
-                type="submit"
-                disabled={loading || !isFormValid}
-                loading={loading}
-                className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                size="lg"
-              >
-                {loading
-                  ? isLogin
-                    ? "Signing you in..."
-                    : "Creating account..."
-                  : isLogin
-                  ? "Sign In"
-                  : "Create Account"}
-              </Button>
-            </div>
-          </form>
+              {resetEmailSent && (
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-lg animate-slide-down">
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                        Reset Email Sent
+                      </p>
+                      <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                        Check your inbox for password reset instructions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-          {/* Divider */}
-          <div className="mt-8 mb-6">
-            <div className="relative">
-              <div className={`absolute inset-0 flex items-center`}>
-                <div
-                  className={`w-full border-t ${
-                    theme === "dark" ? "border-gray-600" : "border-gray-300"
-                  }`}
-                />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span
-                  className={`px-4 ${classes.bg.elevated} ${classes.text.secondary} font-medium`}
+              {/* Forgot Password */}
+              {isLogin && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handlePasswordReset}
+                    disabled={!email || loading || resetLoading}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Send password reset email"
+                  >
+                    {resetLoading ? "Sending..." : "Forgot password?"}
+                  </button>
+                </div>
+              )}
+
+              {/* Form completion hint for signup */}
+              {!isLogin && !isFormValid && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    </div>
+                    <div className="text-sm text-blue-700 dark:text-blue-300">
+                      <p className="font-medium mb-2">
+                        Complete all required fields:
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+                        {!name.trim() && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Full name</span>
+                          </div>
+                        )}
+                        {!email.trim() && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Email address</span>
+                          </div>
+                        )}
+                        {!password && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Password</span>
+                          </div>
+                        )}
+                        {!confirmPassword && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Confirm password</span>
+                          </div>
+                        )}
+                        {!coachingName.trim() && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Institute name</span>
+                          </div>
+                        )}
+                        {!phoneNumber.trim() && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-blue-400 rounded-full"></span>
+                            <span>Phone number</span>
+                          </div>
+                        )}
+                        {password && !passwordStrength.isValid && (
+                          <div className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-yellow-400 rounded-full"></span>
+                            <span>Strong password</span>
+                          </div>
+                        )}
+                        {password &&
+                          confirmPassword &&
+                          password !== confirmPassword && (
+                            <div className="flex items-center space-x-1">
+                              <span className="w-1 h-1 bg-red-400 rounded-full"></span>
+                              <span>Passwords match</span>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  disabled={loading || !isFormValid}
+                  loading={loading}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+                  size="lg"
                 >
-                  Or continue with
-                </span>
+                  {loading ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>
+                        {isLogin ? "Signing you in..." : "Creating account..."}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center space-x-2">
+                      <span>{isLogin ? "Sign In" : "Create Account"}</span>
+                      {isLogin ? (
+                        <Lock className="w-4 h-4" />
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                    </div>
+                  )}
+                </Button>
               </div>
+            </form>
+
+            {/* Divider */}
+            <div className="my-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white/95 dark:bg-gray-900/95 text-gray-500 dark:text-gray-400 font-medium backdrop-blur-sm">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Google Auth */}
+            <Button
+              type="button"
+              onClick={handleGoogleAuth}
+              disabled={loading || googleLoading}
+              loading={googleLoading}
+              variant="outline"
+              className="w-full h-12 text-base font-semibold border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
+            >
+              {!googleLoading && <GoogleIcon className="w-5 h-5 mr-3" />}
+              {googleLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
+                  <span>Connecting to Google...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <span>Continue with Google</span>
+                </div>
+              )}
+            </Button>
+
+            {/* Toggle between login/signup */}
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError("");
+                  setResetEmailSent(false);
+                  setValidationErrors({});
+                  setIsFormValid(false);
+                  // Clear signup fields when switching to login
+                  if (!isLogin) {
+                    setName("");
+                    setCoachingName("");
+                    setPhoneNumber("");
+                    setCoachingLogo("");
+                    setConfirmPassword("");
+                  }
+                  setPassword("");
+                }}
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors group"
+              >
+                <span className="group-hover:underline decoration-2 underline-offset-2">
+                  {isLogin
+                    ? "Don't have an account? Sign up"
+                    : "Already have an account? Sign in"}
+                </span>
+              </button>
             </div>
           </div>
 
-          {/* Google Auth */}
-          <Button
-            type="button"
-            onClick={handleGoogleAuth}
-            disabled={loading || googleLoading}
-            loading={googleLoading}
-            variant="outline"
-            className={`w-full h-12 text-base font-semibold border-2 hover:shadow-md transition-all duration-200 ${
-              theme === "dark"
-                ? "text-gray-200 border-gray-600 hover:bg-gray-800 hover:border-gray-500"
-                : "text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
-            }`}
-            size="lg"
-          >
-            {!googleLoading && <GoogleIcon className="w-5 h-5 mr-3" />}
-            {googleLoading ? "Connecting to Google..." : "Continue with Google"}
-          </Button>
-
-          {/* Toggle between login/signup */}
-          <div className="mt-8 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError("");
-                setResetEmailSent(false);
-                setValidationErrors({});
-                setIsFormValid(false);
-                // Clear signup fields when switching to login
-                if (!isLogin) {
-                  setName("");
-                  setCoachingName("");
-                  setPhoneNumber("");
-                  setCoachingLogo("");
-                  setConfirmPassword("");
-                }
-                setPassword("");
-              }}
-              className={`text-sm sm:text-base ${classes.text.accent} hover:opacity-80 font-medium transition-opacity`}
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : "Already have an account? Sign in"}
-            </button>
+          {/* Enhanced Footer */}
+          <div className="text-center mt-8 space-y-3">
+            <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+              <span>© 2025 Mockify.</span>
+              <span>•</span>
+              <span>All rights reserved.</span>
+              <span>•</span>
+              <span>Trusted worldwide</span>
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
+              Secure authentication powered by industry-standard encryption.
+              Your data is protected and never shared.
+            </p>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div
-          className={`text-center text-xs sm:text-sm ${classes.text.secondary} mt-8`}
-        >
-          <p>© 2025 Mockify. All rights reserved.</p>
-          <p className="mt-1">Your trusted partner in test preparation.</p>
         </div>
       </div>
 

@@ -158,10 +158,10 @@ export const Dashboard: React.FC = () => {
           className="text-center max-w-md mx-auto"
         >
           <div className="text-6xl mb-6">⚠️</div>
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">
-            Unable to Load Dashboard
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+            Welcome back!
           </h2>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-8 leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
             {error}
           </p>
           <Button onClick={loadDashboardData} size="lg" fullWidth>
@@ -176,19 +176,19 @@ export const Dashboard: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in">
       {/* Welcome Section */}
       <div className="mb-10">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 dark:from-primary-400 dark:via-primary-300 dark:to-primary-200 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent mb-4">
           Welcome to Mockify! 🎓
         </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed max-w-3xl">
+        <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl">
           {user
             ? `Hello ${user.displayName || user.email?.split("@")[0]}!`
             : "Your comprehensive test preparation platform"}{" "}
           Ready to practice with{" "}
-          <span className="font-semibold text-primary-600 dark:text-primary-400">
+          <span className="font-semibold text-blue-600 dark:text-blue-400">
             {stats.totalQuestions} questions
           </span>{" "}
           across{" "}
-          <span className="font-semibold text-primary-600 dark:text-primary-400">
+          <span className="font-semibold text-blue-600 dark:text-blue-400">
             {stats.totalSubjects} subjects
           </span>
           .
@@ -200,17 +200,17 @@ export const Dashboard: React.FC = () => {
         <Card variant="elevated" padding="lg" interactive className="group">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                 Total Subjects
               </h3>
-              <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-1">
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                 {stats.totalSubjects}
               </p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-500">
+              <p className="text-sm text-gray-500 dark:text-gray-500">
                 Available for practice
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-primary-100 dark:bg-primary-900/30 group-hover:scale-110 transition-transform duration-200">
+            <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:scale-110 transition-transform duration-200">
               <div className="text-2xl">📚</div>
             </div>
           </div>
@@ -219,17 +219,17 @@ export const Dashboard: React.FC = () => {
         <Card variant="elevated" padding="lg" interactive className="group">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                 Total Chapters
               </h3>
-              <p className="text-3xl font-bold text-success-600 dark:text-success-400 mb-1">
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
                 {stats.totalChapters}
               </p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-500">
+              <p className="text-sm text-gray-500 dark:text-gray-500">
                 Organized content
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-success-100 dark:bg-success-900/30 group-hover:scale-110 transition-transform duration-200">
+            <div className="p-3 rounded-xl bg-green-100 dark:bg-green-900/30 group-hover:scale-110 transition-transform duration-200">
               <div className="text-2xl">📖</div>
             </div>
           </div>
@@ -238,17 +238,17 @@ export const Dashboard: React.FC = () => {
         <Card variant="elevated" padding="lg" interactive className="group">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                 Practice Questions
               </h3>
-              <p className="text-3xl font-bold text-warning-600 dark:text-warning-400 mb-1">
+              <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
                 {stats.totalQuestions}
               </p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-500">
+              <p className="text-sm text-gray-500 dark:text-gray-500">
                 Ready to solve
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-warning-100 dark:bg-warning-900/30 group-hover:scale-110 transition-transform duration-200">
+            <div className="p-3 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 group-hover:scale-110 transition-transform duration-200">
               <div className="text-2xl">🧠</div>
             </div>
           </div>
@@ -257,17 +257,17 @@ export const Dashboard: React.FC = () => {
         <Card variant="elevated" padding="lg" interactive className="group">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                 Your Tests
               </h3>
-              <p className="text-3xl font-bold text-info-600 dark:text-info-400 mb-1">
+              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                 {stats.totalTests}
               </p>
-              <p className="text-sm text-neutral-500 dark:text-neutral-500">
+              <p className="text-sm text-gray-500 dark:text-gray-500">
                 Completed so far
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-info-100 dark:bg-info-900/30 group-hover:scale-110 transition-transform duration-200">
+            <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/30 group-hover:scale-110 transition-transform duration-200">
               <div className="text-2xl">🎯</div>
             </div>
           </div>
@@ -277,8 +277,8 @@ export const Dashboard: React.FC = () => {
       {/* Feature Highlights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <Card variant="elevated" padding="lg">
-          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-6 flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary-100 dark:bg-primary-900/30">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-900/30">
               🚀
             </div>
             Platform Features
@@ -286,8 +286,8 @@ export const Dashboard: React.FC = () => {
           <div className="space-y-4">
             {stats.recentActivity.map((activity, index) => (
               <div key={index} className="flex items-start space-x-4 group">
-                <div className="w-2 h-2 bg-success-500 rounded-full mt-2 group-hover:scale-125 transition-transform duration-200"></div>
-                <span className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 group-hover:scale-125 transition-transform duration-200"></div>
+                <span className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {activity}
                 </span>
               </div>
@@ -296,8 +296,8 @@ export const Dashboard: React.FC = () => {
         </Card>
 
         <Card variant="elevated" padding="lg">
-          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-6 flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-info-100 dark:bg-info-900/30">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-900/30">
               📊
             </div>
             Recent Test Performance
@@ -310,20 +310,20 @@ export const Dashboard: React.FC = () => {
                   variant="ghost"
                   padding="sm"
                   interactive
-                  className="hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex-1">
-                      <p className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
                         {test.title}
                       </p>
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(test.created_at)} • {test.num_questions}{" "}
                         questions
                       </p>
                     </div>
                     <div className="text-right ml-4">
-                      <div className="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-sm font-semibold text-primary-700 dark:text-primary-300">
+                      <div className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-sm font-semibold text-blue-700 dark:text-blue-300">
                         {test.num_questions} Qs
                       </div>
                     </div>
@@ -334,10 +334,10 @@ export const Dashboard: React.FC = () => {
           ) : (
             <div className="text-center py-12">
               <div className="text-5xl mb-4">📝</div>
-              <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
+              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 {user ? "No tests taken yet" : "Track your progress"}
               </h3>
-              <p className="text-neutral-500 dark:text-neutral-400 mb-6 leading-relaxed">
+              <p className="text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
                 {user
                   ? "Create your first test to see your performance here"
                   : "Sign in to track your test performance and progress"}
@@ -354,8 +354,8 @@ export const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <Card variant="elevated" padding="lg">
-        <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-8 flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-warning-100 dark:bg-warning-900/30">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-8 flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-yellow-100 dark:bg-yellow-900/30">
             ⚡
           </div>
           Quick Actions
