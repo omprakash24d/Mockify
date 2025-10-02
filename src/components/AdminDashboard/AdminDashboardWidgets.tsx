@@ -263,235 +263,252 @@ export const AdminDashboardWidgets: React.FC<AdminDashboardWidgetsProps> = ({
   if (!stats) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Questions"
-          value={stats.totalQuestions}
-          icon={<FileQuestion className="w-6 h-6" />}
-          color="blue"
-          onClick={() => onNavigate?.("/admin")}
-        />
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+          Database Overview
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Questions"
+            value={stats.totalQuestions}
+            icon={<FileQuestion className="w-6 h-6" />}
+            color="blue"
+            onClick={() => onNavigate?.("/admin")}
+          />
 
-        <StatCard
-          title="Subjects"
-          value={stats.totalSubjects}
-          icon={<BookOpen className="w-6 h-6" />}
-          color="green"
-        />
+          <StatCard
+            title="Subjects"
+            value={stats.totalSubjects}
+            icon={<BookOpen className="w-6 h-6" />}
+            color="green"
+          />
 
-        <StatCard
-          title="Chapters"
-          value={stats.totalChapters}
-          icon={<Target className="w-6 h-6" />}
-          color="purple"
-        />
+          <StatCard
+            title="Chapters"
+            value={stats.totalChapters}
+            icon={<Target className="w-6 h-6" />}
+            color="purple"
+          />
 
-        <StatCard
-          title="Missing Images"
-          value={stats.questionsWithoutImages}
-          icon={<Image className="w-6 h-6" />}
-          color="red"
-          onClick={() => onNavigate?.("/admin?filter=noImages")}
-        />
+          <StatCard
+            title="Missing Images"
+            value={stats.questionsWithoutImages}
+            icon={<Image className="w-6 h-6" />}
+            color="red"
+            onClick={() => onNavigate?.("/admin?filter=noImages")}
+          />
+        </div>
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard
-          title="Average Accuracy"
-          value={`${stats.averageAccuracy}%`}
-          icon={<TrendingUp className="w-6 h-6" />}
-          color="green"
-          trend={{ value: 5.2, isPositive: true }}
-        />
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+          Performance Metrics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard
+            title="Average Accuracy"
+            value={`${stats.averageAccuracy}%`}
+            icon={<TrendingUp className="w-6 h-6" />}
+            color="green"
+            trend={{ value: 5.2, isPositive: true }}
+          />
 
-        <StatCard
-          title="Total Attempts"
-          value={stats.totalAttempts}
-          icon={<Users className="w-6 h-6" />}
-          color="blue"
-        />
+          <StatCard
+            title="Total Attempts"
+            value={stats.totalAttempts}
+            icon={<Users className="w-6 h-6" />}
+            color="blue"
+          />
 
-        <StatCard
-          title="This Month"
-          value="1,234"
-          icon={<Calendar className="w-6 h-6" />}
-          color="yellow"
-          trend={{ value: 12.5, isPositive: true }}
-        />
+          <StatCard
+            title="This Month"
+            value="1,234"
+            icon={<Calendar className="w-6 h-6" />}
+            color="yellow"
+            trend={{ value: 12.5, isPositive: true }}
+          />
+        </div>
       </div>
 
       {/* Charts and Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Difficulty Distribution */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Difficulty Distribution
-            </h3>
-            <BarChart3 className="w-5 h-5 text-gray-500" />
-          </div>
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+          Analytics & Insights
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Difficulty Distribution */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Difficulty Distribution
+              </h3>
+              <BarChart3 className="w-5 h-5 text-gray-500" />
+            </div>
 
-          <div className="space-y-3">
-            {Object.entries(stats.questionsByDifficulty).map(
-              ([difficulty, count]) => {
-                const percentage = Math.round(
-                  (count / stats.totalQuestions) * 100
-                );
-                const colorClass =
-                  difficulty === "Easy"
-                    ? "bg-green-500"
-                    : difficulty === "Medium"
-                    ? "bg-yellow-500"
-                    : "bg-red-500";
+            <div className="space-y-3">
+              {Object.entries(stats.questionsByDifficulty).map(
+                ([difficulty, count]) => {
+                  const percentage = Math.round(
+                    (count / stats.totalQuestions) * 100
+                  );
+                  const colorClass =
+                    difficulty === "Easy"
+                      ? "bg-green-500"
+                      : difficulty === "Medium"
+                      ? "bg-yellow-500"
+                      : "bg-red-500";
 
-                return (
-                  <div key={difficulty} className="flex items-center">
-                    <div className="w-16 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {difficulty}
-                    </div>
-                    <div className="flex-1 mx-3">
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${colorClass}`}
-                          style={{ width: `${percentage}%` }}
-                        />
+                  return (
+                    <div key={difficulty} className="flex items-center">
+                      <div className="w-16 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {difficulty}
+                      </div>
+                      <div className="flex-1 mx-3">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${colorClass}`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-16 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {count} ({percentage}%)
                       </div>
                     </div>
-                    <div className="w-16 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {count} ({percentage}%)
+                  );
+                }
+              )}
+            </div>
+          </Card>
+
+          {/* Subject Distribution */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Top Subjects
+              </h3>
+              <PieChart className="w-5 h-5 text-gray-500" />
+            </div>
+
+            <div className="space-y-3">
+              {stats.questionsBySubject.map((item, index) => {
+                const colors = [
+                  "bg-blue-500",
+                  "bg-green-500",
+                  "bg-yellow-500",
+                  "bg-red-500",
+                  "bg-purple-500",
+                ];
+                const colorClass = colors[index % colors.length];
+
+                return (
+                  <div key={item.subject} className="flex items-center">
+                    <div
+                      className={`w-3 h-3 rounded-full ${colorClass} mr-3`}
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {item.subject}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {item.count} ({item.percentage}%)
+                        </span>
+                      </div>
                     </div>
                   </div>
                 );
-              }
-            )}
+              })}
+            </div>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Recent Activity
+          </h3>
+
+          <div className="space-y-4">
+            {stats.recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <FileQuestion className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {activity.action}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {activity.details}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(activity.timestamp).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 pt-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onNavigate?.("/admin")}
+            >
+              View All Activity
+            </Button>
           </div>
         </Card>
 
-        {/* Subject Distribution */}
+        {/* Quick Actions */}
         <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Top Subjects
-            </h3>
-            <PieChart className="w-5 h-5 text-gray-500" />
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Quick Actions
+          </h3>
 
-          <div className="space-y-3">
-            {stats.questionsBySubject.map((item, index) => {
-              const colors = [
-                "bg-blue-500",
-                "bg-green-500",
-                "bg-yellow-500",
-                "bg-red-500",
-                "bg-purple-500",
-              ];
-              const colorClass = colors[index % colors.length];
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button
+              variant="outline"
+              onClick={() => onNavigate?.("/admin?action=create")}
+              className="justify-start"
+            >
+              <FileQuestion className="w-4 h-4 mr-2" />
+              Add Question
+            </Button>
 
-              return (
-                <div key={item.subject} className="flex items-center">
-                  <div className={`w-3 h-3 rounded-full ${colorClass} mr-3`} />
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {item.subject}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {item.count} ({item.percentage}%)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            <Button
+              variant="outline"
+              onClick={() => onNavigate?.("/admin?action=import")}
+              className="justify-start"
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Import Questions
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => onNavigate?.("/admin?filter=noImages")}
+              className="justify-start"
+            >
+              <Image className="w-4 h-4 mr-2" />
+              Add Images
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => onNavigate?.("/admin?action=export")}
+              className="justify-start"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Export Data
+            </Button>
           </div>
         </Card>
       </div>
-
-      {/* Recent Activity */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          Recent Activity
-        </h3>
-
-        <div className="space-y-4">
-          {stats.recentActivity.map((activity, index) => (
-            <div key={index} className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <FileQuestion className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {activity.action}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {activity.details}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {new Date(activity.timestamp).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 pt-4 border-t">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onNavigate?.("/admin")}
-          >
-            View All Activity
-          </Button>
-        </div>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          Quick Actions
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button
-            variant="outline"
-            onClick={() => onNavigate?.("/admin?action=create")}
-            className="justify-start"
-          >
-            <FileQuestion className="w-4 h-4 mr-2" />
-            Add Question
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={() => onNavigate?.("/admin?action=import")}
-            className="justify-start"
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Import Questions
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={() => onNavigate?.("/admin?filter=noImages")}
-            className="justify-start"
-          >
-            <Image className="w-4 h-4 mr-2" />
-            Add Images
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={() => onNavigate?.("/admin?action=export")}
-            className="justify-start"
-          >
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Export Data
-          </Button>
-        </div>
-      </Card>
     </div>
   );
 };

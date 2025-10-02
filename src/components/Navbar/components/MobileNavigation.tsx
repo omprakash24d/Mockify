@@ -30,132 +30,73 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   if (!isMenuOpen) return null;
 
   return (
-    <div
-      className="md:hidden border-t border-gray-200/30 dark:border-gray-800/30"
+    <nav
+      className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
       ref={mobileMenuRef}
       id="mobile-menu"
     >
-      <div
-        className={cn(
-          "px-4 pt-6 pb-8 space-y-3",
-          "bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl",
-          "animate-slide-down"
-        )}
-      >
-        {/* Mobile Navigation Items */}
+      <div className="px-4 py-6 space-y-2">
+        {/* Navigation Items */}
         {enhancedNavItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
             className={cn(
-              "flex items-center gap-4 px-4 py-4 rounded-2xl text-base font-medium transition-all duration-300",
-              "hover:scale-[1.02] active:scale-[0.98]",
+              "flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition",
               item.active
-                ? [
-                    "text-blue-700 dark:text-blue-300",
-                    "bg-blue-50/80 dark:bg-blue-900/30",
-                    "border border-blue-200/50 dark:border-blue-800/50",
-                    "shadow-sm",
-                  ]
-                : [
-                    "text-gray-700 dark:text-gray-300",
-                    "hover:text-gray-900 dark:hover:text-gray-100",
-                    "hover:bg-gray-100/80 dark:hover:bg-gray-800/50",
-                    "hover:shadow-sm",
-                  ]
+                ? "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-900/30"
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
             )}
             onClick={onMenuClose}
             aria-current={item.active ? "page" : undefined}
           >
-            <div
-              className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
-                item.active
-                  ? "bg-blue-100 dark:bg-blue-800/50 text-blue-600 dark:text-blue-400"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
-              )}
-            >
-              <item.icon className="h-5 w-5" aria-hidden="true" />
-            </div>
-            <div className="flex-1">
-              <div className="font-semibold">{item.name}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-500 mt-0.5">
-                {item.name === "Dashboard" && "Overview & insights"}
-                {item.name === "Test Library" && "Browse & create tests"}
-                {item.name === "Analytics" && "Performance metrics"}
-              </div>
-            </div>
+            <item.icon className="w-5 h-5" aria-hidden="true" />
+            <span>{item.name}</span>
           </Link>
         ))}
 
-        {/* Mobile User Section */}
-        <div className="pt-6 mt-6 border-t border-gray-200/50 dark:border-gray-700/50">
-          <div className="flex items-center p-4 rounded-2xl bg-gray-50/80 dark:bg-gray-800/50 mb-4">
+        {/* User Section */}
+        <div className="pt-6 mt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+          {/* User Profile */}
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
             <div className="relative">
               {userAvatar}
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full" />
             </div>
-            <div className="ml-4 flex-1 min-w-0">
-              <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                 {userDisplayName}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                 {user.email}
-              </div>
+              </p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <button
-              onClick={() => {
-                onProfileSettings();
-                onMenuClose();
-              }}
-              className={cn(
-                "flex items-center w-full p-4 rounded-2xl transition-all duration-300",
-                "text-gray-700 dark:text-gray-300",
-                "hover:text-gray-900 dark:hover:text-gray-100",
-                "hover:bg-gray-100/80 dark:hover:bg-gray-800/50",
-                "hover:scale-[1.02] active:scale-[0.98]"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mr-4">
-                <Settings className="h-5 w-5" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className="font-semibold">Profile Settings</div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">
-                  Manage your account
-                </div>
-              </div>
-            </button>
+          {/* Action Buttons */}
+          <button
+            onClick={() => {
+              onProfileSettings();
+              onMenuClose();
+            }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition"
+          >
+            <Settings className="w-5 h-5" />
+            <span className="font-medium">Profile Settings</span>
+          </button>
 
-            <button
-              onClick={() => {
-                onSignOut();
-                onMenuClose();
-              }}
-              className={cn(
-                "flex items-center w-full p-4 rounded-2xl transition-all duration-300",
-                "text-gray-700 dark:text-gray-300",
-                "hover:text-red-600 dark:hover:text-red-400",
-                "hover:bg-red-50/80 dark:hover:bg-red-900/20",
-                "hover:scale-[1.02] active:scale-[0.98]"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mr-4">
-                <LogOut className="h-5 w-5" />
-              </div>
-              <div className="flex-1 text-left">
-                <div className="font-semibold">Sign Out</div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">
-                  Log out of your account
-                </div>
-              </div>
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              onSignOut();
+              onMenuClose();
+            }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:text-red-600 hover:bg-red-50 dark:text-gray-300 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Sign Out</span>
+          </button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };

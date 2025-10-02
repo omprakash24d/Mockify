@@ -60,6 +60,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imageUploadError, setImageUploadError] = useState<string>("");
+  const [lastSubject, setLastSubject] = useState<string>("");
 
   // Reset form when modal opens/closes or question changes
   useEffect(() => {
@@ -71,7 +72,9 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
           questionImages: question.questionImages || [],
           tags: question.tags || [],
         });
-        if (question.subjectName) {
+        // Only call onSubjectChange if the subject has actually changed
+        if (question.subjectName && question.subjectName !== lastSubject) {
+          setLastSubject(question.subjectName);
           onSubjectChange(question.subjectName);
         }
       } else {
@@ -88,16 +91,20 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
           questionImages: [],
           tags: [],
         });
+        setLastSubject("");
       }
       setErrors({});
       setImageUploadError("");
     }
-  }, [isOpen, question, onSubjectChange]);
+  }, [isOpen, question]);
 
   const validateForm = (): boolean => {
     const validation = validateQuestion({
       ...formData,
-      options: formData.options?.filter((opt) => opt.trim()) || [],
+      options:
+        formData.options?.filter(
+          (opt) => opt && typeof opt === "string" && opt.trim()
+        ) || [],
     });
 
     if (!validation.success) {
@@ -123,9 +130,16 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
       // Filter out empty options
       const cleanData = {
         ...formData,
-        options: formData.options?.filter((opt) => opt.trim()) || [],
-        subtopics: formData.subtopics?.filter((tag) => tag.trim()),
-        tags: formData.tags?.filter((tag) => tag.trim()),
+        options:
+          formData.options?.filter(
+            (opt) => opt && typeof opt === "string" && opt.trim()
+          ) || [],
+        subtopics: formData.subtopics?.filter(
+          (tag) => tag && typeof tag === "string" && tag.trim()
+        ),
+        tags: formData.tags?.filter(
+          (tag) => tag && typeof tag === "string" && tag.trim()
+        ),
       };
 
       await onSubmit(cleanData);
@@ -189,16 +203,16 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
   const handleTagsChange = (value: string) => {
     const tags = value
       .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag);
+      .map((tag) => (typeof tag === "string" ? tag.trim() : ""))
+      .filter((tag) => tag && typeof tag === "string");
     setFormData((prev) => ({ ...prev, tags }));
   };
 
   const handleSubtopicsChange = (value: string) => {
     const subtopics = value
       .split(",")
-      .map((topic) => topic.trim())
-      .filter((topic) => topic);
+      .map((topic) => (typeof topic === "string" ? topic.trim() : ""))
+      .filter((topic) => topic && typeof topic === "string");
     setFormData((prev) => ({ ...prev, subtopics }));
   };
 
@@ -214,14 +228,14 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* General Error */}
         {errors.general && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-md">
             {errors.general}
           </div>
         )}
 
         {/* Question Text */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Question Text *
           </label>
           <textarea
@@ -231,19 +245,23 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
             }
             placeholder="Enter the question text..."
             rows={4}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.questionText ? "border-red-500" : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+              errors.questionText
+                ? "border-red-500 dark:border-red-400"
+                : "border-gray-300 dark:border-gray-600"
             }`}
           />
           {errors.questionText && (
-            <p className="mt-1 text-sm text-red-600">{errors.questionText}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.questionText}
+            </p>
           )}
         </div>
 
         {/* Subject and Chapter */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Subject *
             </label>
             <select
@@ -256,8 +274,10 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
                 }));
                 onSubjectChange(e.target.value);
               }}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.subjectName ? "border-red-500" : "border-gray-300"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+                errors.subjectName
+                  ? "border-red-500 dark:border-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
             >
               <option value="">Select Subject</option>
@@ -268,12 +288,14 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
               ))}
             </select>
             {errors.subjectName && (
-              <p className="mt-1 text-sm text-red-600">{errors.subjectName}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.subjectName}
+              </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Chapter *
             </label>
             <select
@@ -284,8 +306,10 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
                   chapterName: e.target.value,
                 }))
               }
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.chapterName ? "border-red-500" : "border-gray-300"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 ${
+                errors.chapterName
+                  ? "border-red-500 dark:border-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
               disabled={!formData.subjectName}
             >
@@ -297,7 +321,9 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
               ))}
             </select>
             {errors.chapterName && (
-              <p className="mt-1 text-sm text-red-600">{errors.chapterName}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.chapterName}
+              </p>
             )}
           </div>
         </div>
@@ -305,7 +331,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
         {/* Difficulty and Year */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Difficulty *
             </label>
             <select
@@ -316,7 +342,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
                   difficulty: e.target.value as Question["difficulty"],
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
@@ -325,7 +351,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Year Appeared
             </label>
             <Input
@@ -346,7 +372,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
 
         {/* Question Images */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Question Images (Optional)
           </label>
 
@@ -358,12 +384,12 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
                   <img
                     src={imageUrl}
                     alt={`Question image ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                    className="w-full h-24 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
                   />
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 p-1 bg-red-500 dark:bg-red-600 text-white rounded-full hover:bg-red-600 dark:hover:bg-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -386,7 +412,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
 
         {/* Options */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Options * (minimum 2 required)
           </label>
           <div className="space-y-2">
@@ -414,7 +440,9 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
           </div>
 
           {errors.options && (
-            <p className="mt-1 text-sm text-red-600">{errors.options}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.options}
+            </p>
           )}
 
           {(formData.options?.length || 0) < 6 && (
@@ -433,7 +461,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
 
         {/* Correct Answer */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Correct Answer *
           </label>
           <select
@@ -444,13 +472,18 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
                 correctAnswer: e.target.value,
               }))
             }
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.correctAnswer ? "border-red-500" : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+              errors.correctAnswer
+                ? "border-red-500 dark:border-red-400"
+                : "border-gray-300 dark:border-gray-600"
             }`}
           >
             <option value="">Select Correct Answer</option>
             {formData.options
-              ?.filter((option) => option.trim())
+              ?.filter(
+                (option) =>
+                  option && typeof option === "string" && option.trim()
+              )
               .map((option, index) => (
                 <option key={index} value={option}>
                   {option}
@@ -458,13 +491,15 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
               ))}
           </select>
           {errors.correctAnswer && (
-            <p className="mt-1 text-sm text-red-600">{errors.correctAnswer}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.correctAnswer}
+            </p>
           )}
         </div>
 
         {/* Explanation */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Explanation (Optional)
           </label>
           <textarea
@@ -474,14 +509,14 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
             }
             placeholder="Provide an explanation for the correct answer..."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           />
         </div>
 
         {/* Subtopics and Tags */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Subtopics (Optional)
             </label>
             <Input
@@ -492,7 +527,7 @@ export const EnhancedQuestionModal: React.FC<EnhancedQuestionModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Tags (Optional)
             </label>
             <Input

@@ -25,15 +25,10 @@ export const UserControls: React.FC<UserControlsProps> = ({
 }) => {
   return (
     <div className="hidden md:flex items-center gap-3">
-      {/* Theme Toggle with enhanced styling */}
-      <div className="flex items-center">
-        <ThemeToggle size="sm" variant="switch" />
-      </div>
+      <ThemeToggle size="sm" />
 
-      {/* Divider */}
       <div className="h-6 w-px bg-gray-300 dark:bg-gray-700" />
 
-      {/* User Profile Button */}
       <div className="relative">
         <UserProfileButton
           user={user}

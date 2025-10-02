@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 import { cn } from "../../lib/utils";
-import { ProfileManager } from "../AccountManager/ProfileManager";
+import { ProfileManager } from "../AccountManager";
 import { DesktopNavigation } from "./components/DesktopNavigation";
 import { ErrorToast } from "./components/ErrorToast";
 import { Logo } from "./components/Logo";

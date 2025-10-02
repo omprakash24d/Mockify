@@ -10,7 +10,7 @@ import type {
   ProfileFormData,
   VisibilityStates,
 } from "../types";
-import { studyAvatars } from "../utils/constants";
+import { STUDY_AVATARS } from "../utils/constants";
 import { validateDisplayName } from "../utils/helpers";
 
 export function useAccountManager(user: User | null) {
@@ -67,7 +67,7 @@ export function useAccountManager(user: User | null) {
         if (user.photoURL.startsWith("data:text/plain")) {
           try {
             const emojiString = decodeURIComponent(user.photoURL.split(",")[1]);
-            const currentAvatar = studyAvatars.find(
+            const currentAvatar = STUDY_AVATARS.find(
               (avatar) => avatar.emoji === emojiString
             );
             selectedAvatar = currentAvatar ? currentAvatar.emoji : "";
@@ -76,7 +76,7 @@ export function useAccountManager(user: User | null) {
           }
         } else {
           // Legacy format - check if it contains an emoji directly
-          const currentAvatar = studyAvatars.find((avatar) =>
+          const currentAvatar = STUDY_AVATARS.find((avatar) =>
             user.photoURL?.includes(avatar.emoji)
           );
           selectedAvatar = currentAvatar ? currentAvatar.emoji : "";

@@ -1,10 +1,7 @@
 import type { StudyAvatar } from "../types";
 
-// Constants for password strength scoring
-export const PASSWORD_STRENGTH_MAX_SCORE = 4;
-
-// Error message mapping for better user experience
-export const ERROR_MESSAGES = {
+// Error message mapping for Firebase auth errors
+export const ERROR_MESSAGES: Record<string, string> = {
   "auth/wrong-password": "Current password is incorrect",
   "auth/requires-recent-login":
     "Please sign out and sign back in before changing your password",
@@ -14,10 +11,10 @@ export const ERROR_MESSAGES = {
   "auth/network-request-failed":
     "Network error. Please check your connection and try again.",
   default: "An unexpected error occurred. Please try again.",
-};
+} as const;
 
 // Study-themed avatar options
-export const studyAvatars: StudyAvatar[] = [
+export const STUDY_AVATARS: readonly StudyAvatar[] = [
   { name: "Book", emoji: "📚", color: "bg-blue-500" },
   { name: "Graduate", emoji: "🎓", color: "bg-green-500" },
   { name: "Pencil", emoji: "✏️", color: "bg-yellow-500" },
@@ -26,4 +23,4 @@ export const studyAvatars: StudyAvatar[] = [
   { name: "Lightbulb", emoji: "💡", color: "bg-orange-500" },
   { name: "Trophy", emoji: "🏆", color: "bg-amber-500" },
   { name: "Target", emoji: "🎯", color: "bg-indigo-500" },
-];
+] as const;

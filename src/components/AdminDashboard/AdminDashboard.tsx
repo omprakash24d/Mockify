@@ -2,11 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "../../hooks/useDebounce";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
 import { Input } from "../ui/Input";
 import { BulkOperationModal } from "./BulkOperationModal";
+import { EnhancedQuestionModal } from "./EnhancedQuestionModal";
 import { ImportModal } from "./ImportModal";
-import { QuestionModal } from "./QuestionModal";
 
 interface Question {
   id: string;
@@ -157,7 +156,9 @@ const AdminDashboard: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/chapters?subject=${subject}`);
+      const response = await fetch(
+        `${API_BASE}/chapters/${encodeURIComponent(subject)}`
+      );
       const data = await response.json();
       if (data.success) {
         setChapters(data.data.map((c: any) => c.name));
@@ -414,19 +415,23 @@ const AdminDashboard: React.FC = () => {
 
   // Render Functions
   const renderFilters = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
-      <h3 className="text-lg font-semibold mb-4">Advanced Filters</h3>
+    <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        Advanced Filters
+      </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <Input
-          type="text"
-          placeholder="Search questions..."
-          value={filters.search}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, search: e.target.value }))
-          }
-          className="col-span-full md:col-span-2"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="col-span-full md:col-span-2">
+          <Input
+            type="text"
+            placeholder="Search questions by text, subject, or topic..."
+            value={filters.search}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, search: e.target.value }))
+            }
+            className="h-12 text-base"
+          />
+        </div>
 
         <select
           value={filters.subject}
@@ -437,7 +442,7 @@ const AdminDashboard: React.FC = () => {
               chapter: "",
             }))
           }
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-12 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
           <option value="">All Subjects</option>
           {subjects.map((subject) => (
@@ -452,7 +457,7 @@ const AdminDashboard: React.FC = () => {
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, chapter: e.target.value }))
           }
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-12 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50"
           disabled={!filters.subject}
         >
           <option value="">All Chapters</option>
@@ -464,15 +469,15 @@ const AdminDashboard: React.FC = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <select
           value={filters.difficulty}
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, difficulty: e.target.value }))
           }
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-12 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
-          <option value="">All Difficulty</option>
+          <option value="">All Difficulty Levels</option>
           <option value="Easy">Easy</option>
           <option value="Medium">Medium</option>
           <option value="Hard">Hard</option>
@@ -480,23 +485,25 @@ const AdminDashboard: React.FC = () => {
 
         <Input
           type="number"
-          placeholder="Year From"
+          placeholder="From Year (e.g., 2010)"
           value={filters.yearFrom}
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, yearFrom: e.target.value }))
           }
+          className="h-12"
         />
 
         <Input
           type="number"
-          placeholder="Year To"
+          placeholder="To Year (e.g., 2024)"
           value={filters.yearTo}
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, yearTo: e.target.value }))
           }
+          className="h-12"
         />
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Input
             type="number"
             placeholder="Min Accuracy %"
@@ -504,7 +511,7 @@ const AdminDashboard: React.FC = () => {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, minAccuracy: e.target.value }))
             }
-            className="flex-1"
+            className="flex-1 h-12"
           />
           <Input
             type="number"
@@ -513,17 +520,22 @@ const AdminDashboard: React.FC = () => {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, maxAccuracy: e.target.value }))
             }
-            className="flex-1"
+            className="flex-1 h-12"
           />
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <div className="text-sm text-gray-600">
-          Showing {filteredQuestions.length} of {totalCount} questions
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+          Showing{" "}
+          <span className="font-bold text-blue-600 dark:text-blue-400">
+            {filteredQuestions.length}
+          </span>{" "}
+          of <span className="font-bold">{totalCount}</span> questions
         </div>
         <Button
           variant="outline"
+          className="shadow-sm"
           onClick={() =>
             setFilters({
               search: "",
@@ -538,17 +550,17 @@ const AdminDashboard: React.FC = () => {
             })
           }
         >
-          Clear Filters
+          Clear All Filters
         </Button>
       </div>
     </div>
   );
 
   const renderBulkActions = () => (
-    <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-      <div className="flex justify-between items-center">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <label className="flex items-center">
+          <label className="flex items-center gap-3 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={
@@ -556,20 +568,26 @@ const AdminDashboard: React.FC = () => {
                 filteredQuestions.length > 0
               }
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="mr-2"
+              className="w-5 h-5 text-blue-600 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
             />
-            Select All ({selectedQuestions.size} selected)
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              Select All
+              <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-semibold">
+                {selectedQuestions.size} selected
+              </span>
+            </span>
           </label>
         </div>
 
         {selectedQuestions.size > 0 && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-3">
             <Button
               variant="outline"
               onClick={() => {
                 setBulkOperation({ type: "update" });
                 setShowBulkModal(true);
               }}
+              className="shadow-sm"
             >
               Bulk Edit
             </Button>
@@ -579,16 +597,17 @@ const AdminDashboard: React.FC = () => {
                 setBulkOperation({ type: "duplicate" });
                 setShowBulkModal(true);
               }}
+              className="shadow-sm"
             >
               Duplicate
             </Button>
             <Button
-              variant="outline"
-              className="text-red-600 hover:bg-red-50"
+              variant="danger"
               onClick={() => {
                 setBulkOperation({ type: "delete" });
                 setShowBulkModal(true);
               }}
+              className="shadow-sm"
             >
               Delete Selected
             </Button>
@@ -608,8 +627,24 @@ const AdminDashboard: React.FC = () => {
           )
         : 0;
 
+    const getDifficultyColor = (difficulty: string) => {
+      switch (difficulty) {
+        case "Easy":
+          return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800";
+        case "Medium":
+          return "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800";
+        case "Hard":
+          return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800";
+        default:
+          return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700";
+      }
+    };
+
     return (
-      <Card key={question.id} className="mb-4">
+      <div
+        key={question.id}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200"
+      >
         <div className="flex items-start gap-4">
           <input
             type="checkbox"
@@ -617,45 +652,75 @@ const AdminDashboard: React.FC = () => {
             onChange={(e) =>
               handleSelectQuestion(question.id, e.target.checked)
             }
-            className="mt-1"
+            className="mt-1.5 w-5 h-5 text-blue-600 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
           />
 
-          <div className="flex-1">
-            <div className="flex justify-between items-start mb-2">
-              <div className="text-sm text-gray-600">
-                {question.subjectName} → {question.chapterName}
+          <div className="flex-1 space-y-4">
+            {/* Header with breadcrumb and tags */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <span className="text-blue-600 dark:text-blue-400">
+                  {question.subjectName}
+                </span>
+                <span className="mx-2">→</span>
+                <span>{question.chapterName}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    question.difficulty === "Easy"
-                      ? "bg-green-100 text-green-800"
-                      : question.difficulty === "Medium"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold ${getDifficultyColor(
+                    question.difficulty
+                  )}`}
                 >
                   {question.difficulty}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-semibold border border-blue-200 dark:border-blue-800">
                   {accuracy}% accuracy
                 </span>
               </div>
             </div>
 
-            <div className="mb-3">
-              <p className="text-gray-900 line-clamp-3">
+            {/* Question text */}
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+              <p className="text-gray-900 dark:text-gray-100 leading-relaxed line-clamp-3">
                 {question.questionText}
               </p>
             </div>
 
-            <div className="flex justify-between items-center">
-              <div className="text-xs text-gray-500">
-                {question.statistics.totalAttempts} attempts • Avg:{" "}
-                {Math.round(question.statistics.averageTimeSpent)}s
+            {/* Statistics and actions */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {question.statistics.totalAttempts}
+                  </span>
+                  <span>attempts</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {Math.round(question.statistics.averageTimeSpent)}s
+                  </span>
+                  <span>avg time</span>
+                </div>
+                {question.subtopics && question.subtopics.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {question.subtopics.slice(0, 2).map((subtopic, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-medium border border-purple-200 dark:border-purple-800"
+                      >
+                        {subtopic}
+                      </span>
+                    ))}
+                    {question.subtopics.length > 2 && (
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg text-xs font-medium border border-gray-200 dark:border-gray-700">
+                        +{question.subtopics.length - 2}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Button
                   size="sm"
                   variant="outline"
@@ -663,14 +728,15 @@ const AdminDashboard: React.FC = () => {
                     setEditingQuestion(question);
                     setShowEditModal(true);
                   }}
+                  className="shadow-sm font-medium"
                 >
                   Edit
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-red-600 hover:bg-red-50"
                   onClick={() => handleDeleteQuestion(question.id)}
+                  className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-700 shadow-sm font-medium"
                 >
                   Delete
                 </Button>
@@ -678,7 +744,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     );
   };
 
@@ -691,70 +757,107 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Question Management
-        </h1>
+    <div className="space-y-8">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Question Management
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Create, edit, and manage NEET questions with advanced filtering and
+            bulk operations
+          </p>
+        </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowImportModal(true)}>
-            Import
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowImportModal(true)}
+            className="shadow-sm"
+          >
+            Import Questions
           </Button>
-          <Button variant="outline" onClick={() => handleExport("json")}>
+          <Button
+            variant="outline"
+            onClick={() => handleExport("json")}
+            className="shadow-sm"
+          >
             Export JSON
           </Button>
-          <Button variant="outline" onClick={() => handleExport("csv")}>
+          <Button
+            variant="outline"
+            onClick={() => handleExport("csv")}
+            className="shadow-sm"
+          >
             Export CSV
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>Add Question</Button>
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="shadow-lg"
+          >
+            Add Question
+          </Button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-          <button
-            onClick={() => setError(null)}
-            className="float-right text-red-500 hover:text-red-700"
-          >
-            ×
-          </button>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-6 py-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="font-medium">{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-200 text-xl font-bold"
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
 
       {renderFilters()}
       {renderBulkActions()}
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {filteredQuestions.map(renderQuestionCard)}
       </div>
 
       {/* Pagination */}
       {totalCount > itemsPerPage && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <Button
-            variant="outline"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Previous
-          </Button>
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {Math.ceil(totalCount / itemsPerPage)}
-          </span>
-          <Button
-            variant="outline"
-            disabled={currentPage >= Math.ceil(totalCount / itemsPerPage)}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </Button>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-8">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+            <Button
+              variant="outline"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              className="shadow-sm px-6"
+            >
+              ← Previous
+            </Button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Page
+              </span>
+              <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl font-bold">
+                {currentPage}
+              </span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                of {Math.ceil(totalCount / itemsPerPage)}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              disabled={currentPage >= Math.ceil(totalCount / itemsPerPage)}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              className="shadow-sm px-6"
+            >
+              Next →
+            </Button>
+          </div>
         </div>
       )}
 
       {/* Modals */}
-      <QuestionModal
+      <EnhancedQuestionModal
         isOpen={showCreateModal || showEditModal}
         onClose={() => {
           setShowCreateModal(false);
@@ -766,7 +869,8 @@ const AdminDashboard: React.FC = () => {
         chapters={chapters}
         onSubmit={
           editingQuestion
-            ? (data) => handleUpdateQuestion(editingQuestion.id, data)
+            ? (data: Partial<Question>) =>
+                handleUpdateQuestion(editingQuestion.id, data)
             : handleCreateQuestion
         }
         onSubjectChange={fetchChapters}

@@ -9,7 +9,7 @@ interface CardProps {
   interactive?: boolean;
 }
 
-const paddingClasses = {
+const paddings = {
   none: "",
   xs: "p-3",
   sm: "p-4",
@@ -18,28 +18,14 @@ const paddingClasses = {
   xl: "p-10",
 };
 
-const cardVariants = {
-  default: [
-    "bg-white border border-gray-200",
-    "dark:bg-gray-900 dark:border-gray-800",
-    "shadow-lg",
-  ].join(" "),
-
-  elevated: [
-    "bg-white/80 backdrop-blur-sm border border-gray-200/50",
-    "dark:bg-gray-900/80 dark:border-gray-800/50",
-    "shadow-xl shadow-gray-500/10 dark:shadow-black/20",
-  ].join(" "),
-
-  outlined: [
-    "bg-transparent border-2 border-gray-200",
-    "dark:border-gray-700",
-  ].join(" "),
-
-  ghost: [
-    "bg-gray-50/50 border border-gray-100",
-    "dark:bg-gray-800/50 dark:border-gray-700",
-  ].join(" "),
+const variants = {
+  default:
+    "bg-white border border-gray-200 shadow dark:bg-gray-900 dark:border-gray-800",
+  elevated:
+    "bg-white border border-gray-100 shadow-lg dark:bg-gray-900 dark:border-gray-800",
+  outlined: "bg-transparent border-2 border-gray-200 dark:border-gray-700",
+  ghost:
+    "bg-gray-50 border border-gray-100 dark:bg-gray-800 dark:border-gray-700",
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -52,26 +38,11 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        // Base styles
-        "rounded-2xl transition-all duration-300 ease-out",
-
-        // Variant styles
-        cardVariants[variant],
-
-        // Interactive styles
+        "rounded-lg transition-all",
+        variants[variant],
+        paddings[padding],
         interactive &&
-          [
-            "cursor-pointer",
-            "hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02]",
-            "active:translate-y-0 active:scale-100 active:shadow-lg",
-            "focus:outline-none focus:ring-3 focus:ring-blue-500/20",
-            "transition-all duration-300 ease-out",
-          ].join(" "),
-
-        // Padding
-        paddingClasses[padding],
-
-        // Custom styles
+          "cursor-pointer hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
         className
       )}
       {...(interactive && { tabIndex: 0, role: "button" })}
@@ -95,11 +66,9 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   return (
     <div
       className={cn(
-        divided &&
-          ["border-b border-gray-200 pb-4 mb-6", "dark:border-gray-700"].join(
-            " "
-          ),
-        !divided && "mb-4",
+        divided
+          ? "border-b border-gray-200 pb-4 mb-6 dark:border-gray-700"
+          : "mb-4",
         className
       )}
     >
@@ -115,10 +84,10 @@ interface CardTitleProps {
 }
 
 const titleSizes = {
-  sm: "text-base font-semibold",
-  md: "text-lg font-semibold",
-  lg: "text-xl font-bold",
-  xl: "text-2xl font-bold",
+  sm: "text-base",
+  md: "text-lg",
+  lg: "text-xl",
+  xl: "text-2xl",
 };
 
 export const CardTitle: React.FC<CardTitleProps> = ({
@@ -129,8 +98,7 @@ export const CardTitle: React.FC<CardTitleProps> = ({
   return (
     <h3
       className={cn(
-        "text-gray-900 dark:text-gray-100",
-        "tracking-tight leading-tight",
+        "font-semibold text-gray-900 dark:text-gray-100",
         titleSizes[size],
         className
       )}
@@ -151,11 +119,7 @@ export const CardDescription: React.FC<CardDescriptionProps> = ({
 }) => {
   return (
     <p
-      className={cn(
-        "text-gray-600 dark:text-gray-400",
-        "text-sm leading-relaxed mt-1",
-        className
-      )}
+      className={cn("text-sm text-gray-600 dark:text-gray-400 mt-1", className)}
     >
       {children}
     </p>
@@ -192,11 +156,9 @@ export const CardFooter: React.FC<CardFooterProps> = ({
   return (
     <div
       className={cn(
-        divided &&
-          ["border-t border-gray-200 pt-4 mt-6", "dark:border-gray-700"].join(
-            " "
-          ),
-        !divided && "mt-4",
+        divided
+          ? "border-t border-gray-200 pt-4 mt-6 dark:border-gray-700"
+          : "mt-4",
         className
       )}
     >

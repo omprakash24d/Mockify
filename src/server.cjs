@@ -7,14 +7,15 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 require("dotenv").config();
 
-const logger = require("./config/logger");
-const errorHandler = require("./middleware/errorHandler");
-const questionRoutes = require("./routes/questions");
-const optimizedQuestionRoutes = require("./routes/optimized-questions");
-const subjectRoutes = require("./routes/subjects");
-const chapterRoutes = require("./routes/chapters");
-const analyticsRoutes = require("./routes/analytics");
-const adminRoutes = require("./routes/admin");
+const logger = require("./backend/config/logger");
+const errorHandler = require("./backend/middleware/errorHandler");
+const hybridDataService = require("./backend/services/hybridDataService");
+const questionRoutes = require("./backend/routes/questions");
+const optimizedQuestionRoutes = require("./backend/routes/optimized-questions");
+const subjectRoutes = require("./backend/routes/subjects");
+const chapterRoutes = require("./backend/routes/chapters");
+const analyticsRoutes = require("./backend/routes/analytics");
+const adminRoutes = require("./backend/routes/admin");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
 // CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:3000", "http://localhost:5173"];
+  : ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"];
 
 app.use(
   cors({
@@ -79,8 +80,8 @@ app.use("/api/chapters", chapterRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
 
-// 404 handler
-app.use("*", (req, res) => {
+// 404 handler - must be last route
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     error: "Route not found",
@@ -92,16 +93,22 @@ app.use(errorHandler);
 
 // Database connection
 mongoose
-  .connect(
-    process.env.MONGODB_URI || "mongodb://localhost:27017/mockify_neet",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
-  .then(() => {
+  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/mockify_neet")
+  .then(async () => {
     logger.info("Connected to MongoDB successfully");
     console.log("✅ Connected to MongoDB");
+
+    // Initialize hybrid data service
+    try {
+      await hybridDataService.initialize();
+      logger.info("HybridDataService initialized successfully");
+      console.log("✅ HybridDataService initialized");
+    } catch (error) {
+      logger.warn("HybridDataService initialization failed:", error.message);
+      console.log(
+        "⚠️ HybridDataService initialization failed, continuing with MongoDB only"
+      );
+    }
   })
   .catch((error) => {
     logger.error("MongoDB connection error:", error);

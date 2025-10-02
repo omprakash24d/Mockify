@@ -1,43 +1,23 @@
-import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 /**
- * Custom hook for tracking current path changes in single-page applications
- * Listens to both browser navigation events and programmatic navigation
+ * Custom hook for tracking current path using React Router
+ * Works seamlessly with React Router's navigation system
  */
 export const useNavigation = () => {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  useEffect(() => {
-    const updateCurrentPath = () => {
-      setCurrentPath(window.location.pathname);
-    };
-
-    // Set initial path
-    updateCurrentPath();
-
-    // Listen for browser back/forward navigation
-    window.addEventListener("popstate", updateCurrentPath);
-
-    // Listen for programmatic navigation (custom events)
-    window.addEventListener("pushstate", updateCurrentPath);
-    window.addEventListener("replacestate", updateCurrentPath);
-
-    // Cleanup event listeners
-    return () => {
-      window.removeEventListener("popstate", updateCurrentPath);
-      window.removeEventListener("pushstate", updateCurrentPath);
-      window.removeEventListener("replacestate", updateCurrentPath);
-    };
-  }, []);
-
-  return currentPath;
+  const location = useLocation();
+  return location.pathname;
 };
 
 /**
- * Utility function to navigate programmatically while triggering navigation events
- * This ensures the navigation hook picks up the route change
+ * @deprecated Use React Router's useNavigate hook instead
+ * Utility function to navigate programmatically
+ * This is kept for backward compatibility but should be replaced with useNavigate
  */
 export const navigateTo = (path: string, replace = false) => {
+  console.warn(
+    "navigateTo is deprecated. Use React Router's useNavigate hook instead."
+  );
   if (replace) {
     window.history.replaceState(null, "", path);
     window.dispatchEvent(new Event("replacestate"));

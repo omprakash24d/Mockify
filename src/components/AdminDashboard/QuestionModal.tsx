@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cn } from "../../lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Modal } from "../ui/Modal";
@@ -50,7 +51,6 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Reset form when modal opens/closes or question changes
   useEffect(() => {
     if (isOpen) {
       if (question) {
@@ -82,7 +82,6 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
     }
   }, [isOpen, question]);
 
-  // Handle subject change
   useEffect(() => {
     if (formData.subjectName) {
       onSubjectChange(formData.subjectName);
@@ -104,21 +103,14 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
       newErrors.chapterName = "Chapter is required";
     }
 
-    if (!formData.options || formData.options.length < 2) {
-      newErrors.options = "At least 2 options are required";
-    } else {
-      const filledOptions = formData.options.filter((opt) => opt.trim());
-      if (filledOptions.length < 2) {
-        newErrors.options = "At least 2 options must be filled";
-      }
+    const filledOptions = formData.options?.filter((opt) => opt.trim()) || [];
+    if (filledOptions.length < 2) {
+      newErrors.options = "At least 2 options must be filled";
     }
 
     if (!formData.correctAnswer?.trim()) {
       newErrors.correctAnswer = "Correct answer is required";
-    } else if (
-      formData.options &&
-      !formData.options.includes(formData.correctAnswer)
-    ) {
+    } else if (!formData.options?.includes(formData.correctAnswer)) {
       newErrors.correctAnswer = "Correct answer must match one of the options";
     }
 
@@ -134,11 +126,8 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
     try {
       setLoading(true);
 
-      // Clean up options (remove empty ones)
       const cleanedOptions =
         formData.options?.filter((opt) => opt.trim()) || [];
-
-      // Parse subtopics from comma-separated string
       const subtopicsArray = Array.isArray(formData.subtopics)
         ? formData.subtopics
         : ((formData.subtopics as unknown as string) || "")
@@ -182,7 +171,6 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
       const newOptions = formData.options?.filter((_, i) => i !== index) || [];
       setFormData((prev) => ({ ...prev, options: newOptions }));
 
-      // Update correct answer if it was the removed option
       if (formData.correctAnswer === formData.options?.[index]) {
         setFormData((prev) => ({ ...prev, correctAnswer: "" }));
       }
@@ -197,10 +185,10 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
       onClose={onClose}
       title={question ? "Edit Question" : "Create Question"}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Question Text */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Question Text *
           </label>
           <textarea
@@ -210,19 +198,24 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
             }
             placeholder="Enter the question text..."
             rows={4}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.questionText ? "border-red-500" : "border-gray-300"
-            }`}
+            className={cn(
+              "w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition",
+              errors.questionText
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            )}
           />
           {errors.questionText && (
-            <p className="mt-1 text-sm text-red-600">{errors.questionText}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.questionText}
+            </p>
           )}
         </div>
 
         {/* Subject and Chapter */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Subject *
             </label>
             <select
@@ -234,9 +227,12 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                   chapterName: "",
                 }))
               }
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.subjectName ? "border-red-500" : "border-gray-300"
-              }`}
+              className={cn(
+                "w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition",
+                errors.subjectName
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              )}
             >
               <option value="">Select Subject</option>
               {subjects.map((subject) => (
@@ -246,12 +242,14 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
               ))}
             </select>
             {errors.subjectName && (
-              <p className="mt-1 text-sm text-red-600">{errors.subjectName}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.subjectName}
+              </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Chapter *
             </label>
             <select
@@ -263,9 +261,12 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                 }))
               }
               disabled={!formData.subjectName}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.chapterName ? "border-red-500" : "border-gray-300"
-              }`}
+              className={cn(
+                "w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed",
+                errors.chapterName
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              )}
             >
               <option value="">Select Chapter</option>
               {chapters.map((chapter) => (
@@ -275,7 +276,9 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
               ))}
             </select>
             {errors.chapterName && (
-              <p className="mt-1 text-sm text-red-600">{errors.chapterName}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.chapterName}
+              </p>
             )}
           </div>
         </div>
@@ -283,7 +286,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
         {/* Difficulty and Year */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Difficulty *
             </label>
             <select
@@ -294,7 +297,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                   difficulty: e.target.value as Question["difficulty"],
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             >
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
@@ -303,7 +306,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Year Appeared
             </label>
             <Input
@@ -324,7 +327,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
 
         {/* Options */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Options * (minimum 2 required)
           </label>
           <div className="space-y-2">
@@ -342,7 +345,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => removeOption(index)}
-                    className="text-red-600 hover:bg-red-50"
+                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     Remove
                   </Button>
@@ -352,7 +355,9 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
           </div>
 
           {errors.options && (
-            <p className="mt-1 text-sm text-red-600">{errors.options}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.options}
+            </p>
           )}
 
           <Button
@@ -368,7 +373,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
 
         {/* Correct Answer */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Correct Answer *
           </label>
           <select
@@ -379,9 +384,12 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                 correctAnswer: e.target.value,
               }))
             }
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.correctAnswer ? "border-red-500" : "border-gray-300"
-            }`}
+            className={cn(
+              "w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition",
+              errors.correctAnswer
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            )}
           >
             <option value="">Select Correct Answer</option>
             {formData.options
@@ -393,13 +401,15 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
               ))}
           </select>
           {errors.correctAnswer && (
-            <p className="mt-1 text-sm text-red-600">{errors.correctAnswer}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.correctAnswer}
+            </p>
           )}
         </div>
 
         {/* Explanation */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Explanation (Optional)
           </label>
           <textarea
@@ -409,13 +419,13 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
             }
             placeholder="Provide an explanation for the correct answer..."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
         </div>
 
         {/* Subtopics */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Subtopics (Optional)
           </label>
           <Input
@@ -432,13 +442,13 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
             }
             placeholder="Enter subtopics separated by commas"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple subtopics with commas (e.g., "Genetics, DNA, RNA")
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Separate multiple subtopics with commas
           </p>
         </div>
 
         {/* Form Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

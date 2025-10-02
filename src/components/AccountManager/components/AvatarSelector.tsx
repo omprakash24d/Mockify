@@ -1,7 +1,7 @@
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { cn } from "../../../lib/utils";
-import { studyAvatars } from "../utils/constants";
+import { STUDY_AVATARS } from "../utils/constants";
 
 interface AvatarSelectorProps {
   selectedAvatar: string;
@@ -13,57 +13,40 @@ export function AvatarSelector({
   onAvatarSelect,
 }: AvatarSelectorProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [hoveredAvatar, setHoveredAvatar] = useState<string | null>(null);
 
   const itemsPerPage = 8;
-  const totalPages = Math.ceil(studyAvatars.length / itemsPerPage);
+  const totalPages = Math.ceil(STUDY_AVATARS.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
-  const visibleAvatars = studyAvatars.slice(
+  const visibleAvatars = STUDY_AVATARS.slice(
     startIndex,
     startIndex + itemsPerPage
   );
 
-  const nextPage = () => {
-    setCurrentPage((prev) => (prev + 1) % totalPages);
-  };
-
-  const prevPage = () => {
+  const nextPage = () => setCurrentPage((prev) => (prev + 1) % totalPages);
+  const prevPage = () =>
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
-  };
 
   return (
-    <div className="p-6 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 space-y-6">
+    <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 space-y-4">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Avatar Gallery
-          </h3>
-        </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Choose your perfect study companion
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Choose Your Avatar
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          Select your study companion
         </p>
       </div>
 
       {/* Avatar Grid */}
       <div className="relative">
-        {/* Navigation buttons */}
+        {/* Navigation */}
         {totalPages > 1 && (
           <>
             <button
               type="button"
               onClick={prevPage}
-              className="
-                absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-3 z-10
-                w-8 h-8 rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border
-                flex items-center justify-center text-gray-600 dark:text-gray-400
-                hover:text-gray-900 dark:hover:text-gray-100 hover:scale-110 transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                dark:focus:ring-offset-gray-800 shadow-lg
-              "
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Previous avatars"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -72,14 +55,7 @@ export function AvatarSelector({
             <button
               type="button"
               onClick={nextPage}
-              className="
-                absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-3 z-10
-                w-8 h-8 rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border
-                flex items-center justify-center text-gray-600 dark:text-gray-400
-                hover:text-gray-900 dark:hover:text-gray-100 hover:scale-110 transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                dark:focus:ring-offset-gray-800 shadow-lg
-              "
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Next avatars"
             >
               <ChevronRight className="w-4 h-4" />
@@ -87,73 +63,33 @@ export function AvatarSelector({
           </>
         )}
 
-        {/* Avatar Grid */}
-        <div className="grid grid-cols-4 gap-4 px-2">
-          {visibleAvatars.map((avatar, index) => {
+        {/* Grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {visibleAvatars.map((avatar) => {
             const isSelected = selectedAvatar === avatar.emoji;
-            const isHovered = hoveredAvatar === avatar.emoji;
 
             return (
-              <div key={avatar.name} className="relative group">
-                <button
-                  type="button"
-                  onClick={() => onAvatarSelect(avatar.emoji)}
-                  onMouseEnter={() => setHoveredAvatar(avatar.emoji)}
-                  onMouseLeave={() => setHoveredAvatar(null)}
-                  className={cn(
-                    `relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl
-                     transition-all duration-300 ease-out transform
-                     focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:ring-offset-2
-                     dark:focus:ring-offset-gray-800`,
-                    avatar.color,
-                    isSelected
-                      ? "ring-4 ring-blue-500 dark:ring-blue-400 scale-110 shadow-xl"
-                      : isHovered
-                      ? "scale-105 shadow-lg"
-                      : "hover:scale-105 hover:shadow-lg shadow-md"
-                  )}
-                  title={avatar.name}
-                  aria-label={`Select ${avatar.name} avatar`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl" />
-
-                  {/* Emoji */}
-                  <span className="relative z-10 filter drop-shadow-sm">
-                    {avatar.emoji}
-                  </span>
-
-                  {/* Selection indicator */}
-                  {isSelected && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    </div>
-                  )}
-
-                  {/* Shine effect on hover */}
-                  {isHovered && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl animate-pulse" />
-                  )}
-                </button>
-
-                {/* Tooltip */}
-                {isHovered && (
-                  <div
-                    className="
-                    absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-20
-                    px-2 py-1 text-xs font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                    rounded-lg shadow-lg border border-gray-200 dark:border-gray-700
-                    animate-fade-in whitespace-nowrap
-                  "
-                  >
-                    {avatar.name}
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 border-b rotate-45" />
-                  </div>
+              <button
+                key={avatar.name}
+                type="button"
+                onClick={() => onAvatarSelect(avatar.emoji)}
+                className={cn(
+                  "relative w-16 h-16 rounded-lg flex items-center justify-center text-2xl transition focus:outline-none focus:ring-2 focus:ring-blue-500",
+                  avatar.color,
+                  isSelected
+                    ? "ring-2 ring-blue-500 dark:ring-blue-400 scale-105"
+                    : "hover:scale-105"
                 )}
-              </div>
+                title={avatar.name}
+                aria-label={`Select ${avatar.name} avatar`}
+              >
+                {avatar.emoji}
+
+                {/* Selection indicator */}
+                {isSelected && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800" />
+                )}
+              </button>
             );
           })}
         </div>
@@ -161,31 +97,23 @@ export function AvatarSelector({
 
       {/* Page indicator */}
       {totalPages > 1 && (
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center gap-2">
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setCurrentPage(i)}
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-200",
+                "h-2 rounded-full transition",
                 currentPage === i
-                  ? "bg-blue-500 w-6"
-                  : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
+                  ? "w-6 bg-blue-500"
+                  : "w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
               )}
               aria-label={`Go to page ${i + 1}`}
             />
           ))}
         </div>
       )}
-
-      {/* Footer note */}
-      <div className="text-center">
-        <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center justify-center space-x-1">
-          <Sparkles className="w-3 h-3" />
-          <span>Study-themed avatars designed for focus and motivation</span>
-        </p>
-      </div>
     </div>
   );
 }

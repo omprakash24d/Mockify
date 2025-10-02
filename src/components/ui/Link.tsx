@@ -1,58 +1,58 @@
 import React from "react";
-import { navigateTo } from "../../hooks/useNavigation";
+import { Link as RouterLink } from "react-router-dom";
 
-interface LinkProps {
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
   children: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
   replace?: boolean;
-  "aria-current"?:
-    | "page"
-    | "step"
-    | "location"
-    | "date"
-    | "time"
-    | "true"
-    | "false"
-    | boolean;
 }
 
 /**
  * Client-side navigation link component
- * Provides smooth SPA navigation without full page reloads
+ * Uses React Router for proper SPA navigation
+ *
+ * @example
+ * // Basic link with Tailwind styling
+ * <Link href="/about" className="text-blue-600 hover:text-blue-800 underline">
+ *   About Us
+ * </Link>
+ *
+ * // Button-styled link
+ * <Link href="/contact" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+ *   Contact
+ * </Link>
  */
 export const Link: React.FC<LinkProps> = ({
   href,
   children,
-  className,
   onClick,
   replace = false,
+  className,
   ...props
 }) => {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Allow normal navigation for external links
-    if (
-      href.startsWith("http") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("tel:")
-    ) {
-      return;
-    }
+  // Handle external links with regular anchor tags
+  if (
+    href.startsWith("http") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  ) {
+    return (
+      <a href={href} onClick={onClick} className={className} {...props}>
+        {children}
+      </a>
+    );
+  }
 
-    // Prevent default link behavior for internal navigation
-    e.preventDefault();
-
-    // Call custom onClick if provided
-    onClick?.();
-
-    // Navigate programmatically
-    navigateTo(href, replace);
-  };
-
+  // Use React Router Link for internal navigation
   return (
-    <a href={href} className={className} onClick={handleClick} {...props}>
+    <RouterLink
+      to={href}
+      replace={replace}
+      onClick={onClick}
+      className={className}
+      {...(props as any)}
+    >
       {children}
-    </a>
+    </RouterLink>
   );
 };

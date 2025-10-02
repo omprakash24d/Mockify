@@ -1,5 +1,6 @@
 import { BarChart3, CheckCircle, Clock, XCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { cn } from "../../lib/utils";
 import type { Question } from "../../types/neet";
 
 interface QuestionCardProps {
@@ -24,9 +25,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
     const interval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
       setTimeSpent(elapsed);
-      if (onTimeUpdate) {
-        onTimeUpdate(elapsed);
-      }
+      onTimeUpdate?.(elapsed);
     }, 1000);
 
     return () => clearInterval(interval);
@@ -39,97 +38,87 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   };
 
   const getDifficultyColor = (difficulty: string): string => {
-    switch (difficulty) {
+    switch (difficulty?.toLowerCase()) {
       case "easy":
-        return "text-green-600 bg-green-100";
+        return "text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20";
       case "medium":
-        return "text-yellow-600 bg-yellow-100";
+        return "text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/20";
       case "hard":
-        return "text-red-600 bg-red-100";
+        return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700";
     }
   };
 
   const getSuccessRateColor = (rate: number): string => {
-    if (rate >= 70) return "text-green-600";
-    if (rate >= 50) return "text-yellow-600";
-    return "text-red-600";
+    if (rate >= 70) return "text-green-600 dark:text-green-400";
+    if (rate >= 50) return "text-amber-600 dark:text-amber-400";
+    return "text-red-600 dark:text-red-400";
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <span className="text-sm text-gray-600">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-400 px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded">
             {question.subjectName} • {question.chapterName}
           </span>
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(
-              question.difficulty
-            )}`}
+            className={cn(
+              "px-2.5 py-1 rounded text-xs font-semibold",
+              getDifficultyColor(question.difficulty)
+            )}
           >
-            {question.difficulty}
+            {question.difficulty?.toUpperCase()}
           </span>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <Clock size={16} />
+        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 px-2.5 py-1 bg-gray-50 dark:bg-gray-700 rounded">
+          <Clock className="w-4 h-4" />
           <span>{formatTime(timeSpent)}</span>
         </div>
       </div>
 
       {/* Question */}
-      <div className="mb-6">
-        <h3 className="text-lg font-medium text-gray-900 leading-relaxed">
-          {question.questionText}
-        </h3>
-      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+        {question.questionText}
+      </h3>
 
       {/* Options */}
       <div className="space-y-3 mb-6">
         {question.options.map((option, index) => {
-          const optionLabel = String.fromCharCode(65 + index); // A, B, C, D
+          const optionLabel = String.fromCharCode(65 + index);
           const isSelected = selectedAnswer === option.text;
           const isCorrect = option.isCorrect;
-
-          let optionClasses =
-            "w-full text-left p-4 rounded-lg border transition-all duration-200 ";
-
-          if (showResult) {
-            if (isCorrect) {
-              optionClasses += "bg-green-50 border-green-300 text-green-800 ";
-            } else if (isSelected && !isCorrect) {
-              optionClasses += "bg-red-50 border-red-300 text-red-800 ";
-            } else {
-              optionClasses += "bg-gray-50 border-gray-200 text-gray-600 ";
-            }
-          } else {
-            if (isSelected) {
-              optionClasses += "bg-blue-50 border-blue-300 text-blue-800 ";
-            } else {
-              optionClasses +=
-                "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 ";
-            }
-          }
 
           return (
             <button
               key={index}
-              className={optionClasses}
+              className={cn(
+                "w-full text-left p-4 rounded-lg border transition",
+                showResult
+                  ? isCorrect
+                    ? "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700 text-green-800 dark:text-green-300"
+                    : isSelected
+                    ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-red-800 dark:text-red-300"
+                    : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400"
+                  : isSelected
+                  ? "bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-600 text-blue-800 dark:text-blue-300"
+                  : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+              )}
               onClick={() => !showResult && onAnswerSelect(option.text)}
               disabled={showResult}
             >
-              <div className="flex items-center space-x-3">
-                <span className="font-medium text-sm bg-white rounded-full w-6 h-6 flex items-center justify-center border">
+              <div className="flex items-center gap-3">
+                <span className="font-semibold text-sm bg-white dark:bg-gray-800 rounded-full w-7 h-7 flex items-center justify-center border border-gray-300 dark:border-gray-600 flex-shrink-0">
                   {optionLabel}
                 </span>
-                <span className="flex-1 text-left">{option.text}</span>
+                <span className="flex-1">{option.text}</span>
                 {showResult && isCorrect && (
-                  <CheckCircle size={20} className="text-green-600" />
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                 )}
                 {showResult && isSelected && !isCorrect && (
-                  <XCircle size={20} className="text-red-600" />
+                  <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
                 )}
               </div>
             </button>
@@ -139,37 +128,46 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
       {/* Statistics */}
       {question.statistics && (
-        <div className="border-t pt-4 mt-6">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <div className="flex items-center space-x-1">
-              <BarChart3 size={16} />
-              <span>Statistics:</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span>
-                Attempts:{" "}
-                <span className="font-medium">
-                  {question.statistics.totalAttempts}
-                </span>
-              </span>
-              <span>
-                Success Rate:
-                <span
-                  className={`font-medium ml-1 ${getSuccessRateColor(
-                    question.successRate
-                  )}`}
-                >
-                  {question.successRate}%
-                </span>
-              </span>
-              {question.statistics.averageTimeSpent > 0 && (
-                <span>
-                  Avg Time:{" "}
-                  <span className="font-medium">
-                    {Math.round(question.statistics.averageTimeSpent)}s
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                <BarChart3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="font-semibold text-sm">Statistics</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Attempts:
                   </span>
-                </span>
-              )}
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    {question.statistics.totalAttempts}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Success:
+                  </span>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      getSuccessRateColor(question.successRate)
+                    )}
+                  >
+                    {question.successRate}%
+                  </span>
+                </div>
+                {question.statistics.averageTimeSpent > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Avg:
+                    </span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {Math.round(question.statistics.averageTimeSpent)}s
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -177,12 +175,15 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
       {/* Subtopic Tags */}
       {question.subtopicTags && question.subtopicTags.length > 0 && (
-        <div className="border-t pt-4 mt-4">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 block">
+            Topics:
+          </span>
           <div className="flex flex-wrap gap-2">
             {question.subtopicTags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded"
               >
                 {tag}
               </span>

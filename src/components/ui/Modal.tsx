@@ -1,7 +1,6 @@
 import { X } from "lucide-react";
 import React, { useEffect } from "react";
 import { cn } from "../../lib/utils";
-import { Button } from "./Button";
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,8 +11,8 @@ interface ModalProps {
   className?: string;
 }
 
-const sizeClasses = {
-  sm: "max-w-md",
+const sizes = {
+  sm: "max-w-sm",
   md: "max-w-lg",
   lg: "max-w-2xl",
   xl: "max-w-4xl",
@@ -28,16 +27,14 @@ export const Modal: React.FC<ModalProps> = ({
   className,
 }) => {
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "Escape") onClose();
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
@@ -48,42 +45,47 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
-        {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity"
-          onClick={onClose}
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 dark:bg-black/70"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
-        {/* Modal */}
-        <div
-          className={cn(
-            "relative w-full rounded-xl bg-white dark:bg-gray-800 shadow-xl transition-all",
-            sizeClasses[size],
-            className
-          )}
-        >
-          {/* Header */}
-          {title && (
-            <div className="flex items-center justify-between border-gray-200 dark:border-gray-700 px-6 py-4 border-b">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                {title}
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
+      {/* Modal */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? "modal-title" : undefined}
+        className={cn(
+          "relative w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl",
+          sizes[size],
+          className
+        )}
+      >
+        {/* Header */}
+        {title && (
+          <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <h2
+              id="modal-title"
+              className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            >
+              {title}
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        )}
 
-          {/* Content */}
-          <div className="px-6 py-4">{children}</div>
-        </div>
+        {/* Content */}
+        <div className="px-6 py-4">{children}</div>
       </div>
     </div>
   );

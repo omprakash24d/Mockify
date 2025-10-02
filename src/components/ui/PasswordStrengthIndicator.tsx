@@ -10,60 +10,50 @@ interface PasswordStrengthIndicatorProps {
 export const PasswordStrengthIndicator: React.FC<
   PasswordStrengthIndicatorProps
 > = ({ password, confirmPassword, showConfirmation = false }) => {
-  // Basic password strength calculation
-  const calculateStrength = (pwd: string) => {
-    let score = 0;
-    const checks = {
-      length: pwd.length >= 8,
-      lowercase: /[a-z]/.test(pwd),
-      uppercase: /[A-Z]/.test(pwd),
-      numbers: /\d/.test(pwd),
-      special: /[^A-Za-z0-9]/.test(pwd),
-    };
-
-    Object.values(checks).forEach((check) => {
-      if (check) score++;
-    });
-
-    return { score, checks };
+  const checks = {
+    length: password.length >= 8,
+    lowercase: /[a-z]/.test(password),
+    uppercase: /[A-Z]/.test(password),
+    numbers: /\d/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
   };
 
-  const { score, checks } = calculateStrength(password);
+  const score = Object.values(checks).filter(Boolean).length;
   const passwordsMatch = confirmPassword ? password === confirmPassword : true;
 
-  const getStrengthConfig = (strength: number) => {
-    if (strength >= 4)
+  const getStrength = () => {
+    if (score >= 4)
       return {
         label: "Strong",
         color: "bg-green-500",
-        textColor: "text-green-600 dark:text-green-400",
+        text: "text-green-600 dark:text-green-400",
         width: "w-full",
       };
-    if (strength >= 3)
+    if (score >= 3)
       return {
         label: "Good",
         color: "bg-yellow-500",
-        textColor: "text-yellow-600 dark:text-yellow-400",
+        text: "text-yellow-600 dark:text-yellow-400",
         width: "w-3/4",
       };
-    if (strength >= 2)
+    if (score >= 2)
       return {
         label: "Fair",
         color: "bg-orange-500",
-        textColor: "text-orange-600 dark:text-orange-400",
+        text: "text-orange-600 dark:text-orange-400",
         width: "w-1/2",
       };
     return {
       label: "Weak",
       color: "bg-red-500",
-      textColor: "text-red-600 dark:text-red-400",
+      text: "text-red-600 dark:text-red-400",
       width: "w-1/4",
     };
   };
 
-  const config = getStrengthConfig(score);
-
   if (!password) return null;
+
+  const strength = getStrength();
 
   return (
     <div className="space-y-2">
@@ -73,87 +63,55 @@ export const PasswordStrengthIndicator: React.FC<
           <div
             className={cn(
               "h-full transition-all duration-300",
-              config.color,
-              config.width
+              strength.color,
+              strength.width
             )}
           />
         </div>
-        <span className={cn("text-sm font-medium", config.textColor)}>
-          {config.label}
+        <span className={cn("text-sm font-medium", strength.text)}>
+          {strength.label}
         </span>
       </div>
 
-      {/* Requirements checklist */}
+      {/* Requirements Checklist */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            checks.length
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400"
-          )}
-        >
-          <span>{checks.length ? "✓" : "○"}</span>
-          <span>8+ characters</span>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            checks.uppercase
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400"
-          )}
-        >
-          <span>{checks.uppercase ? "✓" : "○"}</span>
-          <span>Uppercase letter</span>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            checks.lowercase
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400"
-          )}
-        >
-          <span>{checks.lowercase ? "✓" : "○"}</span>
-          <span>Lowercase letter</span>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            checks.numbers
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400"
-          )}
-        >
-          <span>{checks.numbers ? "✓" : "○"}</span>
-          <span>Number</span>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            checks.special
-              ? "text-green-600 dark:text-green-400"
-              : "text-gray-400"
-          )}
-        >
-          <span>{checks.special ? "✓" : "○"}</span>
-          <span>Special character</span>
-        </div>
+        <CheckItem met={checks.length}>8+ characters</CheckItem>
+        <CheckItem met={checks.uppercase}>Uppercase letter</CheckItem>
+        <CheckItem met={checks.lowercase}>Lowercase letter</CheckItem>
+        <CheckItem met={checks.numbers}>Number</CheckItem>
+        <CheckItem met={checks.special}>Special character</CheckItem>
         {showConfirmation && confirmPassword && (
-          <div
-            className={cn(
-              "flex items-center gap-1",
-              passwordsMatch
-                ? "text-green-600 dark:text-green-400"
-                : "text-red-600 dark:text-red-400"
-            )}
-          >
-            <span>{passwordsMatch ? "✓" : "✗"}</span>
-            <span>Passwords match</span>
-          </div>
+          <CheckItem met={passwordsMatch} isMatch>
+            Passwords match
+          </CheckItem>
         )}
       </div>
     </div>
   );
 };
+
+interface CheckItemProps {
+  met: boolean;
+  children: React.ReactNode;
+  isMatch?: boolean;
+}
+
+const CheckItem: React.FC<CheckItemProps> = ({
+  met,
+  children,
+  isMatch = false,
+}) => (
+  <div
+    className={cn(
+      "flex items-center gap-1",
+      met
+        ? "text-green-600 dark:text-green-400"
+        : isMatch
+        ? "text-red-600 dark:text-red-400"
+        : "text-gray-400"
+    )}
+  >
+    <span>{met ? "✓" : isMatch ? "✗" : "○"}</span>
+    <span>{children}</span>
+  </div>
+);

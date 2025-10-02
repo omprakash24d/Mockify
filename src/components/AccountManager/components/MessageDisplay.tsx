@@ -17,10 +17,7 @@ export function MessageDisplay({ error, success }: MessageDisplayProps) {
   useEffect(() => {
     setShowSuccess(!!success);
     if (success) {
-      // Auto-hide success messages after 5 seconds
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000);
+      const timer = setTimeout(() => setShowSuccess(false), 5000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -28,33 +25,23 @@ export function MessageDisplay({ error, success }: MessageDisplayProps) {
   if (!showError && !showSuccess) return null;
 
   return (
-    <div className="px-6 sm:px-8 pb-4 space-y-3">
+    <div className="space-y-3">
       {/* Error Message */}
       {showError && error && (
         <div
-          className={`
-          relative flex items-start space-x-3 p-4 rounded-2xl border-2
-          bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 animate-slide-down
-          shadow-soft hover:shadow-lg transition-all duration-300
-        `}
+          role="alert"
+          className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
         >
-          <div className="flex-shrink-0 p-1 bg-red-100 dark:bg-red-900/30 rounded-lg">
-            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-          </div>
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
 
-          <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">
-              Action Required
-            </h4>
-            <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed">
-              {error}
-            </p>
-          </div>
+          <p className="flex-1 text-sm text-red-700 dark:text-red-300">
+            {error}
+          </p>
 
           <button
             onClick={() => setShowError(false)}
-            className="flex-shrink-0 p-1 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors duration-200"
-            aria-label="Dismiss error message"
+            className="flex-shrink-0 p-1 rounded hover:bg-red-100 dark:hover:bg-red-800/50 transition"
+            aria-label="Dismiss error"
           >
             <X className="w-4 h-4 text-red-600 dark:text-red-400" />
           </button>
@@ -64,45 +51,24 @@ export function MessageDisplay({ error, success }: MessageDisplayProps) {
       {/* Success Message */}
       {showSuccess && success && (
         <div
-          className={`
-          relative flex items-start space-x-3 p-4 rounded-2xl border-2
-          bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 animate-slide-down
-          shadow-soft hover:shadow-lg transition-all duration-300
-        `}
+          role="alert"
+          className="flex items-start gap-3 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
         >
-          <div className="flex-shrink-0 p-1 bg-green-100 dark:bg-green-900/30 rounded-lg">
-            <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-          </div>
+          <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
 
-          <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-green-800 dark:text-green-200 mb-1">
-              Success!
-            </h4>
-            <p className="text-sm text-green-700 dark:text-green-300 leading-relaxed">
-              {success}
-            </p>
-          </div>
+          <p className="flex-1 text-sm text-green-700 dark:text-green-300">
+            {success}
+          </p>
 
           <button
             onClick={() => setShowSuccess(false)}
-            className="flex-shrink-0 p-1 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors duration-200"
-            aria-label="Dismiss success message"
+            className="flex-shrink-0 p-1 rounded hover:bg-green-100 dark:hover:bg-green-800/50 transition"
+            aria-label="Dismiss success"
           >
             <X className="w-4 h-4 text-green-600 dark:text-green-400" />
           </button>
-
-          {/* Auto-dismiss progress bar */}
-          <div className="absolute bottom-0 left-0 h-1 bg-green-300 dark:bg-green-600 rounded-full animate-[shrink_5s_linear_forwards]" />
         </div>
       )}
-
-      {/* Custom animation for progress bar */}
-      <style>{`
-        @keyframes shrink {
-          from { width: 100%; }
-          to { width: 0%; }
-        }
-      `}</style>
     </div>
   );
 }

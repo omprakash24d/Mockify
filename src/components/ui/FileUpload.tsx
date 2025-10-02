@@ -31,7 +31,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       onChange?.(null, "");
       return;
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const url = e.target?.result as string;
@@ -43,19 +42,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
+    if (file) handleFileSelect(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      handleFileSelect(file);
-    }
+    if (file && file.type.startsWith("image/")) handleFileSelect(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -71,9 +65,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const handleRemove = () => {
     setPreviewUrl("");
     onChange?.(null, "");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleClick = () => {
@@ -82,7 +74,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      {/* Label */}
       {label && (
         <label
           className={`block text-sm font-medium ${
@@ -96,22 +87,20 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         </label>
       )}
 
-      {/* Upload Area */}
       <div
         className={`
-          relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
-          transition-all duration-300 ease-in-out group
+          relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50
           ${
             isDragging
-              ? "border-blue-400 bg-blue-50 dark:bg-blue-900/20 scale-105"
+              ? "border-blue-400 bg-blue-50 dark:bg-blue-900/30 scale-[1.03]"
               : ""
           }
           ${
             error
-              ? "border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/20"
-              : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50"
+              ? "border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/10"
+              : "border-gray-300 dark:border-gray-600"
           }
-        `}
+          `}
         onClick={handleClick}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -126,35 +115,34 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         />
 
         {previewUrl ? (
-          /* Preview */
           <div className="relative inline-block">
-            <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-2 shadow-lg">
+            <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-2">
               <img
                 src={previewUrl}
-                alt="Logo preview"
+                alt="Preview"
                 className="mx-auto h-24 w-24 object-cover rounded-lg"
               />
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRemove();
                 }}
-                className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110"
+                className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
             <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 font-medium">
-              Click to change logo
+              Click to change image
             </p>
           </div>
         ) : (
-          /* Upload Prompt */
           <div className="space-y-4">
             <div
-              className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:scale-110 ${
+              className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center transition ${
                 isDragging
-                  ? "bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400"
+                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
                   : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
               }`}
             >
@@ -164,30 +152,28 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 <Image className="h-8 w-8" />
               )}
             </div>
-
-            <div className="space-y-2">
+            <div>
               <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                {isDragging ? "Drop your logo here" : "Upload coaching logo"}
+                {isDragging ? "Drop your image here" : "Upload an image"}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Drag and drop or{" "}
                 <span className="text-blue-600 dark:text-blue-400 font-medium">
-                  browse files
+                  browse
                 </span>
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                PNG, JPG, GIF up to {maxSize}MB • Optional
+                PNG, JPG, GIF up to {maxSize}MB
               </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Error Message */}
       {error && (
         <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
           <svg
-            className="w-4 h-4 flex-shrink-0"
+            className="w-4 h-4 shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

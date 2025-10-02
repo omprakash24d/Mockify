@@ -1,12 +1,12 @@
 import type { User as FirebaseUser } from "firebase/auth";
 import { User } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { studyAvatars } from "../utils/constants";
+import { STUDY_AVATARS } from "../utils/constants";
 
 interface UserAvatarProps {
   user: FirebaseUser;
   className?: string;
-  selectedAvatar?: string; // For immediate preview of selected avatar
+  selectedAvatar?: string;
 }
 
 export function UserAvatar({
@@ -14,75 +14,60 @@ export function UserAvatar({
   className = "w-20 h-20",
   selectedAvatar,
 }: UserAvatarProps) {
+  const renderEmojiAvatar = (emoji: string) => {
+    const avatar = STUDY_AVATARS.find((a) => a.emoji === emoji);
+    if (!avatar) return null;
+
+    return (
+      <div
+        className={cn(
+          "w-full h-full rounded-full flex items-center justify-center text-white text-2xl",
+          avatar.color
+        )}
+      >
+        {avatar.emoji}
+      </div>
+    );
+  };
+
   const getUserAvatar = () => {
-    // Show selected avatar first (for immediate feedback)
+    // Show selected avatar for immediate feedback
     if (selectedAvatar) {
-      const avatar = studyAvatars.find((a) => a.emoji === selectedAvatar);
-      if (avatar) {
-        return (
-          <div
-            className={cn(
-              "w-full h-full rounded-full flex items-center justify-center text-white text-2xl",
-              avatar.color
-            )}
-          >
-            {avatar.emoji}
-          </div>
-        );
-      }
+      const avatar = renderEmojiAvatar(selectedAvatar);
+      if (avatar) return avatar;
     }
 
     if (user.photoURL) {
-      // Check if it's a Google photo URL
+      // Google photo URL
       if (user.photoURL.includes("googleusercontent.com")) {
         return (
           <img
             src={user.photoURL}
-            alt="Profile"
-            className="w-full h-full object-cover rounded-full"
+            alt={user.displayName || "Profile"}
+            className="w-full h-full rounded-full object-cover"
           />
         );
       }
 
-      // Check if it's a data URL containing an emoji (our new format)
+      // Data URL with emoji
       if (user.photoURL.startsWith("data:text/plain")) {
         try {
-          const emojiString = decodeURIComponent(user.photoURL.split(",")[1]);
-          const avatar = studyAvatars.find((a) => a.emoji === emojiString);
-          if (avatar) {
-            return (
-              <div
-                className={cn(
-                  "w-full h-full rounded-full flex items-center justify-center text-white text-2xl",
-                  avatar.color
-                )}
-              >
-                {avatar.emoji}
-              </div>
-            );
-          }
+          const emoji = decodeURIComponent(user.photoURL.split(",")[1]);
+          const avatar = renderEmojiAvatar(emoji);
+          if (avatar) return avatar;
         } catch (error) {
-          console.error("Error parsing avatar data URL:", error);
+          console.error("Error parsing avatar:", error);
         }
       }
 
-      // Check if it's one of our study avatars (legacy format)
-      const avatar = studyAvatars.find((a) => user.photoURL?.includes(a.emoji));
-      if (avatar) {
-        return (
-          <div
-            className={cn(
-              "w-full h-full rounded-full flex items-center justify-center text-white text-2xl",
-              avatar.color
-            )}
-          >
-            {avatar.emoji}
-          </div>
-        );
-      }
+      // Legacy emoji format
+      const avatar = STUDY_AVATARS.find((a) =>
+        user.photoURL?.includes(a.emoji)
+      );
+      if (avatar) return renderEmojiAvatar(avatar.emoji);
     }
 
-    // Default avatar
+    // Default fallback
     return (
       <div className="w-full h-full rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
         <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
