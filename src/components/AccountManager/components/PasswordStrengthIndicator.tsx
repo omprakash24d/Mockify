@@ -1,5 +1,4 @@
 import { AlertTriangle, CheckCircle, Shield, Zap } from "lucide-react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
 import type { PasswordStrength } from "../types";
 import { PASSWORD_STRENGTH_MAX_SCORE } from "../utils/constants";
@@ -13,8 +12,6 @@ export function PasswordStrengthIndicator({
   password,
   passwordStrength,
 }: PasswordStrengthIndicatorProps) {
-  const { classes } = useTheme();
-
   if (!password) return null;
 
   const strengthLevel =
@@ -85,7 +82,7 @@ export function PasswordStrengthIndicator({
               <span className={`text-sm font-semibold ${config.textColor}`}>
                 {config.label}
               </span>
-              <p className={`text-xs ${classes.text.secondary} mt-0.5`}>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                 {config.description}
               </p>
             </div>

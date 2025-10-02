@@ -385,7 +385,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
           >
             <option value="">Select Correct Answer</option>
             {formData.options
-              ?.filter((opt) => opt.trim())
+              ?.filter((opt) => opt && typeof opt === "string" && opt.trim())
               .map((option, index) => (
                 <option key={index} value={option}>
                   {option}

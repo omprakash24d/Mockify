@@ -1,4 +1,3 @@
-import { useTheme } from "../../contexts/ThemeContext";
 import { MessageDisplay } from "./components/MessageDisplay";
 import { ModalProfileManagerWrapper } from "./components/ModalProfileManagerWrapper";
 import { PasswordForm } from "./components/PasswordForm";
@@ -17,7 +16,7 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { classes } = useTheme();
+  // Theme classes removed - using direct Tailwind classes
   const {
     profileData,
     passwordData,
@@ -106,9 +105,7 @@ export const ProfileManager: React.FC<ProfileManagerProps> = ({
       <MessageDisplay error={errors.general} success={success} />
 
       {/* Dynamic Content Area */}
-      <div
-        className={`transition-all duration-300 ease-in-out ${classes.bg.primary}`}
-      >
+      <div className="transition-all duration-300 ease-in-out bg-white dark:bg-gray-900">
         {activeTab === "profile" ? (
           <ProfileForm
             user={user}

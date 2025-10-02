@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
-import { ThemeToggle } from "../../contexts/ThemeContext";
-import { CoachingDetailsModal } from "../CoachingDetails";
-import { useAuth } from "./hooks/useAuth";
+import { ThemeToggle } from "../ui/ThemeToggle";
+import { useAuthForm } from "./hooks/useAuth";
 
 // Import all modular components
 import { AuthToggle } from "./components/AuthToggle";
@@ -31,7 +30,7 @@ export const AuthScreen: React.FC = () => {
     passwordStrength,
     formFieldHandlers,
     authHandlers,
-  } = useAuth();
+  } = useAuthForm();
 
   // Refs for focus management
   const emailRef = useRef<HTMLInputElement>(null);
@@ -156,14 +155,6 @@ export const AuthScreen: React.FC = () => {
           <Footer />
         </div>
       </div>
-
-      {/* Coaching Details Modal */}
-      <CoachingDetailsModal
-        isOpen={authState.showCoachingModal}
-        onComplete={authHandlers.handleCoachingDetailsComplete}
-        title="Complete Your Coaching Setup"
-        subtitle="All details are required to proceed"
-      />
     </div>
   );
 };

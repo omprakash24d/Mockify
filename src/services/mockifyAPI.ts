@@ -31,32 +31,87 @@ export class MockifyAPI {
   ): Promise<Question[]> {
     try {
       const questionsRef = collection(db, getCollectionPath("questions"));
-      let q = query(questionsRef, where("is_active", "==", true));
+      let questions: Question[] = [];
 
-      // Apply filters
+      // Try with the most specific filter first, fallback to simpler queries if needed
+      try {
+        let q = query(questionsRef, where("is_active", "==", true));
+
+        // Apply only one additional filter at a time to avoid complex indexes
+        if (filters.subjects && filters.subjects.length > 0) {
+          q = query(q, where("subject_id", "in", filters.subjects), limit(500));
+        } else if (filters.chapters && filters.chapters.length > 0) {
+          q = query(q, where("chapter_id", "in", filters.chapters), limit(500));
+        } else {
+          q = query(q, limit(Math.max(filters.questionCount || 50, 200)));
+        }
+
+        const snapshot = await getDocs(q);
+        questions = snapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Question)
+        );
+      } catch (indexError) {
+        console.warn("Specific query failed, trying fallback:", indexError);
+
+        // Fallback: Use only the basic active filter
+        const fallbackQuery = query(
+          questionsRef,
+          where("is_active", "==", true),
+          limit(500)
+        );
+
+        const snapshot = await getDocs(fallbackQuery);
+        questions = snapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Question)
+        );
+      }
+
+      // Apply all filters on client side for reliability
       if (filters.subjects && filters.subjects.length > 0) {
-        q = query(q, where("subject_id", "in", filters.subjects));
+        questions = questions.filter((q) =>
+          filters.subjects!.includes(q.subject_id)
+        );
       }
 
       if (filters.chapters && filters.chapters.length > 0) {
-        q = query(q, where("chapter_id", "in", filters.chapters));
+        questions = questions.filter((q) =>
+          filters.chapters!.includes(q.chapter_id)
+        );
       }
 
       if (filters.difficulty && filters.difficulty.length > 0) {
-        q = query(q, where("difficulty", "in", filters.difficulty));
+        questions = questions.filter((q) =>
+          filters.difficulty!.includes(q.difficulty)
+        );
       }
 
       if (filters.onlyPYQs) {
-        q = query(q, where("source.year", ">", 0));
+        questions = questions.filter(
+          (q) => q.source && q.source.year && q.source.year > 0
+        );
       }
 
-      // Order and limit
-      q = query(q, orderBy("q_num"), limit(filters.questionCount || 50));
+      // Sort by q_num if available, otherwise keep original order
+      questions.sort((a, b) => {
+        if (a.q_num && b.q_num) {
+          return a.q_num - b.q_num;
+        }
+        // Keep original order for questions without q_num
+        return 0;
+      });
 
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as Question)
-      );
+      // Apply final limit and shuffle if needed
+      const limitedQuestions = questions.slice(0, filters.questionCount || 50);
+
+      // Shuffle for randomization if no specific ordering is needed
+      if (
+        !filters.questionCount ||
+        filters.questionCount <= limitedQuestions.length
+      ) {
+        return limitedQuestions.sort(() => Math.random() - 0.5);
+      }
+
+      return limitedQuestions;
     } catch (error) {
       console.error("Error fetching questions:", error);
       throw new Error("Failed to fetch questions");

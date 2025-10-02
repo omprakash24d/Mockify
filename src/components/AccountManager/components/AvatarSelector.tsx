@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
 import { studyAvatars } from "../utils/constants";
 
@@ -13,7 +12,6 @@ export function AvatarSelector({
   selectedAvatar,
   onAvatarSelect,
 }: AvatarSelectorProps) {
-  const { classes } = useTheme();
   const [currentPage, setCurrentPage] = useState(0);
   const [hoveredAvatar, setHoveredAvatar] = useState<string | null>(null);
 
@@ -34,20 +32,18 @@ export function AvatarSelector({
   };
 
   return (
-    <div
-      className={`p-6 rounded-2xl border-2 ${classes.border.light} ${classes.bg.accent} space-y-6`}
-    >
+    <div className="p-6 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
-          <h3 className={`text-lg font-bold ${classes.text.primary}`}>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
             Avatar Gallery
           </h3>
         </div>
-        <p className={`text-sm ${classes.text.secondary}`}>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           Choose your perfect study companion
         </p>
       </div>
@@ -60,14 +56,14 @@ export function AvatarSelector({
             <button
               type="button"
               onClick={prevPage}
-              className={`
+              className="
                 absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-3 z-10
-                w-8 h-8 rounded-full ${classes.bg.elevated} ${classes.border.default} border
-                flex items-center justify-center ${classes.text.secondary}
-                hover:${classes.text.primary} hover:scale-110 transition-all duration-200
+                w-8 h-8 rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border
+                flex items-center justify-center text-gray-600 dark:text-gray-400
+                hover:text-gray-900 dark:hover:text-gray-100 hover:scale-110 transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                 dark:focus:ring-offset-gray-800 shadow-lg
-              `}
+              "
               aria-label="Previous avatars"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -76,14 +72,14 @@ export function AvatarSelector({
             <button
               type="button"
               onClick={nextPage}
-              className={`
+              className="
                 absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-3 z-10
-                w-8 h-8 rounded-full ${classes.bg.elevated} ${classes.border.default} border
-                flex items-center justify-center ${classes.text.secondary}
-                hover:${classes.text.primary} hover:scale-110 transition-all duration-200
+                w-8 h-8 rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border
+                flex items-center justify-center text-gray-600 dark:text-gray-400
+                hover:text-gray-900 dark:hover:text-gray-100 hover:scale-110 transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                 dark:focus:ring-offset-gray-800 shadow-lg
-              `}
+              "
               aria-label="Next avatars"
             >
               <ChevronRight className="w-4 h-4" />
@@ -146,17 +142,15 @@ export function AvatarSelector({
                 {/* Tooltip */}
                 {isHovered && (
                   <div
-                    className={`
+                    className="
                     absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-20
-                    px-2 py-1 text-xs font-medium ${classes.bg.elevated} ${classes.text.primary}
-                    rounded-lg shadow-lg border ${classes.border.default}
+                    px-2 py-1 text-xs font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                    rounded-lg shadow-lg border border-gray-200 dark:border-gray-700
                     animate-fade-in whitespace-nowrap
-                  `}
+                  "
                   >
                     {avatar.name}
-                    <div
-                      className={`absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 ${classes.bg.elevated} border-r ${classes.border.default} border-b rotate-45`}
-                    />
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 border-b rotate-45" />
                   </div>
                 )}
               </div>
@@ -187,9 +181,7 @@ export function AvatarSelector({
 
       {/* Footer note */}
       <div className="text-center">
-        <p
-          className={`text-xs ${classes.text.secondary} flex items-center justify-center space-x-1`}
-        >
+        <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center justify-center space-x-1">
           <Sparkles className="w-3 h-3" />
           <span>Study-themed avatars designed for focus and motivation</span>
         </p>

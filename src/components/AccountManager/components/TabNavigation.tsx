@@ -1,5 +1,4 @@
 import { Lock, User } from "lucide-react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
 import type { ActiveTab } from "../types";
 
@@ -9,8 +8,6 @@ interface TabNavigationProps {
 }
 
 export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
-  const { classes } = useTheme();
-
   const tabs = [
     {
       id: "profile" as ActiveTab,
@@ -27,7 +24,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   ];
 
   return (
-    <div className={`px-6 sm:px-8 ${classes.bg.secondary}`}>
+    <div className="px-6 sm:px-8 bg-gray-50 dark:bg-gray-800">
       {/* Enhanced tab navigation with modern styling */}
       <div
         className="flex space-x-1 p-1 rounded-2xl bg-gray-100 dark:bg-gray-700/50"
@@ -54,8 +51,8 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
                 "dark:focus:ring-offset-gray-800",
                 "group overflow-hidden cursor-pointer z-10",
                 isActive
-                  ? `${classes.bg.elevated} ${classes.text.primary} shadow-soft transform scale-[1.02]`
-                  : `${classes.text.secondary} hover:${classes.text.primary} hover:bg-white/60 dark:hover:bg-gray-600/60`
+                  ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-soft transform scale-[1.02]"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/60 dark:hover:bg-gray-600/60"
               )}
             >
               {/* Background gradient for active tab */}

@@ -1,6 +1,5 @@
 import { AlertCircle, CheckCircle2, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useTheme } from "../../../contexts/ThemeContext";
 
 interface MessageDisplayProps {
   error?: string;
@@ -8,7 +7,6 @@ interface MessageDisplayProps {
 }
 
 export function MessageDisplay({ error, success }: MessageDisplayProps) {
-  const { classes } = useTheme();
   const [showError, setShowError] = useState(!!error);
   const [showSuccess, setShowSuccess] = useState(!!success);
 
@@ -36,7 +34,7 @@ export function MessageDisplay({ error, success }: MessageDisplayProps) {
         <div
           className={`
           relative flex items-start space-x-3 p-4 rounded-2xl border-2
-          ${classes.status.error} animate-slide-down
+          bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 animate-slide-down
           shadow-soft hover:shadow-lg transition-all duration-300
         `}
         >
@@ -68,7 +66,7 @@ export function MessageDisplay({ error, success }: MessageDisplayProps) {
         <div
           className={`
           relative flex items-start space-x-3 p-4 rounded-2xl border-2
-          ${classes.status.success} animate-slide-down
+          bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 animate-slide-down
           shadow-soft hover:shadow-lg transition-all duration-300
         `}
         >

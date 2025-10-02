@@ -4,8 +4,6 @@
 
 import { Clock } from "lucide-react";
 import React from "react";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { cn } from "../../../lib/utils";
 import type { SecurityEvent } from "../types";
 import { formatEventType, formatTimestamp } from "../utils";
 import { EventIcon } from "./EventIcon";
@@ -16,29 +14,22 @@ interface EventItemProps {
 }
 
 export const EventItem: React.FC<EventItemProps> = ({ event }) => {
-  const { classes } = useTheme();
-
   return (
-    <div
-      className={cn(
-        "flex items-start gap-4 p-4 rounded-lg transition-colors hover:bg-opacity-50",
-        classes.bg.secondary
-      )}
-    >
+    <div className="flex items-start gap-4 p-4 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
       <div className="flex-shrink-0 mt-1">
         <EventIcon type={event.type} />
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h3 className={`font-medium ${classes.text.primary}`}>
+          <h3 className="font-medium text-gray-900 dark:text-gray-100">
             {formatEventType(event.type)}
           </h3>
           <SeverityBadge severity={event.severity} />
         </div>
 
         {event.email && (
-          <p className={`text-sm ${classes.text.secondary} mb-1`}>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
             User: {event.email}
           </p>
         )}
@@ -55,13 +46,13 @@ export const EventItem: React.FC<EventItemProps> = ({ event }) => {
 
         {/* Additional details for specific event types */}
         {event.type === "rate_limit_exceeded" && event.details?.limit && (
-          <div className={`text-xs ${classes.text.tertiary} mt-1`}>
+          <div className="text-xs text-gray-400 dark:text-gray-600 mt-1">
             Rate limit: {event.details.count}/{event.details.limit} requests
           </div>
         )}
 
         {event.type === "account_locked" && event.details?.attemptCount && (
-          <div className={`text-xs ${classes.text.tertiary} mt-1`}>
+          <div className="text-xs text-gray-400 dark:text-gray-600 mt-1">
             Failed attempts: {event.details.attemptCount}
           </div>
         )}

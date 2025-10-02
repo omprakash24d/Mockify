@@ -132,12 +132,21 @@ const AdminDashboard: React.FC = () => {
   const fetchSubjects = async () => {
     try {
       const response = await fetch(`${API_BASE}/subjects`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
       if (data.success) {
         setSubjects(data.data.map((s: any) => s.name));
+      } else {
+        console.warn("API returned unsuccessful response:", data);
       }
     } catch (err) {
       console.error("Failed to fetch subjects:", err);
+      // Set empty array to prevent UI breaking
+      setSubjects([]);
     }
   };
 

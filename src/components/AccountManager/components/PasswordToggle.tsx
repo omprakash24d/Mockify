@@ -1,5 +1,4 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useTheme } from "../../../contexts/ThemeContext";
 
 interface PasswordToggleProps {
   isVisible: boolean;
@@ -7,8 +6,6 @@ interface PasswordToggleProps {
 }
 
 export function PasswordToggle({ isVisible, onToggle }: PasswordToggleProps) {
-  const { classes } = useTheme();
-
   return (
     <button
       type="button"
@@ -16,7 +13,7 @@ export function PasswordToggle({ isVisible, onToggle }: PasswordToggleProps) {
       className={`
         absolute right-4 top-1/2 transform -translate-y-1/2 
         p-2 rounded-xl transition-all duration-200
-        ${classes.text.secondary} hover:${classes.text.primary}
+        text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100
         hover:bg-gray-100 dark:hover:bg-gray-700
         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
         dark:focus:ring-offset-gray-800

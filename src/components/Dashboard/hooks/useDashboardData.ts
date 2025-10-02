@@ -24,20 +24,27 @@ export const useDashboardData = () => {
       setLoading(true);
       setError(null);
 
-      // Use the firestore wrapper functions for better compatibility
-      const subjects = await getSubjects();
+      console.log("Loading dashboard data...");
 
-      // Load sample questions to get count
+      // Use the firestore wrapper functions for better compatibility
+      console.log("Fetching subjects...");
+      const subjects = await getSubjects();
+      console.log(`Loaded ${subjects.length} subjects`);
+
+      // Load sample questions to get count (reduced to avoid timeout)
+      console.log("Fetching sample questions...");
       const sampleQuestions = await getQuestions({
         subjects: [],
         chapters: [],
         difficulty: ["easy", "medium", "hard"],
-        questionCount: 1000,
+        questionCount: 100, // Reduced from 1000 to avoid firestore limits
         onlyPYQs: false,
         includeImages: true,
       });
+      console.log(`Loaded ${sampleQuestions.length} sample questions`);
 
-      // Calculate chapters from subjects
+      // Calculate chapters from subjects (with better error handling)
+      console.log("Calculating chapters...");
       let totalChapters = 0;
       for (const subject of subjects) {
         try {
@@ -45,18 +52,22 @@ export const useDashboardData = () => {
           totalChapters += chapters.length;
         } catch (err) {
           console.warn(
-            `Could not load chapters for subject ${subject.id}:`,
+            `Could not load chapters for subject ${subject.name} (${subject.id}):`,
             err
           );
         }
       }
+      console.log(`Total chapters: ${totalChapters}`);
 
       // Load user's recent tests if authenticated
       let userTests: Test[] = [];
       if (user) {
         try {
+          console.log("Fetching user tests...");
           userTests = await MockifyAPI.getUserTests(user.uid);
-        } catch {
+          console.log(`Loaded ${userTests.length} user tests`);
+        } catch (err) {
+          console.log("No user tests found:", err);
           // No user tests found yet - using empty array
         }
       }
@@ -73,6 +84,7 @@ export const useDashboardData = () => {
         }),
       };
 
+      console.log("Dashboard stats:", statsData);
       setStats(statsData);
       setRecentTests(userTests.slice(0, 5));
     } catch (error) {

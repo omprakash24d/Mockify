@@ -1,6 +1,5 @@
 import type { User as FirebaseUser } from "firebase/auth";
 import { CheckCircle, Mail, Save, Sparkles, User } from "lucide-react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
 import type { ProfileFormData } from "../types";
 import { AvatarSelector } from "./AvatarSelector";
@@ -25,8 +24,6 @@ export function ProfileForm({
   onAvatarSelect,
   onSubmit,
 }: ProfileFormProps) {
-  const { classes } = useTheme();
-
   return (
     <div
       role="tabpanel"
@@ -53,10 +50,10 @@ export function ProfileForm({
         </div>
 
         <div className="space-y-1">
-          <h3 className={`text-lg font-semibold ${classes.text.primary}`}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Profile Information
           </h3>
-          <p className={`text-sm ${classes.text.secondary}`}>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Customize your personal details and preferences
           </p>
         </div>
@@ -65,9 +62,7 @@ export function ProfileForm({
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Display Name Section */}
         <div className="space-y-3">
-          <label
-            className={`block text-sm font-semibold ${classes.text.primary}`}
-          >
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
             Display Name
             <span className="text-red-500 ml-1">*</span>
           </label>
@@ -94,13 +89,12 @@ export function ProfileForm({
               className={cn(
                 `w-full pl-12 pr-4 py-4 rounded-2xl border-2 transition-all duration-200
                  text-sm font-medium placeholder-gray-400
-                 focus:outline-none focus:ring-4 focus:ring-blue-500/20`,
-                classes.bg.elevated,
-                classes.text.primary,
+                 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`,
                 displayNameError
                   ? `border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400
                      bg-red-50/50 dark:bg-red-900/10`
-                  : `${classes.border.default} focus:border-blue-500 dark:focus:border-blue-400
+                  : `border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400
                      hover:border-gray-300 dark:hover:border-gray-600`
               )}
               placeholder="Enter your display name"
@@ -116,7 +110,7 @@ export function ProfileForm({
                     ? "text-yellow-500"
                     : profileData.displayName.length > 50
                     ? "text-red-500"
-                    : classes.text.secondary
+                    : "text-gray-600 dark:text-gray-400"
                 }`}
               >
                 {profileData.displayName.length}/50
@@ -141,9 +135,7 @@ export function ProfileForm({
 
         {/* Email Section (Enhanced read-only styling) */}
         <div className="space-y-3">
-          <label
-            className={`block text-sm font-semibold ${classes.text.primary}`}
-          >
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
             Email Address
           </label>
 
@@ -156,11 +148,7 @@ export function ProfileForm({
               type="email"
               value={user.email || ""}
               disabled
-              className={cn(
-                `w-full pl-12 pr-4 py-4 rounded-2xl border-2 text-sm font-medium
-                 ${classes.border.default} ${classes.bg.accent} 
-                 ${classes.text.secondary} cursor-not-allowed`
-              )}
+              className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 text-sm font-medium border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
             />
 
             {/* Verified badge */}
@@ -178,8 +166,8 @@ export function ProfileForm({
         {/* Avatar Selection with enhanced presentation */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <Sparkles className={`w-4 h-4 ${classes.text.accent}`} />
-            <label className={`text-sm font-semibold ${classes.text.primary}`}>
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Choose Profile Avatar
             </label>
           </div>
@@ -202,8 +190,7 @@ export function ProfileForm({
                dark:focus:ring-offset-gray-800 relative overflow-hidden group`,
               loading || displayNameError
                 ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                : `${classes.button.primary} hover:scale-[1.02] active:scale-[0.98] 
-                   shadow-lg hover:shadow-xl`
+                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
             )}
           >
             {/* Button background gradient */}

@@ -1,6 +1,6 @@
 import { type User as FirebaseUser } from "firebase/auth";
 import type { RefObject } from "react";
-import { ThemeToggle } from "../../../contexts/ThemeContext";
+import { ThemeToggle } from "../../ui/ThemeToggle";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { UserProfileButton } from "./UserProfileButton";
 

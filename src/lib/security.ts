@@ -7,6 +7,13 @@ import {
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 
+// Enhanced security interfaces
+export interface PasswordValidationResult {
+  isValid: boolean;
+  score: number;
+  errors: string[];
+}
+
 export interface LoginAttempt {
   timestamp: number;
   email: string;
@@ -143,21 +150,23 @@ export class SecurityManager {
     // Multi-factor authentication required
   }
 
-  // Security validation
-  public validatePasswordStrength(password: string): {
-    isValid: boolean;
-    errors: string[];
-    score: number;
-  } {
+  // Enhanced security validation
+  public validatePasswordStrength(password: string): PasswordValidationResult {
     const errors: string[] = [];
     let score = 0;
 
+    // Length check
     if (password.length < 8) {
       errors.push("Password must be at least 8 characters long");
+    } else if (password.length >= 16) {
+      score += 3;
+    } else if (password.length >= 12) {
+      score += 2;
     } else {
       score += 1;
     }
 
+    // Character variety checks
     if (!/[a-z]/.test(password)) {
       errors.push("Password must contain at least one lowercase letter");
     } else {
@@ -176,13 +185,24 @@ export class SecurityManager {
       score += 1;
     }
 
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    if (!/[!@#$%^&*(),.?":{}|<>-_=+\\[\]~`]/.test(password)) {
       errors.push("Password must contain at least one special character");
     } else {
       score += 1;
     }
 
-    // Check for common weak passwords
+    // Advanced security checks
+    if (/(.)\1{2,}/.test(password)) {
+      errors.push("Password cannot contain repeated characters");
+      score = Math.max(0, score - 1);
+    }
+
+    if (/123|abc|qwe|asd|zxc|456|789|321|cba|wer|sdf|xcv/i.test(password)) {
+      errors.push("Password cannot contain common sequences");
+      score = Math.max(0, score - 1);
+    }
+
+    // Check against expanded common passwords list
     const commonPasswords = [
       "password",
       "123456",
@@ -194,17 +214,67 @@ export class SecurityManager {
       "1234567890",
       "qwerty",
       "abc123",
+      "master",
+      "shadow",
+      "123123",
+      "654321",
+      "superman",
+      "qazwsx",
+      "michael",
+      "football",
+      "baseball",
+      "liverpool",
+      "dragon",
+      "mustang",
+      "access",
+      "trustno1",
+      "jordan23",
+      "harley",
+      "ranger",
+      "george",
+      "jennifer",
+      "hunter",
+      "buster",
+      "soccer",
+      "hockey",
+      "killer",
+      "charlie",
+      "andrew",
+      "tigger",
+      "sunshine",
+      "iloveyou",
+      "fuckme",
+      "2000",
+      "gemini",
+      "blahblah",
+      "jordan",
+      "123qwe",
+      "matthew",
+      "freedom",
+      "princess",
     ];
 
     if (commonPasswords.includes(password.toLowerCase())) {
-      errors.push("Password is too common");
+      errors.push("Password is too common and easily guessable");
       score = Math.max(0, score - 2);
+    }
+
+    // Check for dictionary words (simplified check)
+    if (password.length >= 4 && /^[a-zA-Z]+$/.test(password)) {
+      errors.push("Password should not be a simple dictionary word");
+      score = Math.max(0, score - 1);
+    }
+
+    // Bonus points for complexity
+    const uniqueChars = new Set(password).size;
+    if (uniqueChars >= password.length * 0.8) {
+      score += 1; // High character diversity
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      score,
+      score: Math.min(score, 10), // Cap at 10
     };
   }
 

@@ -4,7 +4,6 @@
 
 import type { LucideIcon } from "lucide-react";
 import React from "react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { Card } from "../../ui/Card";
 
 interface StatCardProps {
@@ -20,29 +19,27 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   variant = "default",
 }) => {
-  const { classes } = useTheme();
-
   const getVariantClasses = () => {
     switch (variant) {
       case "error":
         return {
-          border: classes.border.error,
-          text: classes.text.error,
+          border: "border-red-200 dark:border-red-700",
+          text: "text-red-600 dark:text-red-400",
         };
       case "warning":
         return {
-          border: classes.border.warning,
-          text: classes.text.warning,
+          border: "border-yellow-200 dark:border-yellow-700",
+          text: "text-yellow-600 dark:text-yellow-400",
         };
       case "success":
         return {
-          border: classes.border.success,
-          text: classes.text.success,
+          border: "border-green-200 dark:border-green-700",
+          text: "text-green-600 dark:text-green-400",
         };
       default:
         return {
-          border: classes.border.default,
-          text: classes.text.accent,
+          border: "border-gray-200 dark:border-gray-700",
+          text: "text-blue-600 dark:text-blue-400",
         };
     }
   };
@@ -50,10 +47,10 @@ export const StatCard: React.FC<StatCardProps> = ({
   const variantClasses = getVariantClasses();
 
   return (
-    <Card className={`p-6 ${classes.bg.primary} ${variantClasses.border}`}>
+    <Card className={`p-6 bg-white dark:bg-gray-900 ${variantClasses.border}`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className={`text-sm font-medium ${classes.text.secondary}`}>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {title}
           </p>
           <p className={`text-2xl font-bold ${variantClasses.text}`}>{value}</p>

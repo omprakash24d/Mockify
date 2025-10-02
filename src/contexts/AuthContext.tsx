@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
+import AuthSecurityMiddleware from "../middleware/authSecurity";
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -35,21 +36,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     import.meta.env.VITE_SESSION_TIMEOUT || "86400000"
   ); // 24 hours default
 
+  const securityMiddleware = AuthSecurityMiddleware.getInstance();
+
   const updateActivity = useCallback(() => {
     const now = Date.now();
     setLastActivity(now);
     localStorage.setItem("mockify-lastActivity", now.toString());
-  }, []);
+
+    // Update session activity in security middleware
+    if (user) {
+      securityMiddleware.updateSessionActivity(user.uid);
+    }
+  }, [user, securityMiddleware]);
 
   const logout = useCallback(async () => {
     try {
-      await auth.signOut();
-      localStorage.removeItem("mockify-lastActivity");
-      localStorage.removeItem("mockify-loginAttempts");
+      // Use secure logout that clears all session data
+      await securityMiddleware.secureLogout();
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error during secure logout:", error);
     }
-  }, []);
+  }, [securityMiddleware]);
 
   const checkSessionTimeout = useCallback(() => {
     const storedActivity = localStorage.getItem("mockify-lastActivity");
@@ -61,18 +68,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Session expired, logging out
         return false;
       }
+    } else {
+      // No stored activity means this is a fresh authentication
+      // Initialize activity timestamp for new sessions
+      localStorage.setItem("mockify-lastActivity", Date.now().toString());
     }
     return true;
   }, [sessionTimeout]);
 
   useEffect(() => {
-    // Set persistence to local storage
-    setPersistence(auth, browserLocalPersistence).catch(console.error);
+    // Set persistence to local storage with error handling
+    setPersistence(auth, browserLocalPersistence).catch((error) => {
+      console.warn("Could not set Firebase persistence:", error);
+      // Continue without persistence if network is unavailable
+    });
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser && checkSessionTimeout()) {
-        setUser(firebaseUser);
-        updateActivity();
+        try {
+          // Create or validate secure session
+          const session = securityMiddleware.validateSession(firebaseUser.uid);
+          if (session) {
+            // Check for potential session hijacking
+            if (securityMiddleware.detectSessionHijacking(session)) {
+              console.warn(
+                "Potential security threat detected, logging out user"
+              );
+              logout();
+              return;
+            }
+            setUser(firebaseUser);
+            updateActivity();
+          } else {
+            // Create new session - do this asynchronously to avoid blocking
+            Promise.resolve().then(() => {
+              securityMiddleware.createSession(firebaseUser);
+            });
+            setUser(firebaseUser);
+            updateActivity();
+          }
+        } catch (error) {
+          console.error("Session management error:", error);
+          // Fall back to basic authentication without session middleware
+          setUser(firebaseUser);
+          updateActivity();
+        }
       } else {
         setUser(null);
       }

@@ -99,7 +99,6 @@ export const cacheManager = {
     const criticalResources = [
       "/src/main.tsx",
       "/src/App.tsx",
-      "/src/contexts/ThemeContext.tsx",
     ];
 
     criticalResources.forEach((resource) => {

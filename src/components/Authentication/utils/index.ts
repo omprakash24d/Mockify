@@ -28,17 +28,36 @@ export const validateForm = (
 ): boolean => {
   if (isLogin) {
     // For login, only email and password are required
-    return formData.email.trim().length > 0 && formData.password.length > 0;
-  } else {
-    // For signup, all fields must be valid
-    const allFieldsFilled = Object.entries(formData).every(([key, value]) => {
-      // coachingLogo is optional
-      if (key === "coachingLogo") return true;
-      return value.trim().length > 0;
-    });
+    // Use basic email validation to ensure it's not just whitespace
+    const isEmailValid =
+      formData.email.trim().length > 0 &&
+      formData.email.includes("@") &&
+      formData.email.includes(".");
+    const isPasswordValid = formData.password.length > 0;
 
-    // Form is valid if all fields are filled and password is strong
-    return allFieldsFilled && passwordStrength.isValid;
+    return isEmailValid && isPasswordValid;
+  } else {
+    // For signup, validate each required field individually
+    const requiredFields = {
+      name: formData.name.trim().length > 0,
+      email:
+        formData.email.trim().length > 0 &&
+        formData.email.includes("@") &&
+        formData.email.includes("."),
+      password: formData.password.length > 0,
+      confirmPassword: formData.confirmPassword.length > 0,
+      coachingName: formData.coachingName.trim().length > 0,
+      phoneNumber: formData.phoneNumber.trim().length > 0,
+    };
+
+    // Check if all required fields are filled
+    const allFieldsFilled = Object.values(requiredFields).every(Boolean);
+
+    // Check if passwords match
+    const passwordsMatch = formData.password === formData.confirmPassword;
+
+    // Form is valid if all conditions are met
+    return allFieldsFilled && passwordsMatch && passwordStrength.isValid;
   }
 };
 

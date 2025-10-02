@@ -1,6 +1,6 @@
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
+import { ThemeToggle } from "../../ui/ThemeToggle";
 
 interface MobileMenuButtonProps {
   isMenuOpen: boolean;

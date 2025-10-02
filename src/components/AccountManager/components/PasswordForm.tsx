@@ -1,5 +1,4 @@
 import { KeyRound, Lock, Shield, ShieldCheck } from "lucide-react";
-import { useTheme } from "../../../contexts/ThemeContext";
 import { cn } from "../../../lib/utils";
 import type {
   PasswordFormData,
@@ -28,8 +27,6 @@ export function PasswordForm({
   onVisibilityToggle,
   onSubmit,
 }: PasswordFormProps) {
-  const { classes } = useTheme();
-
   const isPasswordMismatch =
     passwordData.confirmPassword &&
     passwordData.newPassword &&
@@ -59,10 +56,10 @@ export function PasswordForm({
         </div>
 
         <div className="space-y-1">
-          <h3 className={`text-lg font-semibold ${classes.text.primary}`}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Security Settings
           </h3>
-          <p className={`text-sm ${classes.text.secondary}`}>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Update your password to keep your account secure
           </p>
         </div>
@@ -71,9 +68,7 @@ export function PasswordForm({
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Current Password */}
         <div className="space-y-3">
-          <label
-            className={`block text-sm font-semibold ${classes.text.primary}`}
-          >
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
             Current Password
             <span className="text-red-500 ml-1">*</span>
           </label>
@@ -93,10 +88,9 @@ export function PasswordForm({
                 `w-full pl-12 pr-14 py-4 rounded-2xl border-2 transition-all duration-200
                  text-sm font-medium placeholder-gray-400
                  focus:outline-none focus:ring-4 focus:ring-red-500/20`,
-                classes.bg.elevated,
-                classes.text.primary,
-                `${classes.border.default} focus:border-red-500 dark:focus:border-red-400
-                 hover:border-gray-300 dark:hover:border-gray-600`
+                "bg-white dark:bg-gray-800",
+                "text-gray-900 dark:text-gray-100",
+                "border-gray-200 dark:border-gray-700 focus:border-red-500 dark:focus:border-red-400 hover:border-gray-300 dark:hover:border-gray-600"
               )}
               placeholder="Enter your current password"
               required
@@ -119,9 +113,7 @@ export function PasswordForm({
 
         {/* New Password */}
         <div className="space-y-3">
-          <label
-            className={`block text-sm font-semibold ${classes.text.primary}`}
-          >
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
             New Password
             <span className="text-red-500 ml-1">*</span>
           </label>
@@ -139,10 +131,9 @@ export function PasswordForm({
                 `w-full pl-12 pr-14 py-4 rounded-2xl border-2 transition-all duration-200
                  text-sm font-medium placeholder-gray-400
                  focus:outline-none focus:ring-4 focus:ring-blue-500/20`,
-                classes.bg.elevated,
-                classes.text.primary,
-                `${classes.border.default} focus:border-blue-500 dark:focus:border-blue-400
-                 hover:border-gray-300 dark:hover:border-gray-600`
+                "bg-white dark:bg-gray-800",
+                "text-gray-900 dark:text-gray-100",
+                "border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 hover:border-gray-300 dark:hover:border-gray-600"
               )}
               placeholder="Create a strong new password"
               required
@@ -176,9 +167,7 @@ export function PasswordForm({
 
         {/* Confirm Password */}
         <div className="space-y-3">
-          <label
-            className={`block text-sm font-semibold ${classes.text.primary}`}
-          >
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
             Confirm New Password
             <span className="text-red-500 ml-1">*</span>
           </label>
@@ -207,12 +196,12 @@ export function PasswordForm({
                 `w-full pl-12 pr-14 py-4 rounded-2xl border-2 transition-all duration-200
                  text-sm font-medium placeholder-gray-400
                  focus:outline-none focus:ring-4`,
-                classes.bg.elevated,
-                classes.text.primary,
+                "bg-white dark:bg-gray-800",
+                "text-gray-900 dark:text-gray-100",
                 isPasswordMismatch
                   ? `border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400
                      focus:ring-red-500/20 bg-red-50/50 dark:bg-red-900/10`
-                  : `${classes.border.default} focus:border-green-500 dark:focus:border-green-400
+                  : `border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-400
                      focus:ring-green-500/20 hover:border-gray-300 dark:hover:border-gray-600`
               )}
               placeholder="Confirm your new password"
@@ -293,16 +282,14 @@ export function PasswordForm({
         </div>
 
         {/* Security tips */}
-        <div
-          className={`p-4 rounded-2xl ${classes.bg.accent} border ${classes.border.light}`}
-        >
+        <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
           <div className="flex items-start space-x-3">
-            <ShieldCheck className={`w-5 h-5 mt-0.5 ${classes.text.accent}`} />
+            <ShieldCheck className="w-5 h-5 mt-0.5 text-blue-600 dark:text-blue-400" />
             <div className="space-y-2">
-              <h4 className={`text-sm font-semibold ${classes.text.primary}`}>
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Security Tips
               </h4>
-              <ul className={`text-xs ${classes.text.secondary} space-y-1`}>
+              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                 <li>• Use a unique password you haven't used elsewhere</li>
                 <li>• Consider using a password manager</li>
                 <li>• Enable two-factor authentication when available</li>
