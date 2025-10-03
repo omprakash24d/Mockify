@@ -9,15 +9,18 @@ const Dashboard = React.lazy(() =>
   }))
 );
 const NEETDashboard = React.lazy(() => import("../NEET/NEETDashboard"));
-const NEETUIDemo = React.lazy(() =>
-  import("../NEETTestUI/NEETUIDemo").then((module) => ({
-    default: module.NEETUIDemo,
+
+const AdminPage = React.lazy(() =>
+  import("../Admin/AdminPage").then((module) => ({
+    default: module.AdminPage,
+  }))
+);
+const StudentPage = React.lazy(() =>
+  import("../Student/StudentPage").then((module) => ({
+    default: module.StudentPage,
   }))
 );
 
-const ModernAdminDashboard = React.lazy(
-  () => import("../AdminDashboard/ModernAdminDashboard")
-);
 const CreateTestWizard = React.lazy(() =>
   import("../CreateTest").then((module) => ({
     default: module.CreateTestWizard,
@@ -40,8 +43,7 @@ const EmailVerificationFlow = React.lazy(
   () => import("../EmailVerification/EmailVerificationFlow")
 );
 
-// Import AdminRoute (not lazy as it's a wrapper)
-import { AdminRoute } from "../../middleware/adminAuth";
+// AdminRoute removed - admin functionality now integrated into NEETUIDemo
 
 interface AppRoutesProps {
   children?: React.ReactNode;
@@ -53,14 +55,12 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ children }) => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/neet" element={<NEETDashboard />} />
-        <Route path="/neet-ui-demo" element={<NEETUIDemo />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/student" element={<StudentPage />} />
+        {/* Legacy route - redirects to admin */}
         <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <ModernAdminDashboard />
-            </AdminRoute>
-          }
+          path="/neet-ui-demo"
+          element={<Navigate to="/admin" replace />}
         />
         <Route path="/create-test" element={<CreateTestWizard />} />
         <Route path="/test" element={<Navigate to="/create-test" replace />} />

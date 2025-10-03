@@ -16,11 +16,13 @@ import { useDebounce } from "../../hooks/useDebounce";
 import { adminApi } from "../../services/efficientAPI";
 import type { Question } from "../../types/neet";
 import { LoadingSpinner } from "../LoadingSpinner";
+import { AdminQuestionCard } from "../NEETTestUI/components/AdminQuestionCard";
+import { AdvancedPagination } from "../NEETTestUI/components/AdvancedPagination";
+import { QuestionModal } from "../NEETTestUI/components/QuestionModal";
+import { mockStudents } from "../NEETTestUI/data/mockStudents";
+import { Alert } from "../ui/Alert";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
-import { AdminQuestionCard } from "./components/AdminQuestionCard";
-import { AdvancedPagination } from "./components/AdvancedPagination";
-import { mockStudents } from "./data/mockStudents";
 
 interface AdminStats {
   totalStudents: number;
@@ -71,6 +73,21 @@ export const AdminDashboard: React.FC = () => {
   const [chapters, setChapters] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">(
+    "view"
+  );
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null
+  );
+
+  // Notification State
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Filters and Search
   const [filters, setFilters] = useState<QuestionFilters>({
@@ -244,8 +261,9 @@ export const AdminDashboard: React.FC = () => {
 
   // CRUD Operations for Questions
   const handleEditQuestion = (question: Question) => {
-    console.log("Edit question:", question);
-    // Implementation: Open question editor modal/page
+    setSelectedQuestion(question);
+    setModalMode("edit");
+    setModalOpen(true);
   };
 
   const handleDeleteQuestion = async (questionId: string) => {
@@ -292,9 +310,69 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleViewQuestionDetails = (question: Question) => {
-    console.log("View question details:", question);
-    // Implementation: Open question details modal
+    setSelectedQuestion(question);
+    setModalMode("view");
+    setModalOpen(true);
   };
+
+  const handleCreateQuestion = () => {
+    setSelectedQuestion(null);
+    setModalMode("create");
+    setModalOpen(true);
+  };
+
+  const handleSaveQuestion = async (questionData: any) => {
+    try {
+      if (modalMode === "edit" && selectedQuestion) {
+        // Update existing question
+        await adminApi.updateQuestion(selectedQuestion._id, questionData, {
+          timeout: 10000,
+          retries: 1,
+        });
+        setNotification({
+          message: "Question updated successfully!",
+          type: "success",
+        });
+      } else if (modalMode === "create") {
+        // Create new question
+        await adminApi.createQuestion(questionData, {
+          timeout: 10000,
+          retries: 1,
+        });
+        setNotification({
+          message: "Question created successfully!",
+          type: "success",
+        });
+      }
+
+      // Refresh questions list and stats
+      await Promise.all([fetchQuestions(), fetchAdminStats()]);
+
+      setModalOpen(false);
+      setSelectedQuestion(null);
+    } catch (err) {
+      console.error("Error saving question:", err);
+      setNotification({
+        message: err instanceof Error ? err.message : "Failed to save question",
+        type: "error",
+      });
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedQuestion(null);
+  };
+
+  // Clear notifications after 5 seconds
+  React.useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const fetchQuestions = async () => {
     try {
@@ -419,7 +497,16 @@ export const AdminDashboard: React.FC = () => {
 
   const handleSelectAll = (isSelected: boolean) => {
     if (isSelected) {
-      setSelectedQuestions(new Set(filteredQuestions.map((q) => q._id)));
+      // Use id field (converted string) or fallback to _id
+      setSelectedQuestions(
+        new Set(
+          filteredQuestions.map((q) => {
+            if (q.id) return q.id;
+            if (typeof q._id === "string") return q._id;
+            return String(q._id); // Convert object to string as fallback
+          })
+        )
+      );
     } else {
       setSelectedQuestions(new Set());
     }
@@ -444,7 +531,10 @@ export const AdminDashboard: React.FC = () => {
                 <Download className="w-4 h-4 mr-2" />
                 Export Data
               </Button>
-              <Button className="shadow-lg rounded-xl">
+              <Button
+                onClick={handleCreateQuestion}
+                className="shadow-lg rounded-xl"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Quick Add
               </Button>
@@ -1085,13 +1175,28 @@ export const AdminDashboard: React.FC = () => {
                   <Button variant="outline" className="shadow-sm rounded-xl">
                     Export
                   </Button>
-                  <Button className="shadow-lg rounded-xl">
+                  <Button
+                    onClick={handleCreateQuestion}
+                    className="shadow-lg rounded-xl"
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Question
                   </Button>
                 </div>
               </div>
             </div>
+
+            {/* Notification */}
+            {notification && (
+              <Alert
+                variant={
+                  notification.type === "success" ? "success" : "destructive"
+                }
+                className="mb-6"
+              >
+                {notification.message}
+              </Alert>
+            )}
 
             {/* Questions Display */}
             {loading ? (
@@ -1110,7 +1215,10 @@ export const AdminDashboard: React.FC = () => {
                       ? "Try adjusting your filters or search terms."
                       : "Start building your question bank by adding new questions."}
                   </p>
-                  <Button className="shadow-lg rounded-xl">
+                  <Button
+                    onClick={handleCreateQuestion}
+                    className="shadow-lg rounded-xl"
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Your First Question
                   </Button>
@@ -1118,23 +1226,33 @@ export const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredQuestions.map((question, index) => (
-                  <AdminQuestionCard
-                    key={question._id}
-                    question={question}
-                    questionNumber={
-                      (currentPage - 1) * itemsPerPage + index + 1
-                    }
-                    isSelected={selectedQuestions.has(question._id)}
-                    onSelect={(questionId, selected) =>
-                      handleSelectQuestion(questionId, selected)
-                    }
-                    onEdit={handleEditQuestion}
-                    onDelete={handleDeleteQuestion}
-                    onDuplicate={handleDuplicateQuestion}
-                    onViewDetails={handleViewQuestionDetails}
-                  />
-                ))}
+                {filteredQuestions.map((question, index) => {
+                  // Ensure we have a valid string key
+                  const questionKey =
+                    question.id ||
+                    (typeof question._id === "string"
+                      ? question._id
+                      : `question-${index}`);
+                  return (
+                    <AdminQuestionCard
+                      key={questionKey}
+                      question={question}
+                      questionNumber={
+                        (currentPage - 1) * itemsPerPage + index + 1
+                      }
+                      isSelected={selectedQuestions.has(
+                        question.id || question._id
+                      )}
+                      onSelect={(questionId, selected) =>
+                        handleSelectQuestion(questionId, selected)
+                      }
+                      onEdit={handleEditQuestion}
+                      onDelete={handleDeleteQuestion}
+                      onDuplicate={handleDuplicateQuestion}
+                      onViewDetails={handleViewQuestionDetails}
+                    />
+                  );
+                })}
 
                 {/* Questions Pagination */}
                 {filteredQuestions.length > 0 && (
@@ -1276,6 +1394,15 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Question Modal */}
+      <QuestionModal
+        isOpen={modalOpen}
+        question={selectedQuestion}
+        mode={modalMode}
+        onClose={closeModal}
+        onSave={handleSaveQuestion}
+      />
     </div>
   );
 };

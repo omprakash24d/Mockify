@@ -3,10 +3,15 @@ import React from "react";
 import { cn } from "../../../lib/utils";
 import type { ProgressStepsProps } from "../types";
 
-export const ProgressSteps: React.FC<ProgressStepsProps> = ({
+interface ExtendedProgressStepsProps extends ProgressStepsProps {
+  onStepClick?: (stepId: number) => void;
+}
+
+export const ProgressSteps: React.FC<ExtendedProgressStepsProps> = ({
   steps,
   currentStep,
   stepLoading,
+  onStepClick,
 }) => {
   const getStepColors = (stepId: number) => {
     switch (stepId) {
@@ -57,20 +62,24 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
             <div key={step.id} className="flex items-center flex-1">
               {/* Step Circle */}
               <div className="flex flex-col items-center">
-                <div
+                <button
+                  onClick={() => onStepClick?.(step.id)}
+                  disabled={!onStepClick || stepLoading[step.id]}
                   className={cn(
-                    "w-16 h-16 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 relative shadow-lg",
+                    "w-16 h-16 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 relative shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50 disabled:hover:scale-100",
                     isCompleted &&
-                      "bg-gradient-to-br from-emerald-500 to-green-600 text-white",
+                      "bg-gradient-to-br from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700",
                     isCurrent &&
                       `bg-gradient-to-br ${colors.bg.replace(
                         "bg-",
                         "from-"
                       )} to-${
                         colors.bg.split("-")[1]
-                      }-600 text-white scale-110 shadow-2xl`,
+                      }-600 text-white scale-110 shadow-2xl hover:scale-115`,
                     isUpcoming &&
-                      "bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600"
+                      "bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-600 dark:hover:text-slate-400",
+                    !onStepClick && "cursor-default",
+                    onStepClick && !stepLoading[step.id] && "cursor-pointer"
                   )}
                 >
                   {isCompleted ? (
@@ -83,7 +92,7 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                   {isCurrent && stepLoading[step.id] && (
                     <div className="absolute inset-0 rounded-2xl border-2 border-white/30 border-t-white animate-spin"></div>
                   )}
-                </div>
+                </button>
 
                 {/* Step Info */}
                 <div className="mt-4 text-center max-w-32">

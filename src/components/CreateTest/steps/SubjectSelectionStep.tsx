@@ -73,14 +73,14 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
           {/* Stats & Controls */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
             <div className="flex items-center space-x-4">
-              <div className="bg-white dark:bg-slate-800 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <div className="bg-white dark:bg-gray-700 px-6 py-3 rounded-2xl border border-gray-200 dark:border-gray-500 shadow-sm">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {subjects.length} Available Subjects
                 </span>
               </div>
               {selectedSubjects.length > 0 && (
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-3 rounded-2xl border border-blue-200 dark:border-blue-800">
-                  <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 rounded-2xl border shadow-sm">
+                  <span className="text-sm font-semibold text-white">
                     {selectedSubjects.length} Selected
                   </span>
                 </div>
@@ -88,11 +88,18 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
             </div>
 
             {/* Quick Actions */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button
                 type="button"
                 onClick={() => setSelectedSubjects(subjects.map((s) => s.id))}
-                className="px-6 py-3 text-sm font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-300 rounded-2xl hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-300 border border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md"
+                className="px-6 py-3 text-sm font-semibold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-2xl transition-all duration-300 border shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+              >
+                🎯 Whole Syllabus
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedSubjects(subjects.map((s) => s.id))}
+                className="px-6 py-3 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl transition-all duration-300 border shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               >
                 Select All
               </button>
@@ -100,7 +107,7 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                 type="button"
                 onClick={() => setSelectedSubjects([])}
                 disabled={selectedSubjects.length === 0}
-                className="px-6 py-3 text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm"
+                className="px-6 py-3 text-sm font-semibold bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-2xl hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300 border border-gray-300 dark:border-gray-500 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm transform hover:-translate-y-0.5"
               >
                 Clear All
               </button>
@@ -118,8 +125,8 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                     "group relative p-8 rounded-3xl cursor-pointer transition-all duration-300 hover:-translate-y-1",
                     "border-2 shadow-lg hover:shadow-2xl",
                     isSelected
-                      ? "border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-blue-200/50 dark:shadow-blue-900/30"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20"
+                      ? "border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-500/20 dark:to-indigo-500/20 shadow-blue-300/60 dark:shadow-blue-400/60"
+                      : "border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-400 hover:shadow-blue-200/40 dark:hover:shadow-blue-400/40"
                   )}
                 >
                   {/* Selection Indicator */}
@@ -128,8 +135,8 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                       className={cn(
                         "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                         isSelected
-                          ? "border-blue-500 bg-blue-500 shadow-lg"
-                          : "border-slate-300 dark:border-slate-600 group-hover:border-blue-400 group-hover:scale-110"
+                          ? "border-blue-600 bg-blue-600 shadow-lg shadow-blue-300/50 dark:shadow-blue-600/40"
+                          : "border-gray-400 dark:border-gray-500 group-hover:border-blue-500 group-hover:scale-110"
                       )}
                     >
                       {isSelected && (
@@ -151,8 +158,8 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                       className={cn(
                         "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg",
                         isSelected
-                          ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white"
-                          : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-indigo-100 dark:group-hover:from-blue-900/30 dark:group-hover:to-indigo-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                          ? "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-400/50"
+                          : "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-indigo-100 dark:group-hover:from-blue-600/60 dark:group-hover:to-indigo-600/60 group-hover:text-blue-700 dark:group-hover:text-blue-200"
                       )}
                     >
                       <GraduationCap className="w-8 h-8" />
@@ -164,23 +171,24 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                         className={cn(
                           "font-bold text-xl transition-colors duration-300",
                           isSelected
-                            ? "text-blue-900 dark:text-blue-100"
-                            : "text-slate-900 dark:text-slate-100"
+                            ? "text-blue-800 dark:text-blue-200"
+                            : "text-gray-900 dark:text-gray-100"
                         )}
                       >
                         {subject.name}
                       </h3>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <BookOpen className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                          <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                             {subject.chapters?.length || 0} chapters
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <BarChart3 className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                            ~{(subject.chapters?.length || 0) * 15} questions
+                          <BarChart3 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            ~{Math.round((subject.chapters?.length || 0) * 300)}{" "}
+                            questions
                           </span>
                         </div>
                       </div>
@@ -198,12 +206,12 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
 
           {/* Selection Summary */}
           {selectedSubjects.length > 0 && (
-            <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 rounded-3xl border border-blue-200 dark:border-blue-800/50 shadow-xl">
+            <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-600/20 dark:via-indigo-600/20 dark:to-purple-600/20 rounded-3xl border border-blue-200 dark:border-blue-400/50 shadow-xl">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-400/30">
                   <CheckCircle className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                <h4 className="text-xl font-bold text-blue-800 dark:text-blue-200">
                   Selected Subjects Summary
                 </h4>
               </div>
@@ -214,16 +222,16 @@ export const SubjectSelectionStep: React.FC<StepComponentProps> = ({
                   return (
                     <div
                       key={subject.id}
-                      className="flex items-center space-x-4 p-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl shadow-sm border border-white/50 dark:border-slate-700/50 backdrop-blur-sm"
+                      className="flex items-center space-x-4 p-4 bg-white/90 dark:bg-gray-700/90 rounded-2xl shadow-sm border border-white/80 dark:border-gray-500/80 backdrop-blur-sm"
                     >
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-md shadow-blue-400/30">
                         <GraduationCap className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm truncate">
+                        <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
                           {subject.name}
                         </div>
-                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                           {subject.chapters?.length || 0} chapters
                         </div>
                       </div>

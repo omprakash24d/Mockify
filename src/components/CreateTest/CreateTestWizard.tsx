@@ -222,6 +222,7 @@ export const CreateTestWizard: React.FC = () => {
           steps={WIZARD_STEPS}
           currentStep={currentStep}
           stepLoading={stepLoading}
+          onStepClick={setCurrentStep}
         />
 
         {/* Main Content Card */}

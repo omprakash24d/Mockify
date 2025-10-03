@@ -29,7 +29,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         inline-flex items-center gap-2 rounded transition-colors
         ${btnSize}
         font-medium text-gray-600 dark:text-gray-300 
-        hover:bg-gray-100 dark:hover:bg-gray-800
+        hover:bg-blue-100 dark:hover:bg-blue-800
         focus:outline-none focus:ring-2 focus:ring-blue-500/20
         ${className}
       `}
@@ -37,12 +37,12 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       {isDark ? (
         <>
           <Moon className={iconSize} />
-          <span className="hidden sm:inline">Dark</span>
+          {/* <span className="hidden sm:inline">Dark</span> */}
         </>
       ) : (
         <>
           <Sun className={iconSize} />
-          <span className="hidden sm:inline">Light</span>
+          {/* <span className="hidden sm:inline">Light</span> */}
         </>
       )}
     </button>

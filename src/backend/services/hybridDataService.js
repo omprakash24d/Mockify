@@ -1,12 +1,26 @@
 const mongoose = require("mongoose");
 const { getFirestore } = require("../config/firebase");
 const logger = require("../config/logger");
+const {
+  DatabaseErrorHandler,
+  FirebaseErrorHandler,
+} = require("../utils/databaseErrorHandler");
+const {
+  DatabaseError,
+  ExternalServiceError,
+  NotFoundError,
+} = require("../errors/CustomErrors");
 
 class HybridDataService {
   constructor() {
     this.useFirebase = false;
     this.useMongoDB = false;
     this.firestore = null;
+    this.dbErrorHandler = new DatabaseErrorHandler({
+      maxRetries: 3,
+      retryDelay: 1000,
+      timeoutMs: 30000,
+    });
   }
 
   async initialize() {
@@ -42,53 +56,72 @@ class HybridDataService {
 
   // Generic CRUD operations
   async create(collection, data) {
-    try {
-      if (this.useFirebase) {
-        const docRef = await this.firestore.collection(collection).add({
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-        const doc = await docRef.get();
-        return { id: doc.id, ...doc.data() };
-      }
+    return this.dbErrorHandler.executeWithRetry(
+      async () => {
+        if (this.useFirebase) {
+          try {
+            const docRef = await this.firestore.collection(collection).add({
+              ...data,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            });
+            const doc = await docRef.get();
+            return { id: doc.id, ...doc.data() };
+          } catch (error) {
+            FirebaseErrorHandler.handleFirebaseError(error, "create");
+          }
+        }
 
-      // Fallback to MongoDB
-      if (this.useMongoDB) {
-        const Model = this.getMongoModel(collection);
-        const document = new Model(data);
-        await document.save();
-        return document.toObject();
-      }
+        // Fallback to MongoDB
+        if (this.useMongoDB) {
+          const Model = this.getMongoModel(collection);
+          const document = new Model(data);
+          await document.save();
+          return document.toObject();
+        }
 
-      throw new Error("No database available");
-    } catch (error) {
-      logger.error(`Create operation failed for ${collection}:`, error);
-      throw error;
-    }
+        throw new DatabaseError("No database available", "create");
+      },
+      {
+        operation: "create",
+        collection,
+        data: process.env.NODE_ENV === "development" ? data : "[REDACTED]",
+      }
+    );
   }
 
   async findById(collection, id) {
-    try {
-      if (this.useFirebase) {
-        const doc = await this.firestore.collection(collection).doc(id).get();
-        if (doc.exists) {
-          return { id: doc.id, ...doc.data() };
+    return this.dbErrorHandler.executeWithRetry(
+      async () => {
+        if (this.useFirebase) {
+          try {
+            const doc = await this.firestore
+              .collection(collection)
+              .doc(id)
+              .get();
+            if (doc.exists) {
+              return { id: doc.id, ...doc.data() };
+            }
+            return null;
+          } catch (error) {
+            FirebaseErrorHandler.handleFirebaseError(error, "findById");
+          }
         }
-        return null;
-      }
 
-      if (this.useMongoDB) {
-        const Model = this.getMongoModel(collection);
-        const document = await Model.findById(id);
-        return document ? document.toObject() : null;
-      }
+        if (this.useMongoDB) {
+          const Model = this.getMongoModel(collection);
+          const document = await Model.findById(id);
+          return document ? document.toObject() : null;
+        }
 
-      throw new Error("No database available");
-    } catch (error) {
-      logger.error(`FindById operation failed for ${collection}:`, error);
-      throw error;
-    }
+        throw new DatabaseError("No database available", "findById");
+      },
+      {
+        operation: "findById",
+        collection,
+        data: { id },
+      }
+    );
   }
 
   async find(collection, query = {}, options = {}) {

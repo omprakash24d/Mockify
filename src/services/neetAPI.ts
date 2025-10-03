@@ -60,8 +60,11 @@ class APIService {
   ): Promise<APIResponse<QuestionsResponse>> {
     const queryString = new URLSearchParams(
       Object.entries(params).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null) {
-          acc[key] = String(value);
+        if (value !== undefined && value !== null && value !== "") {
+          const stringValue = String(value).trim();
+          if (stringValue) {
+            acc[key] = stringValue;
+          }
         }
         return acc;
       }, {} as Record<string, string>)
@@ -78,8 +81,11 @@ class APIService {
   ): Promise<APIResponse<Question[]>> {
     const queryString = new URLSearchParams(
       Object.entries(params).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null) {
-          acc[key] = String(value);
+        if (value !== undefined && value !== null && value !== "") {
+          const stringValue = String(value).trim();
+          if (stringValue) {
+            acc[key] = stringValue;
+          }
         }
         return acc;
       }, {} as Record<string, string>)
@@ -96,8 +102,11 @@ class APIService {
     const queryParams = { q: searchTerm, ...params };
     const queryString = new URLSearchParams(
       Object.entries(queryParams).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null) {
-          acc[key] = String(value);
+        if (value !== undefined && value !== null && value !== "") {
+          const stringValue = String(value).trim();
+          if (stringValue) {
+            acc[key] = stringValue;
+          }
         }
         return acc;
       }, {} as Record<string, string>)

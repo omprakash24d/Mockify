@@ -180,24 +180,26 @@ export const PreviewGenerateStep: React.FC<StepComponentProps> = ({
             </div>
           </div>
 
-          <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3 mb-2">
-              <Clock className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-md">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Generated Questions
               </span>
             </div>
             <div
-              className={`text-2xl font-bold transition-colors duration-300 ${
+              className={`text-3xl font-bold transition-colors duration-300 ${
                 questions.length > 0
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-slate-600 dark:text-slate-400"
               }`}
             >
               {questions.length > 0 ? questions.length : "Not loaded"}
             </div>
             {questions.length > 0 && (
-              <div className="text-xs text-gray-600 dark:text-gray-400 transition-colors duration-300">
+              <div className="text-xs text-slate-600 dark:text-slate-400 transition-colors duration-300">
                 Total Marks: {calculateTotalMarks(questions)}
               </div>
             )}
@@ -227,71 +229,73 @@ export const PreviewGenerateStep: React.FC<StepComponentProps> = ({
 
       {/* Questions Preview */}
       {questions.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden transition-colors duration-300">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-3xl overflow-hidden transition-colors duration-300 shadow-xl">
+          <div className="p-8 border-b border-slate-200 dark:border-slate-600">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Eye className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 transition-colors duration-300">
                     Questions Preview
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 transition-colors duration-300">
                     Showing {Math.min(5, questions.length)} of{" "}
                     {questions.length} questions
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
                   {questions.length}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                <div className="text-xs text-slate-600 dark:text-slate-400 transition-colors duration-300 font-semibold">
                   Total Questions
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-8">
             <div className="space-y-6 max-h-96 overflow-y-auto">
               {questions.slice(0, 5).map((question, index) => (
                 <div
                   key={question.id}
-                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors duration-300"
+                  className="p-6 bg-slate-50 dark:bg-slate-700 rounded-2xl border border-slate-200 dark:border-slate-600 transition-colors duration-300 shadow-sm hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="font-bold text-lg text-slate-900 dark:text-slate-100 transition-colors duration-300">
                       Q{index + 1}.
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       <span
                         className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
+                          "px-3 py-1 rounded-xl text-xs font-bold shadow-sm",
                           question.difficulty === "easy"
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
                             : question.difficulty === "medium"
-                            ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
                             : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
                         )}
                       >
                         {question.difficulty}
                       </span>
-                      <span className="text-xs text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full bg-white dark:bg-gray-800 transition-colors duration-300">
+                      <span className="text-xs text-slate-600 dark:text-slate-400 px-3 py-1 rounded-xl bg-white dark:bg-slate-800 transition-colors duration-300 font-semibold shadow-sm">
                         {question.marks || 1} marks
                       </span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-900 dark:text-gray-100 mb-3 leading-relaxed transition-colors duration-300">
+                  <div className="text-sm text-slate-900 dark:text-slate-100 mb-4 leading-relaxed transition-colors duration-300">
                     {question.question_text.length > 200
                       ? `${question.question_text.substring(0, 200)}...`
                       : question.question_text}
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center space-x-2 transition-colors duration-300">
-                    <GraduationCap className="w-3 h-3" />
-                    <span>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center space-x-2 transition-colors duration-300">
+                    <div className="w-4 h-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center">
+                      <GraduationCap className="w-2.5 h-2.5 text-white" />
+                    </div>
+                    <span className="font-medium">
                       {chapters.find((c) => c.id === question.chapter_id)
                         ?.chapter_name || "Unknown Chapter"}
                     </span>
@@ -300,12 +304,15 @@ export const PreviewGenerateStep: React.FC<StepComponentProps> = ({
               ))}
 
               {questions.length > 5 && (
-                <div className="text-center py-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors duration-300">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                <div className="text-center py-6 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700 rounded-2xl border border-slate-200 dark:border-slate-600 transition-colors duration-300 shadow-sm">
+                  <div className="text-sm text-slate-700 dark:text-slate-300 font-semibold transition-colors duration-300">
                     ... and {questions.length - 5} more questions
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300">
-                    Total marks: {calculateTotalMarks(questions)}
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 transition-colors duration-300 font-medium">
+                    Total marks:{" "}
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {calculateTotalMarks(questions)}
+                    </span>
                   </div>
                 </div>
               )}

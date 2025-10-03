@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { getChaptersBySubject, getSubjects } from "../../../services/firestore";
+import { chaptersAPI, subjectsAPI } from "../../../services/neetAPI";
 import { optimizedQuestionsAPI } from "../../../services/optimizedNeetAPI";
 import type { Chapter, Question, Subject, TestFilters } from "../../../types";
+import type {
+  Chapter as NEETChapter,
+  Subject as NEETSubject,
+} from "../../../types/neet";
 
 export const useOptimizedTestData = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -15,8 +19,39 @@ export const useOptimizedTestData = () => {
 
   const loadSubjects = async () => {
     try {
-      const subjectsData = await getSubjects();
-      setSubjects(subjectsData);
+      const response = await subjectsAPI.getAll();
+      if (response.success && response.data) {
+        // Convert NEET API Subject format to CreateTest Subject format
+        const convertedSubjects: Subject[] = response.data.map(
+          (neetSubject: NEETSubject, index: number) => {
+            // Extract chapter count from statistics
+            const chapterCount =
+              neetSubject.statistics?.totalChapters ||
+              neetSubject.totalChapters ||
+              0;
+
+            // Create fake chapter IDs for the count (will be replaced when chapters are actually loaded)
+            const fakeChapters = Array.from(
+              { length: chapterCount },
+              (_, i) => `${neetSubject.id}_chapter_${i}`
+            );
+
+            return {
+              id: neetSubject.id,
+              name: neetSubject.name,
+              order: index + 1,
+              chapters: fakeChapters, // Populate with correct count for display
+            };
+          }
+        );
+        setSubjects(convertedSubjects);
+        console.log(
+          "✅ [Optimized] Subjects loaded successfully from MongoDB:",
+          convertedSubjects.length
+        );
+      } else {
+        throw new Error("Failed to fetch subjects from API");
+      }
     } catch (error) {
       console.error("❌ Error loading subjects:", error);
       throw error;
@@ -27,21 +62,46 @@ export const useOptimizedTestData = () => {
     try {
       const allChaptersData: Chapter[] = [];
 
-      // Load chapters in parallel for better performance
-      const chapterPromises = subjectIds.map((subjectId) =>
-        getChaptersBySubject(subjectId).catch((err) => {
+      // Load chapters in parallel for better performance using MongoDB API
+      const chapterPromises = subjectIds.map(async (subjectId) => {
+        try {
+          // Find subject name from the current subjects list
+          const subject = subjects.find((s) => s.id === subjectId);
+          if (subject) {
+            const chaptersResponse = await chaptersAPI.getBySubject(
+              subject.name
+            );
+            if (chaptersResponse.success && chaptersResponse.data) {
+              // Convert NEET API Chapter format to CreateTest Chapter format
+              return chaptersResponse.data.map((neetChapter: NEETChapter) => ({
+                id: neetChapter.id,
+                chapter_id: neetChapter.id,
+                chapter_name: neetChapter.name,
+                subject_id: subjectId,
+                topics: [],
+              }));
+            }
+          }
+          return [];
+        } catch (err) {
           console.warn(
             `Failed to load chapters for subject ${subjectId}:`,
             err
           );
           return [];
-        })
-      );
+        }
+      });
 
       const chapterResults = await Promise.all(chapterPromises);
-      chapterResults.forEach((chapters) => allChaptersData.push(...chapters));
+      chapterResults.forEach((chapters: Chapter[]) =>
+        allChaptersData.push(...chapters)
+      );
 
       setChapters(allChaptersData);
+      console.log(
+        "✅ [Optimized] Chapters loaded successfully from MongoDB:",
+        allChaptersData.length
+      );
     } catch (error) {
       console.error("❌ Error loading chapters:", error);
       throw error;

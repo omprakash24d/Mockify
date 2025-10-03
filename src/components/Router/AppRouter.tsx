@@ -14,9 +14,7 @@ const Dashboard = React.lazy(() =>
   }))
 );
 const NEETDashboard = React.lazy(() => import("../NEET/NEETDashboard"));
-const EnhancedAdminDashboard = React.lazy(
-  () => import("../AdminDashboard/EnhancedAdminDashboard")
-);
+
 const CreateTestWizard = React.lazy(() =>
   import("../CreateTest").then((module) => ({
     default: module.CreateTestWizard,
@@ -39,8 +37,7 @@ const EmailVerificationFlow = React.lazy(
   () => import("../EmailVerification/EmailVerificationFlow")
 );
 
-// Import AdminRoute (not lazy as it's a wrapper)
-import { AdminRoute } from "../../middleware/adminAuth";
+// AdminRoute removed - admin functionality integrated into NEETUIDemo
 
 interface AppRouterProps {
   children?: React.ReactNode;
@@ -53,14 +50,7 @@ const AppRouter: React.FC<AppRouterProps> = ({ children }) => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/neet" element={<NEETDashboard />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <EnhancedAdminDashboard />
-              </AdminRoute>
-            }
-          />
+          {/* Admin functionality now available at /neet-ui-demo */}
           <Route path="/create-test" element={<CreateTestWizard />} />
           <Route path="/account" element={<EnhancedAccountManager />} />
           <Route path="/security" element={<SecurityDashboard />} />

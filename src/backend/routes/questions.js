@@ -8,89 +8,104 @@ const {
   randomQuestionsCacheMiddleware,
   searchCacheMiddleware,
 } = require("../middleware/cache");
+const { asyncHandler } = require("../middleware/errorHandler");
 const {
-  validate,
-  paginationValidation,
-  questionIdValidation,
-  searchValidation,
-  difficultyValidation,
-  randomQuestionsValidation,
-  questionAttemptValidation,
-  createQuestionValidation,
-  updateQuestionValidation,
-} = require("../middleware/validation");
+  validateMongoId,
+  validateQuestionQuery,
+  validateSearchQuery,
+  validateRandomQuestions,
+  validateQuestionAttempt,
+  validateCreateQuestion,
+  validateUpdateQuestion,
+  validateQuestionOptions,
+  validateUniqueQuestion,
+  sanitizeInput,
+} = require("../middleware/enhancedValidation");
+const { NotFoundError, BusinessLogicError } = require("../errors/CustomErrors");
+const logger = require("../config/logger");
 
 // @route   GET /api/questions
 // @desc    Get questions with filters and pagination
 // @access  Public
 router.get(
   "/",
-  [paginationValidation, difficultyValidation, validate],
+  validateQuestionQuery,
   questionsCacheMiddleware,
-  async (req, res, next) => {
-    try {
-      const {
-        subject,
-        chapter,
-        page = 1,
-        limit = 10,
-        difficulty,
-        search,
-        sortBy = "createdAt",
-        sortOrder = "desc",
-      } = req.query;
+  asyncHandler(async (req, res, next) => {
+    const startTime = Date.now();
 
-      // Build query
-      const query = { isActive: true };
+    const {
+      page = 1,
+      limit = 10,
+      subject,
+      chapter,
+      difficulty,
+      tags,
+      sort = "createdAt",
+      order = "desc",
+    } = req.query;
 
-      if (subject) query.subjectName = subject;
-      if (chapter) query.chapterName = chapter;
-      if (difficulty) query.difficulty = difficulty;
-      if (search) {
-        query.$text = { $search: search };
-      }
+    // Build query
+    const query = { isActive: true };
+    if (subject) query.subjectName = subject;
+    if (chapter) query.chapterName = chapter;
+    if (difficulty) query.difficulty = difficulty;
+    if (tags) {
+      const tagArray = Array.isArray(tags) ? tags : [tags];
+      query.subtopicTags = { $in: tagArray };
+    }
 
-      // Build sort object
-      const sort = {};
-      if (search) {
-        sort.score = { $meta: "textScore" };
-      }
-      sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+    // Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
 
-      // Execute query with pagination
-      const options = {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        sort,
-        select: search ? { score: { $meta: "textScore" } } : {},
-      };
+    // Sort options
+    const sortOrder = order === "desc" ? -1 : 1;
+    const sortObj = { [sort]: sortOrder };
 
-      const questions = await Question.find(query, options.select)
-        .sort(sort)
-        .skip((options.page - 1) * options.limit)
-        .limit(options.limit);
+    // Execute queries in parallel
+    const [questions, totalCount] = await Promise.all([
+      Question.find(query).sort(sortObj).skip(skip).limit(limitNum).lean(),
+      Question.countDocuments(query),
+    ]);
 
-      const total = await Question.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / limitNum);
+    const hasNext = pageNum < totalPages;
+    const hasPrev = pageNum > 1;
 
-      const response = {
+    // Cache the result
+    const cacheKey = CACHE_KEYS.QUESTIONS(req.query);
+    const result = {
+      success: true,
+      data: {
         questions,
         pagination: {
-          currentPage: options.page,
-          totalPages: Math.ceil(total / options.limit),
-          totalQuestions: total,
-          hasNext: options.page < Math.ceil(total / options.limit),
-          hasPrev: options.page > 1,
+          currentPage: pageNum,
+          totalPages,
+          total: totalCount,
+          totalQuestions: totalCount,
+          hasNext,
+          hasPrev,
         },
-      };
+      },
+    };
 
-      res.json({
-        success: true,
-        data: response,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+    await cacheHelper.set(cacheKey, result);
+
+    // Performance logging
+    const duration = Date.now() - startTime;
+    logger.info("Questions retrieved", {
+      operation: "get_questions",
+      count: questions.length,
+      totalCount,
+      page: pageNum,
+      duration,
+      query: req.query,
+    });
+
+    res.json(result);
+  })
 );
 
 // @route   GET /api/questions/random
@@ -98,9 +113,9 @@ router.get(
 // @access  Public
 router.get(
   "/random",
-  [randomQuestionsValidation, difficultyValidation, validate],
+  validateRandomQuestions,
   randomQuestionsCacheMiddleware,
-  async (req, res, next) => {
+  asyncHandler(async (req, res, next) => {
     try {
       const {
         count = 10,
@@ -134,7 +149,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  })
 );
 
 // @route   GET /api/questions/search
@@ -142,7 +157,7 @@ router.get(
 // @access  Public
 router.get(
   "/search",
-  [searchValidation, paginationValidation, difficultyValidation, validate],
+  validateSearchQuery,
   searchCacheMiddleware,
   async (req, res, next) => {
     try {
@@ -201,27 +216,26 @@ router.get(
 // @access  Public
 router.get(
   "/:id",
-  [questionIdValidation, validate],
+  validateMongoId,
   questionCacheMiddleware,
-  async (req, res, next) => {
-    try {
-      const question = await Question.findById(req.params.id);
+  asyncHandler(async (req, res, next) => {
+    const question = await Question.findById(req.params.id);
 
-      if (!question || !question.isActive) {
-        return res.status(404).json({
-          success: false,
-          error: "Question not found",
-        });
-      }
-
-      res.json({
-        success: true,
-        data: question,
-      });
-    } catch (error) {
-      next(error);
+    if (!question || !question.isActive) {
+      throw new NotFoundError("Question", req.params.id);
     }
-  }
+
+    logger.logBusinessEvent("question_retrieved", {
+      questionId: req.params.id,
+      subject: question.subjectName,
+      chapter: question.chapterName,
+    });
+
+    res.json({
+      success: true,
+      data: question,
+    });
+  })
 );
 
 // @route   POST /api/questions/:id/attempt
@@ -229,38 +243,51 @@ router.get(
 // @access  Public
 router.post(
   "/:id/attempt",
-  [questionIdValidation, questionAttemptValidation, validate],
-  async (req, res, next) => {
-    try {
-      const { isCorrect, timeSpent = 0 } = req.body;
+  validateMongoId,
+  validateQuestionAttempt,
+  sanitizeInput,
+  asyncHandler(async (req, res, next) => {
+    const { isCorrect, timeSpent } = req.body;
 
-      const question = await Question.findById(req.params.id);
+    const question = await Question.findById(req.params.id);
 
-      if (!question || !question.isActive) {
-        return res.status(404).json({
-          success: false,
-          error: "Question not found",
-        });
-      }
-
-      // Record the attempt
-      await question.incrementAttempt(isCorrect, timeSpent);
-
-      // Clear related caches
-      cacheHelper.clearQuestionCache(req.params.id);
-      cacheHelper.clearChapterCache(question.subjectName, question.chapterName);
-
-      res.json({
-        success: true,
-        data: {
-          message: "Attempt recorded successfully",
-          statistics: question.statistics,
-        },
-      });
-    } catch (error) {
-      next(error);
+    if (!question || !question.isActive) {
+      throw new NotFoundError("Question", req.params.id);
     }
-  }
+
+    // Validate time spent (business logic)
+    if (timeSpent > 3600) {
+      // 1 hour max
+      throw new BusinessLogicError("Time spent cannot exceed 1 hour", {
+        maxTimeAllowed: 3600,
+        timeSpent,
+      });
+    }
+
+    // Record the attempt
+    await question.incrementAttempt(isCorrect, timeSpent);
+
+    // Clear related caches
+    cacheHelper.clearQuestionCache(req.params.id);
+    cacheHelper.clearChapterCache(question.subjectName, question.chapterName);
+
+    // Log business event
+    logger.logBusinessEvent("question_attempted", {
+      questionId: req.params.id,
+      isCorrect,
+      timeSpent,
+      subject: question.subjectName,
+      chapter: question.chapterName,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        message: "Attempt recorded successfully",
+        statistics: question.statistics,
+      },
+    });
+  })
 );
 
 // @route   POST /api/questions
@@ -268,33 +295,40 @@ router.post(
 // @access  Private
 router.post(
   "/",
-  [createQuestionValidation, validate],
-  async (req, res, next) => {
-    try {
-      const questionData = {
-        ...req.body,
-        options: req.body.options.map((option, index) => ({
-          text: option.text,
-          isCorrect: option.text === req.body.correctAnswer,
-        })),
-      };
+  sanitizeInput,
+  validateCreateQuestion,
+  validateQuestionOptions,
+  validateUniqueQuestion,
+  asyncHandler(async (req, res, next) => {
+    const questionData = {
+      ...req.body,
+      options: req.body.options.map((option, index) => ({
+        text: option.text,
+        isCorrect: option.text === req.body.correctAnswer,
+      })),
+    };
 
-      const question = new Question(questionData);
-      await question.save();
+    const question = new Question(questionData);
+    await question.save();
 
-      // Clear related caches
-      cacheHelper.clearSubjectCache(question.subjectName);
-      cacheHelper.clearChapterCache(question.subjectName, question.chapterName);
-      cacheHelper.clearQuestionCache();
+    // Clear related caches
+    cacheHelper.clearSubjectCache(question.subjectName);
+    cacheHelper.clearChapterCache(question.subjectName, question.chapterName);
+    cacheHelper.clearQuestionCache();
 
-      res.status(201).json({
-        success: true,
-        data: question,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+    // Log business event
+    logger.logBusinessEvent("question_created", {
+      questionId: question._id,
+      subject: question.subjectName,
+      chapter: question.chapterName,
+      difficulty: question.difficulty,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: question,
+    });
+  })
 );
 
 // @route   PUT /api/questions/:id
@@ -302,8 +336,9 @@ router.post(
 // @access  Private
 router.put(
   "/:id",
-  [questionIdValidation, updateQuestionValidation, validate],
-  async (req, res, next) => {
+  validateMongoId,
+  validateUpdateQuestion,
+  asyncHandler(async (req, res, next) => {
     try {
       const question = await Question.findById(req.params.id);
 
@@ -344,7 +379,7 @@ router.put(
     } catch (error) {
       next(error);
     }
-  }
+  })
 );
 
 // @route   DELETE /api/questions/:id
@@ -352,8 +387,8 @@ router.put(
 // @access  Private
 router.delete(
   "/:id",
-  [questionIdValidation, validate],
-  async (req, res, next) => {
+  validateMongoId,
+  asyncHandler(async (req, res, next) => {
     try {
       const question = await Question.findById(req.params.id);
 
@@ -380,7 +415,7 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  })
 );
 
 module.exports = router;

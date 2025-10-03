@@ -40,9 +40,9 @@ export default defineConfig({
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "DENY",
       "Referrer-Policy": "strict-origin-when-cross-origin",
-      // Allow web workers and blob URLs for better CSP compatibility
+      // Allow web workers, blob URLs, and localhost connections for development CSP
       "Content-Security-Policy":
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://apis.google.com https://www.gstatic.com; worker-src 'self' blob:; object-src 'none';",
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://apis.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:5000 ws://localhost:* https:; worker-src 'self' blob:; object-src 'none';",
     },
     proxy: {
       // Proxy API requests to backend server

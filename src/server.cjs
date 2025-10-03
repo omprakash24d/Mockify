@@ -7,8 +7,25 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 require("dotenv").config();
 
-const logger = require("./backend/config/logger");
-const errorHandler = require("./backend/middleware/errorHandler");
+const enhancedLogger = require("./backend/config/logger");
+const {
+  errorHandler,
+  notFoundHandler,
+  handleUnhandledRejection,
+  handleUncaughtException,
+} = require("./backend/middleware/errorHandler");
+const {
+  sanitizeRequest,
+  sanitizeResponse,
+  securityLogger,
+  secureHeaders,
+  createRateLimiter,
+} = require("./backend/middleware/security");
+const {
+  responseHandler,
+  validateResponse,
+  addRequestId,
+} = require("./backend/utils/responseUtils");
 const hybridDataService = require("./backend/services/hybridDataService");
 const questionRoutes = require("./backend/routes/questions");
 const optimizedQuestionRoutes = require("./backend/routes/optimized-questions");
@@ -20,23 +37,60 @@ const adminRoutes = require("./backend/routes/admin");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
-app.use(helmet());
-app.use(compression());
-
-// Rate limiting - disabled in development
+// Security middleware with development-friendly CSP
 if (process.env.NODE_ENV === "production") {
-  const limiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000,
-    message: {
-      error: "Too many requests from this IP, please try again later.",
-    },
-  });
-  app.use("/api/", limiter);
+  app.use(helmet());
+} else {
+  // Development mode: more permissive CSP for frontend communication
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          "default-src": ["'self'"],
+          "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          "style-src": ["'self'", "'unsafe-inline'", "https:"],
+          "font-src": ["'self'", "https:", "data:"],
+          "img-src": ["'self'", "data:", "https:"],
+          "connect-src": [
+            "'self'",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "ws://localhost:*",
+            "https:",
+          ],
+          "worker-src": ["'self'", "blob:"],
+          "object-src": ["'none'"],
+        },
+      },
+    })
+  );
+}
+app.use(compression());
+app.use(secureHeaders);
+app.use(addRequestId);
+app.use(sanitizeRequest);
+app.use(sanitizeResponse);
+app.use(securityLogger);
+
+// Rate limiting with enhanced error handling
+if (process.env.NODE_ENV === "production") {
+  const generalLimiter = createRateLimiter(
+    parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+    parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000,
+    "Too many requests from this IP, please try again later."
+  );
+  app.use("/api/", generalLimiter);
+
+  // Stricter rate limiting for admin endpoints
+  const adminLimiter = createRateLimiter(
+    15 * 60 * 1000, // 15 minutes
+    100, // Much lower limit for admin
+    "Too many admin requests, please try again later."
+  );
+  app.use("/api/admin", adminLimiter);
 } else {
   // Development mode: no rate limiting
-  logger.info("Rate limiting disabled in development mode");
+  enhancedLogger.info("Rate limiting disabled in development mode");
 }
 
 // CORS configuration
@@ -55,10 +109,14 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Response utilities
+app.use(responseHandler);
+app.use(validateResponse);
+
 // Logging middleware
 app.use(
   morgan("combined", {
-    stream: { write: (message) => logger.info(message.trim()) },
+    stream: { write: (message) => enhancedLogger.info(message.trim()) },
   })
 );
 
@@ -81,27 +139,26 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
 
 // 404 handler - must be last route
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: "Route not found",
-  });
-});
+app.use(notFoundHandler);
 
 // Error handling middleware
 app.use(errorHandler);
+
+// Setup global error handlers
+handleUnhandledRejection();
+handleUncaughtException();
 
 // Database connection
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/mockify_neet")
   .then(async () => {
-    logger.info("Connected to MongoDB successfully");
+    enhancedLogger.info("Connected to MongoDB successfully");
     console.log("✅ Connected to MongoDB");
 
     // Initialize hybrid data service
     try {
       await hybridDataService.initialize();
-      logger.info("HybridDataService initialized successfully");
+      enhancedLogger.info("HybridDataService initialized successfully");
       console.log("✅ HybridDataService initialized");
     } catch (error) {
       logger.warn("HybridDataService initialization failed:", error.message);
@@ -118,11 +175,11 @@ mongoose
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
-  logger.info("Received SIGINT. Shutting down gracefully...");
+  enhancedLogger.info("Received SIGINT. Shutting down gracefully...");
   console.log("\n⏹️  Shutting down server...");
 
   await mongoose.connection.close();
-  logger.info("MongoDB connection closed.");
+  enhancedLogger.info("MongoDB connection closed.");
   console.log("✅ MongoDB connection closed");
 
   process.exit(0);
@@ -130,7 +187,7 @@ process.on("SIGINT", async () => {
 
 // Start server
 app.listen(PORT, () => {
-  logger.info(
+  enhancedLogger.info(
     `Server running on port ${PORT} in ${
       process.env.NODE_ENV || "development"
     } mode`

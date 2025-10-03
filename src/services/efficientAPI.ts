@@ -20,7 +20,10 @@ class EfficientApiService {
   private pendingRequests = new Map<string, Promise<any>>();
   private baseUrl: string;
 
-  constructor(baseUrl: string = "/api") {
+  constructor(
+    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
+      "http://localhost:5000/api"
+  ) {
     this.baseUrl = baseUrl;
   }
 

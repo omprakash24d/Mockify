@@ -5,7 +5,7 @@
 ## Security Headers
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' <https://fonts.googleapis.com>; style-src 'self' 'unsafe-inline' <https://fonts.googleapis.com>; font-src 'self' <https://fonts.gstatic.com>; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self';
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: <https://apis.google.com> <https://www.gstatic.com> <https://fonts.googleapis.com>; style-src 'self' 'unsafe-inline' <https://fonts.googleapis.com>; font-src 'self' <https://fonts.gstatic.com>; img-src 'self' data: https:; connect-src 'self' <http://localhost:5000> <http://localhost:5173> <http://localhost:5174> ws://localhost:5173 ws://localhost:5174 https:; worker-src 'self' blob:; frame-ancestors 'self';
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

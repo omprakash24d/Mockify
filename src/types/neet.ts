@@ -33,10 +33,12 @@ export interface Question {
   _id: string;
   id?: string; // Keep for backwards compatibility
   questionText: string;
+  questionImage?: string; // URL or base64 of question image
   subjectName: string;
   chapterName: string;
   difficulty: "Easy" | "Medium" | "Hard" | "easy" | "medium" | "hard";
   options: QuestionOption[];
+  optionImages?: string[]; // Array of image URLs/base64 for each option
   correctAnswer: string;
   explanation?: string;
   subtopics?: string[];

@@ -3,12 +3,36 @@ const router = express.Router();
 const hybridDataService = require("../services/hybridDataService");
 const { cacheHelper } = require("../config/cache");
 const logger = require("../config/logger");
+const { asyncHandler } = require("../middleware/errorHandler");
+const { requireAdmin, validateInputSize } = require("../middleware/security");
+const {
+  validateBulkQuestions,
+  validateBulkUpdate,
+  validateBulkDelete,
+  validateImportQuestions,
+  validateStudentQuery,
+  validateMongoId,
+  sanitizeInput,
+} = require("../middleware/enhancedValidation");
+const { PaginationHelper, DataTransformer } = require("../utils/responseUtils");
+const {
+  NotFoundError,
+  BusinessLogicError,
+  ValidationError,
+} = require("../errors/CustomErrors");
+
+// Apply admin authentication to all routes
+router.use(requireAdmin);
+router.use(validateInputSize(5 * 1024 * 1024)); // 5MB limit for admin operations
 
 // @route   GET /api/admin/stats
 // @desc    Get admin dashboard statistics
 // @access  Admin
-router.get("/stats", async (req, res, next) => {
-  try {
+router.get(
+  "/stats",
+  asyncHandler(async (req, res, next) => {
+    const startTime = Date.now();
+
     const stats = {
       totalStudents: 150,
       totalQuestions: 0,
@@ -16,7 +40,7 @@ router.get("/stats", async (req, res, next) => {
       avgScore: 76.8,
     };
 
-    // Get actual question count
+    // Get actual question count with error handling
     try {
       stats.totalQuestions = await hybridDataService.count("questions");
     } catch (error) {
@@ -24,14 +48,23 @@ router.get("/stats", async (req, res, next) => {
       stats.totalQuestions = 2847; // fallback value
     }
 
+    // Log admin action
+    logger.logBusinessEvent("admin_stats_viewed", {
+      adminId: req.user.id,
+      ip: req.ip,
+    });
+
+    // Performance logging
+    const duration = Date.now() - startTime;
+    logger.logPerformance("admin_stats", duration);
+
     res.json({
       success: true,
       data: stats,
+      message: "Dashboard statistics retrieved successfully",
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   GET /api/admin/students
 // @desc    Get students list with pagination
@@ -50,7 +83,6 @@ router.get("/students", async (req, res, next) => {
         avgScore: 88,
         lastActive: "2024-10-03T18:00:00Z",
       },
-      
     ];
 
     let filteredStudents = mockStudents;
