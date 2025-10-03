@@ -66,7 +66,7 @@ export const useUserAvatar = (user: FirebaseUser) => {
       }
     }
 
-    // Default avatar with improved styling
+    // Default avatar with proper dark mode support
     return (
       <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center shadow-lg ring-2 ring-blue-500/20">
         <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
-import { cn } from "../../lib/utils";
 import { ProfileManager } from "../AccountManager";
 import { DesktopNavigation } from "./components/DesktopNavigation";
 import { ErrorToast } from "./components/ErrorToast";
 import { Logo } from "./components/Logo";
 import { MobileMenuButton } from "./components/MobileMenuButton";
 import { MobileNavigation } from "./components/MobileNavigation";
+import { TopBanner } from "./components/TopBanner";
 import { UserControls } from "./components/UserControls";
 import { useLogoutHandler } from "./hooks/useLogoutHandler";
 import type { NavbarProps } from "./types";
@@ -40,26 +40,26 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
 
   return (
     <>
-      {/* Modern Navbar */}
+      {/* Top Banner - Fixed at very top */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <TopBanner />
+      </div>
+
+      {/* Professional Unified Navbar - Below banner */}
       <nav
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
-          "backdrop-blur-xl backdrop-saturate-150",
-          "border-b border-gray-200/40 dark:border-gray-800/40",
-          "bg-white/85 dark:bg-gray-900/85",
-          "shadow-sm hover:shadow-md transition-shadow duration-300"
-        )}
+        className="fixed left-0 right-0 z-50 bg-blue-50/95 dark:bg-blue-900/95 border-b border-blue-200 dark:border-blue-700 shadow-sm navbar-blur"
+        style={{ top: "40px" }}
       >
         {/* Main Navigation Container */}
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-            {/* Enhanced Logo Section */}
+            {/* Logo Section */}
             <Logo />
 
             {/* Desktop Navigation */}
             <DesktopNavigation />
 
-            {/* User Menu & Controls */}
+            {/* User Controls */}
             <UserControls
               user={user}
               isProfileOpen={isProfileOpen}
@@ -70,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               onSignOut={handleSignOut}
             />
 
-            {/* Mobile Controls */}
+            {/* Mobile Menu Button */}
             <MobileMenuButton
               isMenuOpen={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -78,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
           </div>
         </div>
 
-        {/* Enhanced Mobile Navigation */}
+        {/* Mobile Navigation */}
         <MobileNavigation
           user={user}
           isMenuOpen={isMenuOpen}
@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
         />
       </nav>
 
-      {/* Enhanced Error Notification Toast */}
+      {/* Error Toast */}
       <ErrorToast error={logoutError} onDismiss={() => setLogoutError(null)} />
 
       {/* Profile Manager Modal */}

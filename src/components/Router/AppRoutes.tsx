@@ -9,6 +9,12 @@ const Dashboard = React.lazy(() =>
   }))
 );
 const NEETDashboard = React.lazy(() => import("../NEET/NEETDashboard"));
+const NEETUIDemo = React.lazy(() =>
+  import("../NEETTestUI/NEETUIDemo").then((module) => ({
+    default: module.NEETUIDemo,
+  }))
+);
+
 const ModernAdminDashboard = React.lazy(
   () => import("../AdminDashboard/ModernAdminDashboard")
 );
@@ -47,6 +53,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ children }) => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/neet" element={<NEETDashboard />} />
+        <Route path="/neet-ui-demo" element={<NEETUIDemo />} />
         <Route
           path="/admin"
           element={

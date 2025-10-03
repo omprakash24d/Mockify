@@ -187,12 +187,12 @@ export const CreateTestWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 lg:p-8 transition-colors">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-12">
+    <div className="min-h-screen bg-gray-50 neet-prep-font">
+      {/* NEET-style Header Banner */}
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl shadow-lg mb-6">
               <svg
                 className="w-10 h-10 text-white"
                 fill="none"
@@ -207,16 +207,16 @@ export const CreateTestWizard: React.FC = () => {
                 />
               </svg>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 dark:from-white dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
-              Create Test
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            <h1 className="text-4xl lg:text-5xl font-bold">Create Test</h1>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
               Generate customized tests in minutes with our intelligent test
               creation wizard
             </p>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Progress Steps */}
         <ProgressSteps
           steps={WIZARD_STEPS}
@@ -225,7 +225,7 @@ export const CreateTestWizard: React.FC = () => {
         />
 
         {/* Main Content Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-sm overflow-hidden">
+        <div className="card-neet overflow-hidden">
           {/* Error Banner */}
           <ErrorBanner error={error} onDismiss={() => setError(null)} />
 

@@ -12,11 +12,11 @@ export const DesktopNavigation: React.FC = () => {
           key={item.name}
           href={item.href}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition",
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
             "focus:outline-none focus:ring-2 focus:ring-blue-500/50",
             item.active
-              ? "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+              ? "text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-800/30 shadow-sm"
+              : "text-blue-700 dark:text-blue-200 hover:text-blue-800 dark:hover:text-blue-100 hover:bg-blue-100/50 dark:hover:bg-blue-800/20"
           )}
           aria-current={item.active ? "page" : undefined}
         >
@@ -24,8 +24,8 @@ export const DesktopNavigation: React.FC = () => {
             className={cn(
               "w-4 h-4",
               item.active
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-gray-500 dark:text-gray-500"
+                ? "text-blue-700 dark:text-blue-300"
+                : "text-blue-600 dark:text-blue-300"
             )}
             aria-hidden="true"
           />

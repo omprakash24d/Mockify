@@ -21,10 +21,10 @@ export const UserProfileButton: React.FC<UserProfileButtonProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 px-3 py-2 rounded-lg transition",
+        "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200",
         "bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
-        "hover:bg-gray-100 dark:hover:bg-gray-700",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500"
+        "hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-sm",
+        "focus:outline-none focus:ring-2 focus:ring-blue-500/50"
       )}
       id="user-menu-button"
       aria-expanded={isProfileOpen}
@@ -42,7 +42,7 @@ export const UserProfileButton: React.FC<UserProfileButtonProps> = ({
 
       <ChevronDown
         className={cn(
-          "w-4 h-4 text-gray-400 transition-transform",
+          "w-4 h-4 text-gray-400 transition-transform duration-200",
           isProfileOpen && "rotate-180"
         )}
       />

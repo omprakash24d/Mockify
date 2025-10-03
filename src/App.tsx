@@ -13,6 +13,7 @@ import {
 import PasswordResetFlow from "./components/PasswordReset/PasswordResetFlow";
 import { AppRoutes } from "./components/Router";
 import { AuthProvider, ThemeProvider, useAuth } from "./contexts";
+import { Footer } from "./Footer";
 import { usePerformanceMonitor } from "./hooks/usePerformanceMonitor";
 import UserProfileService from "./lib/user-profile";
 import type { CoachingDetailsFormData } from "./lib/validations";
@@ -102,13 +103,13 @@ const AppContent = () => {
 
   return (
     <NetworkErrorBoundary>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
+      <div className="min-h-screen bg-gray-50 neet-prep-font transition-colors">
         <NetworkStatus />
         <Navbar user={user} />
         <EmailVerificationBanner />
 
-        <main className={user.emailVerified ? "pt-16" : "pt-28"}>
-          <div className="min-h-[calc(100vh-4rem)]">
+        <main className={user.emailVerified ? "pt-[104px]" : "pt-[140px]"}>
+          <div className="min-h-[calc(100vh-6.5rem)]">
             <AppRoutes>
               {needsCoachingDetails && (
                 <CoachingDetailsModal
@@ -121,6 +122,7 @@ const AppContent = () => {
               )}
             </AppRoutes>
           </div>
+          <Footer />
         </main>
       </div>
     </NetworkErrorBoundary>

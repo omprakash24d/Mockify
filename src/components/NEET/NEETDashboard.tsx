@@ -314,24 +314,26 @@ const NEETDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Header */}
+    <div className="min-h-screen bg-gray-50 neet-prep-font">
+      {/* NEET-style Header Banner */}
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-lg mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-lg mb-4">
               <BookOpen className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              NEET Question Bank
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+            <h1 className="text-4xl font-bold mb-2">NEET Question Bank</h1>
+            <p className="text-lg text-blue-100">
               Master your NEET preparation with comprehensive practice
             </p>
           </div>
+        </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
           {/* Navigation Tabs */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+          <div className="card-neet p-1">
             <nav className="flex gap-1">
               {[
                 { id: "subjects", icon: BookOpen, label: "Subjects" },
@@ -349,7 +351,7 @@ const NEETDashboard: React.FC = () => {
                       "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition",
                       isActive
                         ? "bg-blue-600 text-white"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        : "text-gray-600 hover:bg-gray-100"
                     )}
                   >
                     <Icon className="w-4 h-4" />

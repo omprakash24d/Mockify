@@ -31,7 +31,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
   return (
     <nav
-      className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+      className="md:hidden border-t border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900 shadow-lg"
       ref={mobileMenuRef}
       id="mobile-menu"
     >
@@ -42,10 +42,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
             key={item.name}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition",
+              "flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200",
               item.active
-                ? "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-900/30"
-                : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                ? "text-blue-800 dark:text-blue-200 bg-blue-100 dark:bg-blue-800/40 shadow-sm"
+                : "text-blue-700 dark:text-blue-200 hover:text-blue-800 dark:hover:text-blue-100 hover:bg-blue-100/60 dark:hover:bg-blue-800/20"
             )}
             onClick={onMenuClose}
             aria-current={item.active ? "page" : undefined}
@@ -56,9 +56,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
         ))}
 
         {/* User Section */}
-        <div className="pt-6 mt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="pt-6 mt-4 border-t border-blue-200 dark:border-blue-700 space-y-2">
           {/* User Profile */}
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-blue-100/50 dark:bg-blue-800/30">
             <div className="relative">
               {userAvatar}
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full" />
@@ -79,7 +79,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
               onProfileSettings();
               onMenuClose();
             }}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-blue-700 dark:text-blue-200 hover:bg-blue-100/60 dark:hover:bg-blue-800/30 transition-all duration-200"
           >
             <Settings className="w-5 h-5" />
             <span className="font-medium">Profile Settings</span>
@@ -90,7 +90,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
               onSignOut();
               onMenuClose();
             }}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:text-red-600 hover:bg-red-50 dark:text-gray-300 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-blue-700 dark:text-blue-200 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>
