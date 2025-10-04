@@ -11,7 +11,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   className = "",
   size = "md",
 }) => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isLoading } = useTheme();
   const isDark = theme === "dark";
 
   // Responsive icon/button sizes using Tailwind only
@@ -23,28 +23,37 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   return (
     <button
       onClick={toggleTheme}
+      disabled={isLoading}
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       className={`
-        inline-flex items-center gap-2 rounded transition-colors
+        inline-flex items-center justify-center rounded-lg transition-all duration-200
         ${btnSize}
         font-medium text-gray-600 dark:text-gray-300 
-        hover:bg-blue-100 dark:hover:bg-blue-800
-        focus:outline-none focus:ring-2 focus:ring-blue-500/20
+        hover:bg-gray-100 dark:hover:bg-gray-800
+        focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900
+        disabled:opacity-50 disabled:cursor-not-allowed
+        border border-gray-200 dark:border-gray-700
+        bg-white dark:bg-gray-800
+        shadow-sm hover:shadow
         ${className}
       `}
     >
-      {isDark ? (
-        <>
-          <Moon className={iconSize} />
-          {/* <span className="hidden sm:inline">Dark</span> */}
-        </>
-      ) : (
-        <>
-          <Sun className={iconSize} />
-          {/* <span className="hidden sm:inline">Light</span> */}
-        </>
-      )}
+      <div className="relative">
+        {isDark ? (
+          <Moon
+            className={`${iconSize} transition-transform duration-200 ${
+              isLoading ? "animate-pulse" : ""
+            }`}
+          />
+        ) : (
+          <Sun
+            className={`${iconSize} transition-transform duration-200 ${
+              isLoading ? "animate-pulse" : ""
+            }`}
+          />
+        )}
+      </div>
     </button>
   );
 };

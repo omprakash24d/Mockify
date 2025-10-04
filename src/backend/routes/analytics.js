@@ -4,12 +4,21 @@ const Question = require("../models/Question");
 const Subject = require("../models/Subject");
 const Chapter = require("../models/Chapter");
 const { cacheHelper } = require("../config/cache");
+const {
+  getSuccessRateExpression,
+  getRoundedSuccessRateExpression,
+  getDifficultyDistributionFields,
+  getQuestionStatsFields,
+  parseIntParam,
+} = require("../utils/projectionUtils");
+const { asyncHandler } = require("../middleware/errorHandler");
 
 // @route   GET /api/analytics/overview
 // @desc    Get overall platform analytics
 // @access  Public
-router.get("/overview", async (req, res, next) => {
-  try {
+router.get(
+  "/overview",
+  asyncHandler(async (req, res, next) => {
     const cacheKey = "analytics:overview";
     const cached = cacheHelper.get(cacheKey);
 
@@ -87,16 +96,15 @@ router.get("/overview", async (req, res, next) => {
       success: true,
       data: analytics,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   GET /api/analytics/subjects
 // @desc    Get subject-wise analytics
 // @access  Public
-router.get("/subjects", async (req, res, next) => {
-  try {
+router.get(
+  "/subjects",
+  asyncHandler(async (req, res, next) => {
     const cacheKey = "analytics:subjects";
     const cached = cacheHelper.get(cacheKey);
 
@@ -113,53 +121,13 @@ router.get("/subjects", async (req, res, next) => {
       {
         $group: {
           _id: "$subjectName",
-          totalQuestions: { $sum: 1 },
-          totalAttempts: { $sum: "$statistics.totalAttempts" },
-          correctAttempts: { $sum: "$statistics.correctAttempts" },
-          avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
-          difficultyDistribution: {
-            $push: "$difficulty",
-          },
+          ...getQuestionStatsFields(),
+          ...getDifficultyDistributionFields(),
         },
       },
       {
         $addFields: {
-          successRate: {
-            $cond: [
-              { $eq: ["$totalAttempts", 0] },
-              0,
-              {
-                $multiply: [
-                  { $divide: ["$correctAttempts", "$totalAttempts"] },
-                  100,
-                ],
-              },
-            ],
-          },
-          easyCount: {
-            $size: {
-              $filter: {
-                input: "$difficultyDistribution",
-                cond: { $eq: ["$$this", "easy"] },
-              },
-            },
-          },
-          mediumCount: {
-            $size: {
-              $filter: {
-                input: "$difficultyDistribution",
-                cond: { $eq: ["$$this", "medium"] },
-              },
-            },
-          },
-          hardCount: {
-            $size: {
-              $filter: {
-                input: "$difficultyDistribution",
-                cond: { $eq: ["$$this", "hard"] },
-              },
-            },
-          },
+          successRate: getRoundedSuccessRateExpression(),
         },
       },
       {
@@ -167,7 +135,7 @@ router.get("/subjects", async (req, res, next) => {
           subject: "$_id",
           totalQuestions: 1,
           totalAttempts: 1,
-          successRate: { $round: ["$successRate", 2] },
+          successRate: 1,
           avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
           difficultyDistribution: {
             easy: "$easyCount",
@@ -186,19 +154,19 @@ router.get("/subjects", async (req, res, next) => {
       success: true,
       data: subjectAnalytics,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   GET /api/analytics/popular-questions
 // @desc    Get most attempted questions
 // @access  Public
-router.get("/popular-questions", async (req, res, next) => {
-  try {
+router.get(
+  "/popular-questions",
+  asyncHandler(async (req, res, next) => {
     const { limit = 10 } = req.query;
+    const limitInt = parseIntParam(limit, 10, 1, 100);
 
-    const cacheKey = `analytics:popular:${limit}`;
+    const cacheKey = `analytics:popular:${limitInt}`;
     const cached = cacheHelper.get(cacheKey);
 
     if (cached) {
@@ -212,7 +180,7 @@ router.get("/popular-questions", async (req, res, next) => {
     const popularQuestions = await Question.find({ isActive: true })
       .select("questionText subjectName chapterName difficulty statistics")
       .sort({ "statistics.totalAttempts": -1 })
-      .limit(parseInt(limit));
+      .limit(limitInt);
 
     cacheHelper.set(cacheKey, popularQuestions, 300);
 
@@ -220,19 +188,20 @@ router.get("/popular-questions", async (req, res, next) => {
       success: true,
       data: popularQuestions,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   GET /api/analytics/difficult-questions
 // @desc    Get questions with lowest success rates
 // @access  Public
-router.get("/difficult-questions", async (req, res, next) => {
-  try {
+router.get(
+  "/difficult-questions",
+  asyncHandler(async (req, res, next) => {
     const { limit = 10, minAttempts = 5 } = req.query;
+    const limitInt = parseIntParam(limit, 10, 1, 100);
+    const minAttemptsInt = parseIntParam(minAttempts, 5, 1, 1000);
 
-    const cacheKey = `analytics:difficult:${limit}:${minAttempts}`;
+    const cacheKey = `analytics:difficult:${limitInt}:${minAttemptsInt}`;
     const cached = cacheHelper.get(cacheKey);
 
     if (cached) {
@@ -247,22 +216,12 @@ router.get("/difficult-questions", async (req, res, next) => {
       {
         $match: {
           isActive: true,
-          "statistics.totalAttempts": { $gte: parseInt(minAttempts) },
+          "statistics.totalAttempts": { $gte: minAttemptsInt },
         },
       },
       {
         $addFields: {
-          successRate: {
-            $multiply: [
-              {
-                $divide: [
-                  "$statistics.correctAttempts",
-                  "$statistics.totalAttempts",
-                ],
-              },
-              100,
-            ],
-          },
+          successRate: getRoundedSuccessRateExpression(),
         },
       },
       {
@@ -272,11 +231,11 @@ router.get("/difficult-questions", async (req, res, next) => {
           chapterName: 1,
           difficulty: 1,
           statistics: 1,
-          successRate: { $round: ["$successRate", 2] },
+          successRate: 1,
         },
       },
       { $sort: { successRate: 1 } },
-      { $limit: parseInt(limit) },
+      { $limit: limitInt },
     ]);
 
     cacheHelper.set(cacheKey, difficultQuestions, 300);
@@ -285,19 +244,18 @@ router.get("/difficult-questions", async (req, res, next) => {
       success: true,
       data: difficultQuestions,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
-// @route   GET /api/analytics/performance-trends
-// @desc    Get performance trends over time
+// @route   GET /api/analytics/performance-breakdown
+// @desc    Get current performance breakdown by subject and difficulty
 // @access  Public
-router.get("/performance-trends", async (req, res, next) => {
-  try {
-    const { days = 30 } = req.query;
-
-    const cacheKey = `analytics:trends:${days}`;
+// Note: This provides a snapshot of performance grouped by subject and difficulty,
+// not a true trend over time. For real trends, implement an Attempt collection with timestamps.
+router.get(
+  "/performance-breakdown",
+  asyncHandler(async (req, res, next) => {
+    const cacheKey = "analytics:performance-breakdown";
     const cached = cacheHelper.get(cacheKey);
 
     if (cached) {
@@ -308,9 +266,7 @@ router.get("/performance-trends", async (req, res, next) => {
       });
     }
 
-    // Note: This is a simplified version. In a real implementation,
-    // you would track attempt timestamps and calculate trends
-    const trends = await Question.aggregate([
+    const performanceBreakdown = await Question.aggregate([
       { $match: { isActive: true } },
       {
         $group: {
@@ -318,25 +274,12 @@ router.get("/performance-trends", async (req, res, next) => {
             subject: "$subjectName",
             difficulty: "$difficulty",
           },
-          totalAttempts: { $sum: "$statistics.totalAttempts" },
-          correctAttempts: { $sum: "$statistics.correctAttempts" },
-          avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
+          ...getQuestionStatsFields(),
         },
       },
       {
         $addFields: {
-          successRate: {
-            $cond: [
-              { $eq: ["$totalAttempts", 0] },
-              0,
-              {
-                $multiply: [
-                  { $divide: ["$correctAttempts", "$totalAttempts"] },
-                  100,
-                ],
-              },
-            ],
-          },
+          successRate: getRoundedSuccessRateExpression(),
         },
       },
       {
@@ -345,9 +288,10 @@ router.get("/performance-trends", async (req, res, next) => {
           difficulties: {
             $push: {
               difficulty: "$_id.difficulty",
-              successRate: { $round: ["$successRate", 2] },
+              successRate: "$successRate",
               totalAttempts: "$totalAttempts",
               avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
+              totalQuestions: "$totalQuestions",
             },
           },
         },
@@ -355,22 +299,21 @@ router.get("/performance-trends", async (req, res, next) => {
       {
         $project: {
           subject: "$_id",
-          trends: "$difficulties",
+          breakdown: "$difficulties",
           _id: 0,
         },
       },
+      { $sort: { subject: 1 } },
     ]);
 
-    cacheHelper.set(cacheKey, trends, 600);
+    cacheHelper.set(cacheKey, performanceBreakdown, 600);
 
     res.json({
       success: true,
-      data: trends,
+      data: performanceBreakdown,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   GET /api/analytics/cache-stats
 // @desc    Get cache performance statistics

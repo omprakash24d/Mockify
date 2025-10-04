@@ -38,7 +38,7 @@ export const AuthScreen: React.FC = () => {
   const nameRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="min-h-screen bg-gray-50 neet-prep-font relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 neet-prep-font relative overflow-hidden">
       {/* Background Pattern */}
       <BackgroundPattern />
 
@@ -61,7 +61,7 @@ export const AuthScreen: React.FC = () => {
           <WelcomeMessage isLogin={authState.isLogin} />
 
           {/* Auth Form Container */}
-          <div className="card-neet p-6 sm:p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 sm:p-8">
             {/* Form Header */}
             <FormHeader isLogin={authState.isLogin} />
 

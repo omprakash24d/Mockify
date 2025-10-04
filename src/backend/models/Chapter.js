@@ -196,6 +196,47 @@ chapterSchema.statics.getChapterWithStats = function (
   ]);
 };
 
+// Static method for getting chapters with question counts
+chapterSchema.statics.getChaptersWithQuestionCounts = function (subjectName) {
+  return this.aggregate([
+    { $match: { subjectName, isActive: true } },
+    {
+      $lookup: {
+        from: "questions",
+        let: { chapterName: "$name", subjectName: "$subjectName" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$chapterName", "$$chapterName"] },
+                  { $eq: ["$subjectName", "$$subjectName"] },
+                  { $eq: ["$isActive", true] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "questions",
+      },
+    },
+    {
+      $addFields: {
+        questionCount: { $size: "$questions" },
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        displayName: 1,
+        questionCount: 1,
+        order: 1,
+      },
+    },
+    { $sort: { order: 1, name: 1 } },
+  ]);
+};
+
 // Instance methods
 chapterSchema.methods.updateSubtopics = async function () {
   const Question = mongoose.model("Question");

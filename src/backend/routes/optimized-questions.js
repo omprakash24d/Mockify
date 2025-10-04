@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const Question = require("../models/Question");
 const { cacheHelper } = require("../config/cache");
+const { getProjectionFields } = require("../utils/projectionUtils");
 const {
   validate,
   paginationValidation,
@@ -46,33 +47,8 @@ router.get("/meta", async (req, res, next) => {
       },
     ]);
 
-    // Get subject-wise breakdown
-    const subjectBreakdown = await Question.aggregate([
-      { $match: { isActive: true } },
-      {
-        $group: {
-          _id: "$subjectName",
-          count: { $sum: 1 },
-          chapters: { $addToSet: "$chapterName" },
-          difficulties: {
-            $push: {
-              difficulty: "$difficulty",
-              count: 1,
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          subject: "$_id",
-          count: 1,
-          chapterCount: { $size: "$chapters" },
-          chapters: 1,
-          difficulties: 1,
-          _id: 0,
-        },
-      },
-    ]);
+    // Get subject-wise breakdown using the new static method
+    const subjectBreakdown = await Question.getSubjectMetadata();
 
     const result = {
       ...metadata[0],
@@ -121,45 +97,8 @@ router.get(
         query.$text = { $search: search };
       }
 
-      // Define field projections based on requested detail level
-      let projection = {};
-      switch (fields) {
-        case "minimal":
-          projection = {
-            questionText: 1,
-            correctAnswer: 1,
-            difficulty: 1,
-            subjectName: 1,
-            chapterName: 1,
-          };
-          break;
-        case "basic":
-          projection = {
-            questionText: 1,
-            options: 1,
-            correctAnswer: 1,
-            difficulty: 1,
-            subjectName: 1,
-            chapterName: 1,
-            subtopicTags: 1,
-            examYear: 1,
-          };
-          break;
-        case "full":
-          // Include all fields (default behavior)
-          break;
-        default:
-          projection = {
-            questionText: 1,
-            options: 1,
-            correctAnswer: 1,
-            difficulty: 1,
-            subjectName: 1,
-            chapterName: 1,
-            subtopicTags: 1,
-            examYear: 1,
-          };
-      }
+      // Get field projections using utility function
+      const projection = getProjectionFields(fields);
 
       // Build sort object
       const sort = {};
@@ -368,7 +307,6 @@ router.get("/sample", async (req, res, next) => {
       $project: {
         questionText: 1,
         options: 1,
-        correctAnswer: 1,
         difficulty: 1,
         subjectName: 1,
         chapterName: 1,
@@ -379,6 +317,30 @@ router.get("/sample", async (req, res, next) => {
         statistics: {
           totalAttempts: 1,
           correctAttempts: 1,
+        },
+      },
+    });
+
+    // Add correctAnswer field to aggregation result
+    pipeline.push({
+      $addFields: {
+        correctAnswer: {
+          $let: {
+            vars: {
+              correctOption: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: "$options",
+                      cond: { $eq: ["$$this.isCorrect", true] },
+                    },
+                  },
+                  0,
+                ],
+              },
+            },
+            in: "$$correctOption.text",
+          },
         },
       },
     });
@@ -511,24 +473,8 @@ router.post("/bulk-ids", async (req, res, next) => {
       return res.json({ success: true, data: cached, cached: true });
     }
 
-    // Define projection based on fields
-    let projection = {};
-    if (fields === "minimal") {
-      projection = {
-        questionText: 1,
-        correctAnswer: 1,
-        difficulty: 1,
-      };
-    } else if (fields === "basic") {
-      projection = {
-        questionText: 1,
-        options: 1,
-        correctAnswer: 1,
-        difficulty: 1,
-        subjectName: 1,
-        chapterName: 1,
-      };
-    }
+    // Get projection using utility function
+    const projection = getProjectionFields(fields);
 
     const objectIds = ids.map((id) => new mongoose.Types.ObjectId(id));
 
@@ -538,7 +484,7 @@ router.post("/bulk-ids", async (req, res, next) => {
         isActive: true,
       },
       projection
-    ).lean();
+    );
 
     // Maintain order of requested IDs
     const orderedQuestions = ids

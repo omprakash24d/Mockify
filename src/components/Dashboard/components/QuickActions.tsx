@@ -39,14 +39,18 @@ export const QuickActions: React.FC = () => {
   ];
 
   return (
-    <div className="card-neet p-8 mb-8">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-8 mb-8">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-          <Zap className="w-5 h-5 text-blue-600" />
+        <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+          <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
-          <p className="text-gray-600">Jump right into your study session</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Quick Actions
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Jump right into your study session
+          </p>
         </div>
       </div>
 
@@ -57,9 +61,7 @@ export const QuickActions: React.FC = () => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className={`h-32 ${
-                action.primary ? "btn-neet-primary" : "btn-neet-secondary"
-              } rounded-xl p-6 flex flex-col items-center justify-center gap-3 group transition-all duration-300 hover:scale-105 hover:shadow-lg border-0`}
+              className={`h-32 ${action.bgColor} rounded-xl p-6 flex flex-col items-center justify-center gap-3 group transition-all duration-300 hover:scale-105 hover:shadow-lg border-0`}
             >
               <IconComponent className="w-8 h-8 group-hover:scale-110 transition-transform duration-300" />
               <div className="text-center">

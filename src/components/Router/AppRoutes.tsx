@@ -10,9 +10,14 @@ const Dashboard = React.lazy(() =>
 );
 const NEETDashboard = React.lazy(() => import("../NEET/NEETDashboard"));
 
-const AdminPage = React.lazy(() =>
-  import("../Admin/AdminPage").then((module) => ({
-    default: module.AdminPage,
+const AdminDashboard = React.lazy(() =>
+  import("../Admin/AdminDashboard").then((module) => ({
+    default: module.AdminDashboard,
+  }))
+);
+const AdminReportsDashboard = React.lazy(() =>
+  import("../Admin/AdminReportsDashboard").then((module) => ({
+    default: module.AdminReportsDashboard,
   }))
 );
 const StudentPage = React.lazy(() =>
@@ -42,6 +47,11 @@ const PasswordResetFlow = React.lazy(
 const EmailVerificationFlow = React.lazy(
   () => import("../EmailVerification/EmailVerificationFlow")
 );
+const ThemeTest = React.lazy(() =>
+  import("../ui/ThemeTest").then((module) => ({
+    default: module.ThemeTest,
+  }))
+);
 
 // AdminRoute removed - admin functionality now integrated into NEETUIDemo
 
@@ -55,7 +65,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ children }) => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/neet" element={<NEETDashboard />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/reports" element={<AdminReportsDashboard />} />
         <Route path="/student" element={<StudentPage />} />
         {/* Legacy route - redirects to admin */}
         <Route
@@ -69,6 +80,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ children }) => {
         <Route path="/security" element={<SecurityDashboard />} />
         <Route path="/reset-password" element={<PasswordResetFlow />} />
         <Route path="/verify-email" element={<EmailVerificationFlow />} />
+        <Route path="/theme-test" element={<ThemeTest />} />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,5 +1,6 @@
 import { AlertCircle, Wifi, WifiOff } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { isFirebaseOnline } from "../lib/firebase";
 import { cn } from "../lib/utils";
 
 interface NetworkStatusProps {
@@ -8,32 +9,73 @@ interface NetworkStatusProps {
 
 export const NetworkStatus: React.FC<NetworkStatusProps> = ({ className }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [firebaseOnline, setFirebaseOnline] = useState(isFirebaseOnline);
   const [showStatus, setShowStatus] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
+      setFirebaseOnline(true);
       setShowStatus(true);
       setTimeout(() => setShowStatus(false), 3000);
     };
 
     const handleOffline = () => {
       setIsOnline(false);
+      setFirebaseOnline(false);
       setShowStatus(true);
     };
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    if (!navigator.onLine) setShowStatus(true);
+    // Check Firebase status periodically
+    const checkFirebaseStatus = () => {
+      const currentFirebaseStatus = isFirebaseOnline;
+      if (currentFirebaseStatus !== firebaseOnline) {
+        setFirebaseOnline(currentFirebaseStatus);
+        if (!currentFirebaseStatus) {
+          setShowStatus(true);
+        }
+      }
+    };
+
+    const interval = setInterval(checkFirebaseStatus, 2000);
+
+    if (!navigator.onLine || !isFirebaseOnline) setShowStatus(true);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
     };
-  }, []);
+  }, [firebaseOnline]);
 
   if (!showStatus) return null;
+
+  const getStatusConfig = () => {
+    if (!isOnline) {
+      return {
+        icon: WifiOff,
+        message: "No internet connection",
+        bgColor: "bg-red-500",
+      };
+    } else if (!firebaseOnline) {
+      return {
+        icon: AlertCircle,
+        message: "Database connection issues",
+        bgColor: "bg-yellow-500",
+      };
+    } else {
+      return {
+        icon: Wifi,
+        message: "Connection restored",
+        bgColor: "bg-green-500",
+      };
+    }
+  };
+
+  const { icon: Icon, message, bgColor } = getStatusConfig();
 
   return (
     <div
@@ -41,21 +83,12 @@ export const NetworkStatus: React.FC<NetworkStatusProps> = ({ className }) => {
       aria-live="polite"
       className={cn(
         "fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg text-white transition-all",
-        isOnline ? "bg-green-500" : "bg-red-500",
+        bgColor,
         className
       )}
     >
-      {isOnline ? (
-        <>
-          <Wifi className="w-4 h-4" />
-          <span className="text-sm font-medium">Connection restored</span>
-        </>
-      ) : (
-        <>
-          <WifiOff className="w-4 h-4" />
-          <span className="text-sm font-medium">Working offline</span>
-        </>
-      )}
+      <Icon className="w-4 h-4" />
+      <span className="text-sm font-medium">{message}</span>
     </div>
   );
 };

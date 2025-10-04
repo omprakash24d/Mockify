@@ -26,14 +26,17 @@ export const NEETInput: React.FC<NEETInputProps> = ({
   return (
     <div className={cn("space-y-1", fullWidth && "w-full")}>
       {label && (
-        <label htmlFor={inputId} className="label-neet">
+        <label
+          htmlFor={inputId}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
           {label}
         </label>
       )}
       <div className="relative">
         {leftIcon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <div className="text-gray-400">{leftIcon}</div>
+            <div className="text-gray-400 dark:text-gray-500">{leftIcon}</div>
           </div>
         )}
         <input
@@ -53,7 +56,7 @@ export const NEETInput: React.FC<NEETInputProps> = ({
         />
         {rightIcon && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <div className="text-gray-400">{rightIcon}</div>
+            <div className="text-gray-400 dark:text-gray-500">{rightIcon}</div>
           </div>
         )}
       </div>

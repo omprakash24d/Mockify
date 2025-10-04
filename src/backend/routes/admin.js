@@ -69,9 +69,12 @@ router.get(
 // @route   GET /api/admin/students
 // @desc    Get students list with pagination
 // @access  Admin
-router.get("/students", async (req, res, next) => {
-  try {
+router.get(
+  "/students",
+  asyncHandler(async (req, res, next) => {
     const { page = 1, limit = 50, search } = req.query;
+    const pageInt = parseInt(page) || 1;
+    const limitInt = Math.min(parseInt(limit) || 50, 100); // Cap at 100
 
     // Mock student data for now
     const mockStudents = [
@@ -98,8 +101,8 @@ router.get("/students", async (req, res, next) => {
     }
 
     // Apply pagination
-    const startIndex = (parseInt(page) - 1) * parseInt(limit);
-    const endIndex = startIndex + parseInt(limit);
+    const startIndex = (pageInt - 1) * limitInt;
+    const endIndex = startIndex + limitInt;
     const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
 
     res.json({
@@ -107,23 +110,23 @@ router.get("/students", async (req, res, next) => {
       data: {
         students: paginatedStudents,
         pagination: {
-          current: parseInt(page),
-          limit: parseInt(limit),
+          current: pageInt,
+          limit: limitInt,
           total: filteredStudents.length,
-          pages: Math.ceil(filteredStudents.length / parseInt(limit)),
+          pages: Math.ceil(filteredStudents.length / limitInt),
         },
       },
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // @route   DELETE /api/admin/students/:id
 // @desc    Delete a student
 // @access  Admin
-router.delete("/students/:id", async (req, res, next) => {
-  try {
+router.delete(
+  "/students/:id",
+  validateMongoId,
+  asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
     // In a real implementation, you would delete from the database
@@ -135,10 +138,8 @@ router.delete("/students/:id", async (req, res, next) => {
         deletedId: id,
       },
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 // Advanced CRUD Operations for NEET Questions
 

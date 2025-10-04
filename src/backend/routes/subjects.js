@@ -3,6 +3,7 @@ const router = express.Router();
 const Subject = require("../models/Subject");
 const Question = require("../models/Question");
 const Chapter = require("../models/Chapter");
+const { NotFoundError } = require("../errors/CustomErrors");
 const {
   subjectsCacheMiddleware,
   statsCacheMiddleware,
@@ -39,10 +40,7 @@ router.get(
       const subjectData = await Subject.getSubjectWithStats(subject);
 
       if (!subjectData || subjectData.length === 0) {
-        return res.status(404).json({
-          success: false,
-          error: "Subject not found",
-        });
+        throw new NotFoundError("Subject", subject);
       }
 
       res.json({
@@ -61,6 +59,7 @@ router.get(
 router.get(
   "/:subject/overview",
   [subjectValidation, validate],
+  statsCacheMiddleware,
   async (req, res, next) => {
     try {
       const { subject } = req.params;
@@ -72,10 +71,7 @@ router.get(
       });
 
       if (!subjectInfo) {
-        return res.status(404).json({
-          success: false,
-          error: "Subject not found",
-        });
+        throw new NotFoundError("Subject", subject);
       }
 
       // Get detailed statistics
@@ -87,44 +83,8 @@ router.get(
             isActive: true,
           }),
 
-          // Chapters with question counts
-          Chapter.aggregate([
-            { $match: { subjectName: subject, isActive: true } },
-            {
-              $lookup: {
-                from: "questions",
-                let: { chapterName: "$name", subjectName: "$subjectName" },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [
-                          { $eq: ["$chapterName", "$$chapterName"] },
-                          { $eq: ["$subjectName", "$$subjectName"] },
-                          { $eq: ["$isActive", true] },
-                        ],
-                      },
-                    },
-                  },
-                ],
-                as: "questions",
-              },
-            },
-            {
-              $addFields: {
-                questionCount: { $size: "$questions" },
-              },
-            },
-            {
-              $project: {
-                name: 1,
-                displayName: 1,
-                questionCount: 1,
-                order: 1,
-              },
-            },
-            { $sort: { order: 1, name: 1 } },
-          ]),
+          // Chapters with question counts using static method
+          Chapter.getChaptersWithQuestionCounts(subject),
 
           // Difficulty distribution
           Question.aggregate([
@@ -137,45 +97,8 @@ router.get(
             },
           ]),
 
-          // Top chapters by question count
-          Question.aggregate([
-            { $match: { subjectName: subject, isActive: true } },
-            {
-              $group: {
-                _id: "$chapterName",
-                questionCount: { $sum: 1 },
-                avgSuccessRate: {
-                  $avg: {
-                    $cond: [
-                      { $eq: ["$statistics.totalAttempts", 0] },
-                      0,
-                      {
-                        $multiply: [
-                          {
-                            $divide: [
-                              "$statistics.correctAttempts",
-                              "$statistics.totalAttempts",
-                            ],
-                          },
-                          100,
-                        ],
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            { $sort: { questionCount: -1 } },
-            { $limit: 5 },
-            {
-              $project: {
-                chapterName: "$_id",
-                questionCount: 1,
-                avgSuccessRate: { $round: ["$avgSuccessRate", 2] },
-                _id: 0,
-              },
-            },
-          ]),
+          // Top chapters by question count using static method
+          Question.getTopChaptersByCount(subject, 5),
         ]);
 
       // Format difficulty distribution
@@ -219,62 +142,13 @@ router.get(
 router.get(
   "/:subject/progress",
   [subjectValidation, validate],
+  statsCacheMiddleware,
   async (req, res, next) => {
     try {
       const { subject } = req.params;
 
-      // Get questions with attempt statistics
-      const progressData = await Question.aggregate([
-        { $match: { subjectName: subject, isActive: true } },
-        {
-          $group: {
-            _id: "$chapterName",
-            totalQuestions: { $sum: 1 },
-            attemptedQuestions: {
-              $sum: {
-                $cond: [{ $gt: ["$statistics.totalAttempts", 0] }, 1, 0],
-              },
-            },
-            totalAttempts: { $sum: "$statistics.totalAttempts" },
-            correctAttempts: { $sum: "$statistics.correctAttempts" },
-            avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
-          },
-        },
-        {
-          $addFields: {
-            progressPercentage: {
-              $multiply: [
-                { $divide: ["$attemptedQuestions", "$totalQuestions"] },
-                100,
-              ],
-            },
-            successRate: {
-              $cond: [
-                { $eq: ["$totalAttempts", 0] },
-                0,
-                {
-                  $multiply: [
-                    { $divide: ["$correctAttempts", "$totalAttempts"] },
-                    100,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        {
-          $project: {
-            chapterName: "$_id",
-            totalQuestions: 1,
-            attemptedQuestions: 1,
-            progressPercentage: { $round: ["$progressPercentage", 2] },
-            successRate: { $round: ["$successRate", 2] },
-            avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
-            _id: 0,
-          },
-        },
-        { $sort: { chapterName: 1 } },
-      ]);
+      // Get questions with attempt statistics using static method
+      const progressData = await Question.getChapterProgress(subject);
 
       // Calculate overall progress
       const overallStats = progressData.reduce(

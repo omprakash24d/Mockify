@@ -102,7 +102,7 @@ const NEETDashboard: React.FC = () => {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+            className="px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition"
           >
             Retry
           </button>
@@ -136,7 +136,7 @@ const NEETDashboard: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+            className="px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition"
           >
             Search
           </button>
@@ -314,16 +314,16 @@ const NEETDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 neet-prep-font">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 neet-prep-font">
       {/* NEET-style Header Banner */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-lg mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 dark:bg-white/10 rounded-lg mb-4">
               <BookOpen className="w-7 h-7 text-white" />
             </div>
             <h1 className="text-4xl font-bold mb-2">NEET Question Bank</h1>
-            <p className="text-lg text-blue-100">
+            <p className="text-lg text-blue-100 dark:text-blue-200">
               Master your NEET preparation with comprehensive practice
             </p>
           </div>
@@ -333,7 +333,7 @@ const NEETDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* Navigation Tabs */}
-          <div className="card-neet p-1">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-1">
             <nav className="flex gap-1">
               {[
                 { id: "subjects", icon: BookOpen, label: "Subjects" },

@@ -49,20 +49,22 @@ export const StatisticsCards: React.FC<StatisticsCardsProps> = ({ stats }) => {
         return (
           <div
             key={card.title}
-            className="card-neet p-6 group animate-fade-in-up"
+            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 group animate-fade-in-up"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
                   <IconComponent className={`w-4 h-4 ${card.color}`} />
-                  <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                     {card.title}
                   </h3>
                 </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                   {card.value}
                 </p>
-                <p className="text-sm text-gray-500">{card.subtitle}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {card.subtitle}
+                </p>
               </div>
               <div
                 className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}

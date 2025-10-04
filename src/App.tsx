@@ -12,7 +12,10 @@ import {
 } from "./components/NetworkStatus";
 import PasswordResetFlow from "./components/PasswordReset/PasswordResetFlow";
 import { AppRoutes } from "./components/Router";
-import { AuthProvider, ThemeProvider, useAuth } from "./contexts";
+import { TailwindTest } from "./components/ui/TailwindTest";
+import { ThemeIndicator } from "./components/ui/ThemeIndicator";
+import { ThemeTestComponent } from "./components/ui/ThemeTestComponent";
+import { AuthProvider, ThemeProvider, useAuth, useTheme } from "./contexts";
 import { Footer } from "./Footer";
 import { usePerformanceMonitor } from "./hooks/usePerformanceMonitor";
 import UserProfileService from "./lib/user-profile";
@@ -20,6 +23,7 @@ import type { CoachingDetailsFormData } from "./lib/validations";
 
 const AppContent = () => {
   const { user, loading } = useAuth();
+  const { theme } = useTheme();
   const [needsCoachingDetails, setNeedsCoachingDetails] = useState(false);
   const [checkingProfile, setCheckingProfile] = useState(false);
 
@@ -103,13 +107,26 @@ const AppContent = () => {
 
   return (
     <NetworkErrorBoundary>
-      <div className="min-h-screen bg-gray-50 neet-prep-font transition-colors">
+      <div
+        key={theme}
+        className="min-h-screen bg-white dark:bg-gray-900 neet-prep-font transition-colors duration-200"
+      >
         <NetworkStatus />
-        <Navbar user={user} />
+
+        {/* Theme status indicator - temporary for verification */}
+        <ThemeIndicator />
+        <TailwindTest />
+        <ThemeTestComponent />
+
+        {/* Navbar with proper theme support */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+          <Navbar user={user} />
+        </div>
+
         <EmailVerificationBanner />
 
         <main className={user.emailVerified ? "pt-[104px]" : "pt-[140px]"}>
-          <div className="min-h-[calc(100vh-6.5rem)]">
+          <div className="min-h-[calc(100vh-6.5rem)] bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
             <AppRoutes>
               {needsCoachingDetails && (
                 <CoachingDetailsModal

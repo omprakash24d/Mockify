@@ -27,7 +27,10 @@ export const NEETSelect: React.FC<NEETSelectProps> = ({
   return (
     <div className={cn("space-y-1", fullWidth && "w-full")}>
       {label && (
-        <label htmlFor={selectId} className="label-neet">
+        <label
+          htmlFor={selectId}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
           {label}
         </label>
       )}
@@ -111,7 +114,10 @@ export const NEETTextarea: React.FC<NEETTextareaProps> = ({
   return (
     <div className={cn("space-y-1", fullWidth && "w-full")}>
       {label && (
-        <label htmlFor={textareaId} className="label-neet">
+        <label
+          htmlFor={textareaId}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
           {label}
         </label>
       )}

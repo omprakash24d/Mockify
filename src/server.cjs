@@ -7,6 +7,9 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 require("dotenv").config();
 
+// Set default environment if not specified
+process.env.NODE_ENV = process.env.NODE_ENV || "development";
+
 const enhancedLogger = require("./backend/config/logger");
 const {
   errorHandler,
@@ -33,6 +36,7 @@ const subjectRoutes = require("./backend/routes/subjects");
 const chapterRoutes = require("./backend/routes/chapters");
 const analyticsRoutes = require("./backend/routes/analytics");
 const adminRoutes = require("./backend/routes/admin");
+const reportRoutes = require("./backend/routes/reports");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -137,6 +141,7 @@ app.use("/api/subjects", subjectRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reports", reportRoutes);
 
 // 404 handler - must be last route
 app.use(notFoundHandler);
@@ -153,34 +158,37 @@ mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/mockify_neet")
   .then(async () => {
     enhancedLogger.info("Connected to MongoDB successfully");
-    console.log("✅ Connected to MongoDB");
+    enhancedLogger.info("✅ Connected to MongoDB");
 
     // Initialize hybrid data service
     try {
       await hybridDataService.initialize();
       enhancedLogger.info("HybridDataService initialized successfully");
-      console.log("✅ HybridDataService initialized");
+      enhancedLogger.info("✅ HybridDataService initialized");
     } catch (error) {
-      logger.warn("HybridDataService initialization failed:", error.message);
-      console.log(
+      enhancedLogger.warn(
+        "HybridDataService initialization failed:",
+        error.message
+      );
+      enhancedLogger.warn(
         "⚠️ HybridDataService initialization failed, continuing with MongoDB only"
       );
     }
   })
   .catch((error) => {
-    logger.error("MongoDB connection error:", error);
-    console.error("❌ MongoDB connection failed:", error.message);
+    enhancedLogger.error("MongoDB connection error:", error);
+    enhancedLogger.error("❌ MongoDB connection failed:", error.message);
     process.exit(1);
   });
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
   enhancedLogger.info("Received SIGINT. Shutting down gracefully...");
-  console.log("\n⏹️  Shutting down server...");
+  enhancedLogger.info("\n⏹️  Shutting down server...");
 
   await mongoose.connection.close();
   enhancedLogger.info("MongoDB connection closed.");
-  console.log("✅ MongoDB connection closed");
+  enhancedLogger.info("✅ MongoDB connection closed");
 
   process.exit(0);
 });
@@ -188,12 +196,10 @@ process.on("SIGINT", async () => {
 // Start server
 app.listen(PORT, () => {
   enhancedLogger.info(
-    `Server running on port ${PORT} in ${
-      process.env.NODE_ENV || "development"
-    } mode`
+    `Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
   );
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  enhancedLogger.info(`🚀 Server running on http://localhost:${PORT}`);
+  enhancedLogger.info(`📊 Health check: http://localhost:${PORT}/health`);
 });
 
 module.exports = app;

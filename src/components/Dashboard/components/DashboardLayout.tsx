@@ -20,16 +20,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   recentTests,
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50 neet-prep-font">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 neet-prep-font">
       {/* NEET-style Header Banner */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h1 className="text-3xl font-bold mb-2">
                 Welcome back, {user?.displayName || "Student"}!
               </h1>
-              <p className="text-blue-100">
+              <p className="text-blue-100 dark:text-blue-200">
                 Continue your NEET preparation journey with personalized
                 practice and progress tracking.
               </p>

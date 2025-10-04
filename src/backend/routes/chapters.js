@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Chapter = require("../models/Chapter");
 const Question = require("../models/Question");
+const { NotFoundError } = require("../errors/CustomErrors");
 const {
   chaptersCacheMiddleware,
   statsCacheMiddleware,
@@ -49,10 +50,7 @@ router.get(
       const chapterData = await Chapter.getChapterWithStats(subject, chapter);
 
       if (!chapterData || chapterData.length === 0) {
-        return res.status(404).json({
-          success: false,
-          error: "Chapter not found",
-        });
+        throw new NotFoundError("Chapter", `${subject}/${chapter}`);
       }
 
       res.json({
@@ -71,6 +69,7 @@ router.get(
 router.get(
   "/:subject/:chapter/overview",
   [subjectValidation, chapterValidation, validate],
+  statsCacheMiddleware,
   async (req, res, next) => {
     try {
       const { subject, chapter } = req.params;
@@ -83,10 +82,7 @@ router.get(
       });
 
       if (!chapterInfo) {
-        return res.status(404).json({
-          success: false,
-          error: "Chapter not found",
-        });
+        throw new NotFoundError("Chapter", `${subject}/${chapter}`);
       }
 
       // Get detailed statistics
@@ -161,50 +157,8 @@ router.get(
             },
           ]),
 
-          // Subtopic statistics
-          Question.aggregate([
-            {
-              $match: {
-                subjectName: subject,
-                chapterName: chapter,
-                isActive: true,
-              },
-            },
-            { $unwind: "$subtopicTags" },
-            {
-              $group: {
-                _id: "$subtopicTags",
-                questionCount: { $sum: 1 },
-                totalAttempts: { $sum: "$statistics.totalAttempts" },
-                correctAttempts: { $sum: "$statistics.correctAttempts" },
-              },
-            },
-            {
-              $addFields: {
-                successRate: {
-                  $cond: [
-                    { $eq: ["$totalAttempts", 0] },
-                    0,
-                    {
-                      $multiply: [
-                        { $divide: ["$correctAttempts", "$totalAttempts"] },
-                        100,
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              $project: {
-                subtopic: "$_id",
-                questionCount: 1,
-                successRate: { $round: ["$successRate", 2] },
-                _id: 0,
-              },
-            },
-            { $sort: { questionCount: -1, subtopic: 1 } },
-          ]),
+          // Subtopic statistics using static method
+          Question.getSubtopicStats(subject, chapter),
 
           // Recent questions (most recently added)
           Question.find({
@@ -280,83 +234,12 @@ router.get(
 router.get(
   "/:subject/:chapter/subtopics",
   [subjectValidation, chapterValidation, validate],
+  statsCacheMiddleware,
   async (req, res, next) => {
     try {
       const { subject, chapter } = req.params;
 
-      const subtopics = await Question.aggregate([
-        {
-          $match: {
-            subjectName: subject,
-            chapterName: chapter,
-            isActive: true,
-          },
-        },
-        { $unwind: "$subtopicTags" },
-        {
-          $group: {
-            _id: "$subtopicTags",
-            questionCount: { $sum: 1 },
-            totalAttempts: { $sum: "$statistics.totalAttempts" },
-            correctAttempts: { $sum: "$statistics.correctAttempts" },
-            avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
-            difficulties: { $push: "$difficulty" },
-          },
-        },
-        {
-          $addFields: {
-            successRate: {
-              $cond: [
-                { $eq: ["$totalAttempts", 0] },
-                0,
-                {
-                  $multiply: [
-                    { $divide: ["$correctAttempts", "$totalAttempts"] },
-                    100,
-                  ],
-                },
-              ],
-            },
-            difficultyDistribution: {
-              easy: {
-                $size: {
-                  $filter: {
-                    input: "$difficulties",
-                    cond: { $eq: ["$$this", "easy"] },
-                  },
-                },
-              },
-              medium: {
-                $size: {
-                  $filter: {
-                    input: "$difficulties",
-                    cond: { $eq: ["$$this", "medium"] },
-                  },
-                },
-              },
-              hard: {
-                $size: {
-                  $filter: {
-                    input: "$difficulties",
-                    cond: { $eq: ["$$this", "hard"] },
-                  },
-                },
-              },
-            },
-          },
-        },
-        {
-          $project: {
-            name: "$_id",
-            questionCount: 1,
-            successRate: { $round: ["$successRate", 2] },
-            avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
-            difficultyDistribution: 1,
-            _id: 0,
-          },
-        },
-        { $sort: { questionCount: -1, name: 1 } },
-      ]);
+      const subtopics = await Question.getSubtopicStats(subject, chapter);
 
       res.json({
         success: true,

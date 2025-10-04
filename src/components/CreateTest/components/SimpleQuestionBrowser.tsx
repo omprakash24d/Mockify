@@ -239,10 +239,10 @@ export const SimpleQuestionBrowser: React.FC<SimpleQuestionBrowserProps> = ({
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 bg-slate-100 text-xs rounded">
+                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-xs rounded">
                       {question.subjectName || question.subject_id}
                     </span>
-                    <span className="px-2 py-1 bg-slate-100 text-xs rounded">
+                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-xs rounded">
                       {question.chapterName || question.chapter_id}
                     </span>
                     <span
@@ -264,18 +264,26 @@ export const SimpleQuestionBrowser: React.FC<SimpleQuestionBrowserProps> = ({
 
                   {question.options && (
                     <div className="space-y-2">
-                      {question.options.map((option: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className={`text-sm p-2 rounded border-l-2 ${
-                            option.isCorrect
-                              ? "border-green-500 bg-green-50"
-                              : "border-slate-200 bg-slate-50"
-                          }`}
-                        >
-                          {String.fromCharCode(65 + idx)}. {option.text}
-                        </div>
-                      ))}
+                      {question.options.map((option: any, idx: number) => {
+                        const optionLabel = String.fromCharCode(65 + idx);
+                        // Correct logic: correctAnswer is the text of the correct option (virtual field)
+                        const isCorrectOption =
+                          option.isCorrect ||
+                          question.correctAnswer === option.text;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`text-sm p-2 rounded border-l-2 ${
+                              isCorrectOption
+                                ? "border-green-500 bg-green-50"
+                                : "border-slate-200 bg-slate-50"
+                            }`}
+                          >
+                            {optionLabel}. {option.text}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

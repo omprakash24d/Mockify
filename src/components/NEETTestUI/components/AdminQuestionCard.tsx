@@ -190,34 +190,59 @@ export const AdminQuestionCard: React.FC<AdminQuestionCardProps> = ({
 
               {showOptions && (
                 <div className="space-y-2 pl-6">
-                  {question.options.map((option, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg border transition-colors ${
-                        option.isCorrect
-                          ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700"
-                          : "border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-600"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="font-medium text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                          ({String.fromCharCode(65 + index)})
-                        </span>
-                        <span
-                          className={`flex-1 text-sm ${
-                            option.isCorrect
-                              ? "text-emerald-800 dark:text-emerald-200 font-medium"
-                              : "text-gray-700 dark:text-gray-300"
-                          }`}
-                        >
-                          {option.text}
-                        </span>
-                        {option.isCorrect && (
-                          <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                        )}
+                  {question.options.map((option, index) => {
+                    const optionLabel = String.fromCharCode(65 + index);
+
+                    // Debug logging for admin view
+                    if (index === 0) {
+                      console.log("AdminQuestionCard Debug:", {
+                        questionId: question._id,
+                        correctAnswer: question.correctAnswer,
+                        correctAnswerType: typeof question.correctAnswer,
+                        options: question.options.map((opt, idx) => ({
+                          index: idx,
+                          letter: String.fromCharCode(65 + idx),
+                          text: opt.text,
+                          isCorrect: opt.isCorrect,
+                          isCorrectType: typeof opt.isCorrect,
+                        })),
+                      });
+                    }
+
+                    // Correct logic: correctAnswer is the text of the correct option (virtual field)
+                    const isCorrectOption =
+                      option.isCorrect ||
+                      question.correctAnswer === option.text;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`p-3 rounded-lg border transition-colors ${
+                          isCorrectOption
+                            ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700"
+                            : "border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-600"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="font-medium text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                            ({optionLabel})
+                          </span>
+                          <span
+                            className={`flex-1 text-sm ${
+                              isCorrectOption
+                                ? "text-emerald-800 dark:text-emerald-200 font-medium"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                          >
+                            {option.text}
+                          </span>
+                          {isCorrectOption && (
+                            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

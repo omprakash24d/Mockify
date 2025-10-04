@@ -334,7 +334,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                           checked={option.isCorrect}
                           onChange={() => handleCorrectAnswerChange(index)}
                           disabled={isReadOnly}
-                          className="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500"
+                          className="w-5 h-5 text-green-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-green-500"
                         />
                         <span className="ml-3 text-lg font-bold text-gray-700 dark:text-gray-300">
                           {String.fromCharCode(65 + index)}
@@ -463,7 +463,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
                               />
                               <label
                                 htmlFor={`option-image-${index}`}
-                                className="cursor-pointer text-sm bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors"
+                                className="cursor-pointer text-sm bg-gray-500 dark:bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
                               >
                                 Add Image
                               </label>

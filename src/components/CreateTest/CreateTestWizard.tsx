@@ -187,12 +187,12 @@ export const CreateTestWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 neet-prep-font">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 neet-prep-font">
       {/* NEET-style Header Banner */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl shadow-lg mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 dark:bg-white/10 rounded-2xl shadow-lg mb-6">
               <svg
                 className="w-10 h-10 text-white"
                 fill="none"
@@ -226,7 +226,7 @@ export const CreateTestWizard: React.FC = () => {
         />
 
         {/* Main Content Card */}
-        <div className="card-neet overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
           {/* Error Banner */}
           <ErrorBanner error={error} onDismiss={() => setError(null)} />
 

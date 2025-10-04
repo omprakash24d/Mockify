@@ -302,7 +302,7 @@ export const QuestionBrowser: React.FC<QuestionBrowserProps> = ({
             </span>
             <button
               onClick={handleSelectAll}
-              className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-3 py-1 text-sm bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-700"
             >
               {selectedQuestions.size === questions.length
                 ? "Deselect All"
@@ -365,10 +365,10 @@ export const QuestionBrowser: React.FC<QuestionBrowserProps> = ({
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 bg-slate-100 text-xs rounded">
+                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-xs rounded">
                       {question.subjectName}
                     </span>
-                    <span className="px-2 py-1 bg-slate-100 text-xs rounded">
+                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-xs rounded">
                       {question.chapterName}
                     </span>
                     <span
@@ -390,23 +390,31 @@ export const QuestionBrowser: React.FC<QuestionBrowserProps> = ({
 
                   {filters.fields !== "minimal" && (
                     <div className="space-y-2">
-                      {question.options.map((option, idx) => (
-                        <div
-                          key={idx}
-                          className={`text-sm p-2 rounded border-l-2 ${
-                            option.isCorrect
-                              ? "border-green-500 bg-green-50"
-                              : "border-slate-200 bg-slate-50"
-                          }`}
-                        >
-                          {String.fromCharCode(65 + idx)}. {option.text}
-                        </div>
-                      ))}
+                      {question.options.map((option, idx) => {
+                        const optionLabel = String.fromCharCode(65 + idx);
+                        // Correct logic: correctAnswer is the text of the correct option (virtual field)
+                        const isCorrectOption =
+                          option.isCorrect ||
+                          question.correctAnswer === option.text;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`text-sm p-2 rounded border-l-2 ${
+                              isCorrectOption
+                                ? "border-green-500 bg-green-50"
+                                : "border-slate-200 bg-slate-50"
+                            }`}
+                          >
+                            {optionLabel}. {option.text}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
                   {filters.fields === "full" && question.explanation && (
-                    <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <h4 className="font-medium text-blue-800 mb-1">
                         Explanation:
                       </h4>

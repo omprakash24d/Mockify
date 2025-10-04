@@ -66,7 +66,7 @@ router.get(
 
     // Execute queries in parallel
     const [questions, totalCount] = await Promise.all([
-      Question.find(query).sort(sortObj).skip(skip).limit(limitNum).lean(),
+      Question.find(query).sort(sortObj).skip(skip).limit(limitNum),
       Question.countDocuments(query),
     ]);
 
@@ -302,9 +302,9 @@ router.post(
   asyncHandler(async (req, res, next) => {
     const questionData = {
       ...req.body,
-      options: req.body.options.map((option, index) => ({
+      options: req.body.options.map((option) => ({
         text: option.text,
-        isCorrect: option.text === req.body.correctAnswer,
+        isCorrect: option.isCorrect || false,
       })),
     };
 
@@ -353,8 +353,7 @@ router.put(
       if (req.body.options) {
         req.body.options = req.body.options.map((option) => ({
           text: option.text,
-          isCorrect:
-            option.text === (req.body.correctAnswer || question.correctAnswer),
+          isCorrect: option.isCorrect || false,
         }));
       }
 

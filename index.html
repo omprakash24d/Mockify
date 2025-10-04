@@ -47,8 +47,37 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/src/index.css" />
 
     <title>Mockify - Test Generation Platform</title>
+
+    <!-- Prevent theme flash -->
+    <script>
+      (function () {
+        // Get theme from localStorage or system preference
+        const getInitialTheme = () => {
+          const savedTheme = localStorage.getItem("theme");
+          if (savedTheme === "dark" || savedTheme === "light") {
+            return savedTheme;
+          }
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        };
+
+        // Apply theme immediately
+        const theme = getInitialTheme();
+        const root = document.documentElement;
+
+        if (theme === "dark") {
+          root.classList.add("dark");
+          root.style.colorScheme = "dark";
+        } else {
+          root.classList.remove("dark");
+          root.style.colorScheme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

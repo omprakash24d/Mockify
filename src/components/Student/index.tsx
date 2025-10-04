@@ -41,10 +41,9 @@ export const NEETTestUI: React.FC = () => {
   // Memoize question transformations to prevent unnecessary re-computations
   const transformedQuestions = useMemo(() => {
     return questions.map((question: any, index: number) => ({
-      key:
-        question._id ||
-        question.id ||
-        `${selectedSubject}-${pagination.currentPage}-${index}`,
+      key: `${selectedSubject}-${pagination.currentPage}-${index}-${
+        question._id || question.id || `q${index}`
+      }`,
       transformedQuestion: {
         id: question._id || question.id || `q-${index}`,
         subject:
@@ -58,10 +57,32 @@ export const NEETTestUI: React.FC = () => {
         options: (question.options?.map((opt: any) =>
           typeof opt === "string" ? opt : opt?.text || String(opt)
         ) || []) as string[],
-        correctAnswer:
-          question.options?.findIndex(
-            (opt: any) => typeof opt === "object" && opt?.isCorrect
-          ) || 0,
+        correctAnswer: (() => {
+          // First try to find the correct answer from the options array
+          const correctIndex = question.options?.findIndex(
+            (opt: any) => typeof opt === "object" && opt?.isCorrect === true
+          );
+
+          if (correctIndex !== undefined && correctIndex >= 0) {
+            return correctIndex;
+          }
+
+          // Fallback: try to match the correctAnswer string with option text
+          if (question.correctAnswer && question.options) {
+            const matchIndex = question.options.findIndex(
+              (opt: any) =>
+                (typeof opt === "string" ? opt : opt?.text) ===
+                question.correctAnswer
+            );
+            if (matchIndex >= 0) return matchIndex;
+          }
+
+          // Last resort: log error and return 0 (but this needs to be reported)
+          console.warn(
+            `Question ${question._id} has invalid correct answer configuration`
+          );
+          return 0;
+        })(),
         difficulty:
           question.difficulty === "easy"
             ? "Level 1"
@@ -77,7 +98,7 @@ export const NEETTestUI: React.FC = () => {
   }, [questions, selectedSubject, pagination.currentPage]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <TestBanner />
       <QuickActionsSidebar />
 
@@ -91,7 +112,7 @@ export const NEETTestUI: React.FC = () => {
           <button
             onClick={refresh}
             disabled={loading}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <svg
               className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
@@ -114,15 +135,17 @@ export const NEETTestUI: React.FC = () => {
         {loading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Loading questions...</span>
+            <span className="ml-3 text-gray-600 dark:text-gray-400">
+              Loading questions...
+            </span>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
             <div className="flex">
-              <div className="text-red-400">
+              <div className="text-red-400 dark:text-red-300">
                 <svg
                   className="w-5 h-5"
                   fill="currentColor"
@@ -136,10 +159,12 @@ export const NEETTestUI: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
                   Error loading questions
                 </h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  {error}
+                </p>
               </div>
             </div>
           </div>
@@ -160,7 +185,7 @@ export const NEETTestUI: React.FC = () => {
               )
             ) : (
               <div className="text-center py-12">
-                <div className="text-gray-500 mb-4">
+                <div className="text-gray-500 dark:text-gray-400 mb-4">
                   <svg
                     className="w-16 h-16 mx-auto mb-4"
                     fill="none"
@@ -175,10 +200,10 @@ export const NEETTestUI: React.FC = () => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                   No questions found
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-gray-500 dark:text-gray-400">
                   Try selecting a different subject or check back later.
                 </p>
               </div>

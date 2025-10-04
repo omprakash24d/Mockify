@@ -19,7 +19,9 @@ export const NEETCard: React.FC<{
   onClick?: () => void;
 }> = ({ children, className = "", onClick }) => (
   <div
-    className={`card-neet ${className}`}
+    className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 ${
+      onClick ? "cursor-pointer hover:scale-[1.02]" : ""
+    } ${className}`}
     onClick={onClick}
     role={onClick ? "button" : "article"}
     tabIndex={onClick ? 0 : undefined}
@@ -46,7 +48,13 @@ export const NEETButton: React.FC<{
   type = "button",
 }) => {
   const baseClass =
-    variant === "primary" ? "btn-neet-primary" : "btn-neet-secondary";
+    "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+
+  const variantClass =
+    variant === "primary"
+      ? "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white focus:ring-blue-500 dark:focus:ring-blue-400"
+      : "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 focus:ring-gray-500 dark:focus:ring-gray-400";
+
   const sizeClass = {
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2",
@@ -56,7 +64,7 @@ export const NEETButton: React.FC<{
   return (
     <button
       type={type}
-      className={`${baseClass} ${sizeClass} ${className} ${
+      className={`${baseClass} ${variantClass} ${sizeClass} ${className} ${
         disabled ? "opacity-50 cursor-not-allowed" : ""
       }`}
       onClick={onClick}
@@ -93,7 +101,11 @@ export const NEETInput: React.FC<{
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className={`input-neet ${error ? "border-red-500" : ""} ${className}`}
+    className={`w-full px-4 py-2 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+      error
+        ? "border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+    } bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     disabled={disabled}
     id={id}
     name={name}
@@ -124,7 +136,11 @@ export const NEETSelect: React.FC<{
   <select
     value={value}
     onChange={onChange}
-    className={`select-neet ${error ? "border-red-500" : ""} ${className}`}
+    className={`w-full px-4 py-2 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+      error
+        ? "border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+    } bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     disabled={disabled}
     id={id}
     name={name}
@@ -164,7 +180,11 @@ export const NEETTextarea: React.FC<{
     value={value}
     onChange={onChange}
     rows={rows}
-    className={`textarea-neet ${error ? "border-red-500" : ""} ${className}`}
+    className={`w-full px-4 py-2 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 resize-vertical ${
+      error
+        ? "border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+    } bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     disabled={disabled}
     id={id}
     name={name}
@@ -177,9 +197,12 @@ export const NEETLabel: React.FC<{
   className?: string;
   required?: boolean;
 }> = ({ children, htmlFor, className = "", required = false }) => (
-  <label htmlFor={htmlFor} className={`label-neet ${className}`}>
+  <label
+    htmlFor={htmlFor}
+    className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 ${className}`}
+  >
     {children}
-    {required && <span className="text-red-500 ml-1">*</span>}
+    {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
   </label>
 );
 
@@ -187,27 +210,38 @@ export const NEETBadge: React.FC<{
   children: React.ReactNode;
   variant?: "default" | "success" | "warning" | "error";
   className?: string;
-}> = ({ children, variant = "default", className = "" }) => (
-  <span
-    className={`badge-neet ${
-      variant !== "default" ? variant : ""
-    } ${className}`}
-  >
-    {children}
-  </span>
-);
+}> = ({ children, variant = "default", className = "" }) => {
+  const variantClasses = {
+    default: "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
+    success:
+      "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
+    warning:
+      "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
+    error: "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variantClasses[variant]} ${className}`}
+    >
+      {children}
+    </span>
+  );
+};
 
 export const NEETPageHeader: React.FC<{
   title: string;
   subtitle?: string;
   children?: React.ReactNode;
 }> = ({ title, subtitle, children }) => (
-  <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-8">
+  <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-8">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <h1 className="text-3xl font-bold mb-2">{title}</h1>
-          {subtitle && <p className="text-blue-100">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-blue-100 dark:text-blue-200">{subtitle}</p>
+          )}
         </div>
         {children && <div className="hidden lg:block">{children}</div>}
       </div>

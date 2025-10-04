@@ -21,7 +21,7 @@ class EfficientApiService {
   private baseUrl: string;
 
   constructor(
-    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
+    baseUrl: string = import.meta.env.VITE_API_URL ||
       "http://localhost:5000/api"
   ) {
     this.baseUrl = baseUrl;

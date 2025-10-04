@@ -6,13 +6,11 @@ const questionSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     chapterName: {
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     questionNumberForChapter: {
       type: Number,
@@ -35,10 +33,7 @@ const questionSchema = new mongoose.Schema(
         },
       },
     ],
-    correctAnswer: {
-      type: String,
-      required: true,
-    },
+
     subtopicTags: [
       {
         type: String,
@@ -113,15 +108,26 @@ questionSchema.virtual("successRate").get(function () {
   ).toFixed(2);
 });
 
+// Virtual for correct answer (derived from options)
+questionSchema.virtual("correctAnswer").get(function () {
+  const correctOption = this.options.find((option) => option.isCorrect);
+  return correctOption ? correctOption.text : null;
+});
+
 // Static methods
-questionSchema.statics.getBySubject = function (subject, options = {}) {
+questionSchema.statics.getBySubject = function (
+  subject,
+  projection = null,
+  options = {}
+) {
   const query = { subjectName: subject, isActive: true };
-  return this.find(query, null, options);
+  return this.find(query, projection, options);
 };
 
 questionSchema.statics.getByChapter = function (
   subject,
   chapter,
+  projection = null,
   options = {}
 ) {
   const query = {
@@ -129,7 +135,7 @@ questionSchema.statics.getByChapter = function (
     chapterName: chapter,
     isActive: true,
   };
-  return this.find(query, null, options);
+  return this.find(query, projection, options);
 };
 
 questionSchema.statics.searchQuestions = function (searchTerm, filters = {}) {
@@ -144,10 +150,253 @@ questionSchema.statics.searchQuestions = function (searchTerm, filters = {}) {
   });
 };
 
-questionSchema.statics.getRandomQuestions = function (count, filters = {}) {
+questionSchema.statics.getRandomQuestions = async function (
+  count,
+  filters = {}
+) {
   const matchQuery = { isActive: true, ...filters };
 
-  return this.aggregate([{ $match: matchQuery }, { $sample: { size: count } }]);
+  // Get total count first
+  const totalCount = await this.countDocuments(matchQuery);
+
+  if (totalCount === 0) {
+    return [];
+  }
+
+  // If requesting more than available, return all
+  const limitCount = Math.min(count, totalCount);
+
+  // Generate random skip values
+  const randomSkips = [];
+  for (let i = 0; i < limitCount; i++) {
+    randomSkips.push(Math.floor(Math.random() * totalCount));
+  }
+
+  // Get questions at random positions
+  const questions = await Promise.all(
+    randomSkips.map((skip) => this.findOne(matchQuery).skip(skip))
+  );
+
+  // Filter out nulls and remove duplicates
+  const uniqueQuestions = questions
+    .filter(Boolean)
+    .filter(
+      (question, index, arr) =>
+        arr.findIndex((q) => q._id.toString() === question._id.toString()) ===
+        index
+    );
+
+  return uniqueQuestions.slice(0, count);
+};
+
+// Static method for subtopic statistics
+questionSchema.statics.getSubtopicStats = function (subject, chapter) {
+  return this.aggregate([
+    {
+      $match: {
+        subjectName: subject,
+        chapterName: chapter,
+        isActive: true,
+      },
+    },
+    { $unwind: "$subtopicTags" },
+    {
+      $group: {
+        _id: "$subtopicTags",
+        questionCount: { $sum: 1 },
+        totalAttempts: { $sum: "$statistics.totalAttempts" },
+        correctAttempts: { $sum: "$statistics.correctAttempts" },
+        avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
+        difficulties: { $push: "$difficulty" },
+      },
+    },
+    {
+      $addFields: {
+        successRate: {
+          $cond: [
+            { $eq: ["$totalAttempts", 0] },
+            0,
+            {
+              $multiply: [
+                { $divide: ["$correctAttempts", "$totalAttempts"] },
+                100,
+              ],
+            },
+          ],
+        },
+        difficultyDistribution: {
+          easy: {
+            $size: {
+              $filter: {
+                input: "$difficulties",
+                cond: { $eq: ["$$this", "easy"] },
+              },
+            },
+          },
+          medium: {
+            $size: {
+              $filter: {
+                input: "$difficulties",
+                cond: { $eq: ["$$this", "medium"] },
+              },
+            },
+          },
+          hard: {
+            $size: {
+              $filter: {
+                input: "$difficulties",
+                cond: { $eq: ["$$this", "hard"] },
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        name: "$_id",
+        questionCount: 1,
+        successRate: { $round: ["$successRate", 2] },
+        avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
+        difficultyDistribution: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { questionCount: -1, name: 1 } },
+  ]);
+};
+
+// Static method for top chapters by question count
+questionSchema.statics.getTopChaptersByCount = function (subject, limit = 5) {
+  return this.aggregate([
+    { $match: { subjectName: subject, isActive: true } },
+    {
+      $group: {
+        _id: "$chapterName",
+        questionCount: { $sum: 1 },
+        avgSuccessRate: {
+          $avg: {
+            $cond: [
+              { $eq: ["$statistics.totalAttempts", 0] },
+              0,
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      "$statistics.correctAttempts",
+                      "$statistics.totalAttempts",
+                    ],
+                  },
+                  100,
+                ],
+              },
+            ],
+          },
+        },
+      },
+    },
+    { $sort: { questionCount: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        chapterName: "$_id",
+        questionCount: 1,
+        avgSuccessRate: { $round: ["$avgSuccessRate", 2] },
+        _id: 0,
+      },
+    },
+  ]);
+};
+
+// Static method for chapter progress statistics
+questionSchema.statics.getChapterProgress = function (subject) {
+  return this.aggregate([
+    { $match: { subjectName: subject, isActive: true } },
+    {
+      $group: {
+        _id: "$chapterName",
+        totalQuestions: { $sum: 1 },
+        attemptedQuestions: {
+          $sum: {
+            $cond: [{ $gt: ["$statistics.totalAttempts", 0] }, 1, 0],
+          },
+        },
+        totalAttempts: { $sum: "$statistics.totalAttempts" },
+        correctAttempts: { $sum: "$statistics.correctAttempts" },
+        avgTimeSpent: { $avg: "$statistics.averageTimeSpent" },
+      },
+    },
+    {
+      $addFields: {
+        progressPercentage: {
+          $multiply: [
+            { $divide: ["$attemptedQuestions", "$totalQuestions"] },
+            100,
+          ],
+        },
+        successRate: {
+          $cond: [
+            { $eq: ["$totalAttempts", 0] },
+            0,
+            {
+              $multiply: [
+                { $divide: ["$correctAttempts", "$totalAttempts"] },
+                100,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        chapterName: "$_id",
+        totalQuestions: 1,
+        attemptedQuestions: 1,
+        progressPercentage: { $round: ["$progressPercentage", 2] },
+        successRate: { $round: ["$successRate", 2] },
+        avgTimeSpent: { $round: ["$avgTimeSpent", 2] },
+        _id: 0,
+      },
+    },
+    { $sort: { chapterName: 1 } },
+  ]);
+};
+
+// Static method for subject metadata with improved breakdown
+questionSchema.statics.getSubjectMetadata = function () {
+  return this.aggregate([
+    { $match: { isActive: true } },
+    {
+      $group: {
+        _id: { subject: "$subjectName", difficulty: "$difficulty" },
+        count: { $sum: 1 },
+        chapters: { $addToSet: "$chapterName" },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.subject",
+        totalCount: { $sum: "$count" },
+        chapterCount: { $first: { $size: "$chapters" } },
+        difficulties: {
+          $push: {
+            difficulty: "$_id.difficulty",
+            count: "$count",
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        subject: "$_id",
+        count: "$totalCount",
+        chapterCount: 1,
+        difficulties: 1,
+        _id: 0,
+      },
+    },
+  ]);
 };
 
 // Instance methods
@@ -165,5 +414,21 @@ questionSchema.methods.incrementAttempt = function (isCorrect, timeSpent = 0) {
 
   return this.save();
 };
+
+// Pre-save validation for options array
+questionSchema.pre("save", function (next) {
+  // Validate minimum number of options
+  if (this.options.length < 2) {
+    return next(new Error("A question must have at least two options."));
+  }
+
+  // Validate exactly one correct option
+  const correctCount = this.options.filter((opt) => opt.isCorrect).length;
+  if (correctCount !== 1) {
+    return next(new Error("A question must have exactly one correct option."));
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Question", questionSchema);

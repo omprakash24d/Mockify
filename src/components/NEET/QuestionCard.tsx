@@ -1,7 +1,14 @@
-import { BarChart3, CheckCircle, Clock, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  CheckCircle,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { cn } from "../../lib/utils";
 import type { Question } from "../../types/neet";
+import { ReportQuestionModal } from "../ui/ReportQuestionModal";
 
 interface QuestionCardProps {
   question: Question;
@@ -20,6 +27,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   const [timeSpent, setTimeSpent] = useState(0);
   const [startTime] = useState(Date.now());
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -89,7 +97,29 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         {question.options.map((option, index) => {
           const optionLabel = String.fromCharCode(65 + index);
           const isSelected = selectedAnswer === option.text;
-          const isCorrect = option.isCorrect;
+
+          // Debug logging to understand the data structure (temporary)
+          if (index === 0) {
+            console.log("QuestionCard Debug - FIXED LOGIC:", {
+              questionId: question._id,
+              correctAnswer: question.correctAnswer,
+              correctAnswerType: typeof question.correctAnswer,
+              options: question.options.map((opt, idx) => ({
+                index: idx,
+                letter: String.fromCharCode(65 + idx),
+                text: opt.text,
+                isCorrect: opt.isCorrect,
+                newLogicResult:
+                  opt.isCorrect || question.correctAnswer === opt.text,
+                comparisonCorrectAnswerVsText:
+                  question.correctAnswer === opt.text,
+              })),
+            });
+          }
+
+          // Correct logic: correctAnswer is the text of the correct option (virtual field)
+          const isCorrect =
+            option.isCorrect || question.correctAnswer === option.text;
 
           return (
             <button
@@ -191,6 +221,26 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Action Buttons */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span>Report Issue</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Report Question Modal */}
+      <ReportQuestionModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        question={question}
+      />
     </div>
   );
 };

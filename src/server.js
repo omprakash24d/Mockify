@@ -16,6 +16,7 @@ const subjectRoutes = require("./backend/routes/subjects");
 const chapterRoutes = require("./backend/routes/chapters");
 const analyticsRoutes = require("./backend/routes/analytics");
 const adminRoutes = require("./backend/routes/admin");
+const reportRoutes = require("./backend/routes/reports");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -79,6 +80,7 @@ app.use("/api/subjects", subjectRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reports", reportRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

@@ -44,7 +44,7 @@ const DotsVariant = React.memo(() => (
 ));
 DotsVariant.displayName = "DotsVariant";
 
-const PulseVariant = React.memo(({ }: { config: any }) => (
+const PulseVariant = React.memo(({}: { config: any }) => (
   <div className="flex gap-2">
     {[0, 1, 2].map((i) => (
       <div
@@ -210,14 +210,14 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = React.memo(
 
               {/* Loading Stage */}
               {loadingStage && (
-                <p className="text-xs text-gray-500 dark:text-gray-500 italic">
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic">
                   {loadingStage}
                 </p>
               )}
 
               {/* Estimated Time */}
               {estimatedTime && estimatedTime > 0 && (
-                <p className="text-xs text-gray-500 dark:text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Estimated time: ~{estimatedTime}s
                 </p>
               )}

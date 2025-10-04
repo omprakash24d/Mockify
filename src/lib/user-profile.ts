@@ -1,6 +1,6 @@
 import type { User } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, FirebaseNetworkManager } from "./firebase";
 import type { CoachingDetailsFormData } from "./validations";
 
 export interface UserProfile {
@@ -24,7 +24,11 @@ export class UserProfileService {
   static async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
       const docRef = doc(db, "userProfiles", uid);
-      const docSnap = await getDoc(docRef);
+
+      // Use retry mechanism for network errors
+      const docSnap = await FirebaseNetworkManager.retryWithBackoff(() =>
+        getDoc(docRef)
+      );
 
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -38,7 +42,20 @@ export class UserProfileService {
       return null;
     } catch (error) {
       console.error("Error fetching user profile:", error);
-      return null;
+
+      // Handle network errors gracefully
+      if (FirebaseNetworkManager.isNetworkError(error)) {
+        await FirebaseNetworkManager.handleNetworkError(error);
+
+        // Return cached data if available or null
+        console.warn(
+          "User profile unavailable due to network issues. Operating in offline mode."
+        );
+        return null;
+      }
+
+      // Re-throw non-network errors
+      throw error;
     }
   }
 
@@ -63,15 +80,28 @@ export class UserProfileService {
 
     try {
       const docRef = doc(db, "userProfiles", user.uid);
-      await setDoc(docRef, {
-        ...profileData,
-        createdAt: now,
-        updatedAt: now,
-      });
+
+      // Use retry mechanism for network errors
+      await FirebaseNetworkManager.retryWithBackoff(() =>
+        setDoc(docRef, {
+          ...profileData,
+          createdAt: now,
+          updatedAt: now,
+        })
+      );
 
       return profileData;
     } catch (error) {
       console.error("Error creating user profile:", error);
+
+      if (FirebaseNetworkManager.isNetworkError(error)) {
+        await FirebaseNetworkManager.handleNetworkError(error);
+
+        // Return the profile data even if save failed (offline mode)
+        console.warn("Profile creation queued for when network is restored.");
+        return profileData;
+      }
+
       throw error;
     }
   }
@@ -101,9 +131,19 @@ export class UserProfileService {
         updatePayload.coachingLogo = this.getDefaultLogo();
       }
 
-      await updateDoc(docRef, updatePayload);
+      // Use retry mechanism for network errors
+      await FirebaseNetworkManager.retryWithBackoff(() =>
+        updateDoc(docRef, updatePayload)
+      );
     } catch (error) {
       console.error("Error updating user profile:", error);
+
+      if (FirebaseNetworkManager.isNetworkError(error)) {
+        await FirebaseNetworkManager.handleNetworkError(error);
+        console.warn("Profile update queued for when network is restored.");
+        return; // Don't throw error in offline mode
+      }
+
       throw error;
     }
   }

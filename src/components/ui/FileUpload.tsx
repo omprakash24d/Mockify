@@ -83,7 +83,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           }`}
         >
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && (
+            <span className="text-red-500 dark:text-red-400 ml-1">*</span>
+          )}
         </label>
       )}
 
@@ -128,7 +130,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   e.stopPropagation();
                   handleRemove();
                 }}
-                className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition"
+                className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white transition"
               >
                 <X className="h-3 w-3" />
               </button>
